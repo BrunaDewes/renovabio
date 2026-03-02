@@ -12,7 +12,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "desafio") //só pra definir o nome da tabela
+@Table(name = "Desafio") //NOME IGUAL AO BD
 public class Desafio implements Serializable {  
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

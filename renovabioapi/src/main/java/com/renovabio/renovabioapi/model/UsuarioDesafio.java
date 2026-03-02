@@ -1,50 +1,70 @@
 package com.renovabio.renovabioapi.model;
 
 import java.io.Serializable;
-import java.util.Objects;
+import java.time.LocalDate;
+import jakarta.persistence.*;
 
+@Entity
+@Table(name = "Usuario_has_Desafio") // nome igual do banco
 public class UsuarioDesafio implements Serializable {
-    private Long usuarioId;
-    private Long desafioId;
+    //essa é a chave composta (classe auxiliar)
+    @EmbeddedId
+    private UsuarioDesafioId id = new UsuarioDesafioId();
+
+    // RELACIONAMENTO COM USUÁRIO
+    @ManyToOne
+    @MapsId("usuarioId") // Conecta com o ID dentro da chave composta
+    @JoinColumn(name = "Usuario_idusuario") // Nome da coluna no banco
+    private Usuario usuario;
+
+    // RELACIONAMENTO COM DESAFIO
+    @ManyToOne
+    @MapsId("desafioId") // Conecta com o ID dentro da chave composta
+    @JoinColumn(name = "Desafio_idDesafio") // Nome da coluna no banco
+    private Desafio desafio;
+
+    // OUTROS CAMPOS 
+    @Enumerated(EnumType.STRING)
+    private StatusDesafio status;
+    
+    private Integer progresso; 
+    
+    @Column(columnDefinition = "DATE")
+    private LocalDate dataInicio;
+
+    @Column(columnDefinition = "DATE")
+    private LocalDate dataFim;
 
     // Construtores
     public UsuarioDesafio() {}
 
-    public UsuarioDesafio(Long usuarioId, Long desafioId) {
-        this.usuarioId = usuarioId;
-        this.desafioId = desafioId;
+    public UsuarioDesafio(Usuario usuario, Desafio desafio, StatusDesafio status) {
+        this.usuario = usuario;
+        this.desafio = desafio;
+        this.status = status;
+        this.id = new UsuarioDesafioId(usuario.getIdUsuario(), desafio.getId());
+        this.dataInicio = LocalDate.now(); // Define data atual automaticamente
     }
 
     // getters e setters
-    public Long getUsuarioId() {
-        return usuarioId;
-    }
+    public UsuarioDesafioId getId() { return id; }
+    public void setId(UsuarioDesafioId id) { this.id = id; }
 
-    public void setUsuarioId(Long usuarioId) {
-        this.usuarioId = usuarioId;
-    }
+    public Usuario getUsuario() { return usuario; }
+    public void setUsuario(Usuario usuario) { this.usuario = usuario; }
 
-    public Long getDesafioId() {
-        return desafioId;
-    }
+    public Desafio getDesafio() { return desafio; }
+    public void setDesafio(Desafio desafio) { this.desafio = desafio; }
 
-    public void setDesafioId(Long desafioId) {
-        this.desafioId = desafioId;
-    }
+    public StatusDesafio getStatus() { return status; }
+    public void setStatus(StatusDesafio status) { this.status = status; }
 
-    // hashCode e equals para garantir a unicidade da chave composta
-    @Override
-    public int hashCode() {
-        return Objects.hash(usuarioId, desafioId);   //gera um hash code baseado nos ids do usuario e do desafio pra garantir a unicidade da chave composta
-    }
+    public Integer getProgresso() { return progresso; }
+    public void setProgresso(Integer progresso) { this.progresso = progresso; }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;                                      //compara com ele mesmo
-        if (obj == null || getClass() != obj.getClass()) return false;     //ve se o objeto é nulo ou de classe diferente, se for, é falso
- 
-        UsuarioDesafio that = (UsuarioDesafio) obj; 
+    public LocalDate getDataInicio() { return dataInicio; }
+    public void setDataInicio(LocalDate dataInicio) { this.dataInicio = dataInicio; }
 
-        return usuarioId.equals(that.usuarioId) && desafioId.equals(that.desafioId);   //compara os ids do usuário e do desafio para verificar se são iguais
-    }
+    public LocalDate getDataFim() { return dataFim; }
+    public void setDataFim(LocalDate dataFim) { this.dataFim = dataFim; }
 }

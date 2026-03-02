@@ -23,36 +23,15 @@ public class Cidade implements Serializable {
     private List<Usuario> usuarios;
 
     // getters e setters
+    public Long getId() { return id;}
+    public void setId(Long id) { this.id = id; }
 
-    public Long getId() {
-        return id;
-    }
+    public String getNome() { return nome; }
+    public void setNome(String nome) { this.nome = nome; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public String getEstado() { return estado; }
+    public void setEstado(String estado) { this.estado = estado;}
 
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getEstado() {
-        return estado;
-    }
-
-    public void setEstado(String estado) {
-        this.estado = estado;
-    }
-
-    public List<Usuario> getUsuarios() {
-        return usuarios;
-    }
-
-    public void setUsuarios(List<Usuario> usuarios) {
-        this.usuarios = usuarios;
-    }    
+    public List<Usuario> getUsuarios() { return usuarios; }
+    public void setUsuarios(List<Usuario> usuarios) { this.usuarios = usuarios; }    
 }
