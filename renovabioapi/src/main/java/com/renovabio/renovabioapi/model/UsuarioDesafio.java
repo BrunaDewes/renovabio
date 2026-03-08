@@ -1,25 +1,23 @@
 package com.renovabio.renovabioapi.model;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "Usuario_has_Desafio") // nome igual do banco
-public class UsuarioDesafio implements Serializable {
-    //essa é a chave composta (classe auxiliar)
-    @EmbeddedId
-    private UsuarioDesafioId id = new UsuarioDesafioId();
+public class UsuarioDesafio {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     // RELACIONAMENTO COM USUÁRIO
     @ManyToOne
-    @MapsId("usuarioId") // Conecta com o ID dentro da chave composta
-    @JoinColumn(name = "Usuario_idusuario") // Nome da coluna no banco
+    @JoinColumn(name = "Usuario_idUsuario") // Nome da coluna no banco
     private Usuario usuario;
 
     // RELACIONAMENTO COM DESAFIO
     @ManyToOne
-    @MapsId("desafioId") // Conecta com o ID dentro da chave composta
     @JoinColumn(name = "Desafio_idDesafio") // Nome da coluna no banco
     private Desafio desafio;
 
@@ -29,10 +27,7 @@ public class UsuarioDesafio implements Serializable {
     
     private Integer progresso; 
     
-    @Column(columnDefinition = "DATE")
     private LocalDate dataInicio;
-
-    @Column(columnDefinition = "DATE")
     private LocalDate dataFim;
 
     // Construtores
@@ -42,13 +37,13 @@ public class UsuarioDesafio implements Serializable {
         this.usuario = usuario;
         this.desafio = desafio;
         this.status = status;
-        this.id = new UsuarioDesafioId(usuario.getIdUsuario(), desafio.getId());
+        this.progresso = 0;
         this.dataInicio = LocalDate.now(); // Define data atual automaticamente
     }
 
     // getters e setters
-    public UsuarioDesafioId getId() { return id; }
-    public void setId(UsuarioDesafioId id) { this.id = id; }
+    public Long getId() { return id; }
+    //não tem setId porque é auto gerado
 
     public Usuario getUsuario() { return usuario; }
     public void setUsuario(Usuario usuario) { this.usuario = usuario; }

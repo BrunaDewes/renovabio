@@ -26,7 +26,7 @@ public class AcaoUsuario implements Serializable {
     private Long idReferencia; // Guarda o ID do Desafio ou Receita que gerou os pontos
 
     @ManyToOne
-    @JoinColumn(name = "Usuario_idusuario")
+    @JoinColumn(name = "Usuario_idUsuario")
     private Usuario usuario;
 
     // Construtores 

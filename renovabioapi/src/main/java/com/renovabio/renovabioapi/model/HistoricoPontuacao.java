@@ -24,7 +24,7 @@ public class HistoricoPontuacao implements Serializable {
     private LocalDateTime dataRegistro = LocalDateTime.now();
 
     @ManyToOne
-    @JoinColumn(name = "Usuario_idusuario")
+    @JoinColumn(name = "Usuario_idUsuario")
     private Usuario usuario;
 
     // Construtores

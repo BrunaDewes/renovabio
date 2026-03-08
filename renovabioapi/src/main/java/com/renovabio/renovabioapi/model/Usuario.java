@@ -10,7 +10,7 @@ public class Usuario implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idusuario;
+    private Long idUsuario;
 
     @Column(name = "nome", length = 45, nullable = false)
     private String nome;
@@ -37,12 +37,12 @@ public class Usuario implements Serializable {
 
 
     // getters e setters
-    public Long getIdUsuario() {
-        return idusuario;
+    public Long getidUsuario() {
+        return idUsuario;
     }   
 
-    public void setIdUsuario(Long id) {
-        this.idusuario = id;
+    public void setidUsuario(Long id) {
+        this.idUsuario = id;
     }
 
     public String getNome() {

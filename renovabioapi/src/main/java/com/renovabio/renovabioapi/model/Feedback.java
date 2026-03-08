@@ -19,7 +19,7 @@ public class Feedback implements Serializable {
     private LocalDateTime dataEnvio = LocalDateTime.now();
 
     @ManyToOne
-    @JoinColumn(name = "Usuario_idusuario")
+    @JoinColumn(name = "Usuario_idUsuario")
     private Usuario usuario;
 
     // --- Construtores ---

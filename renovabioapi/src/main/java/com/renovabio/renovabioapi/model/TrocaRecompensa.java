@@ -14,7 +14,7 @@ public class TrocaRecompensa implements Serializable {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "Usuario_idusuario")
+    @JoinColumn(name = "Usuario_idUsuario")
     private Usuario usuario;
 
     @ManyToOne
