@@ -3,6 +3,8 @@ package com.renovabio.renovabioapi.model;
 import java.io.Serializable;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,6 +21,7 @@ public class Cidade implements Serializable {
 
     private String estado;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "cidade")
     private List<Usuario> usuarios;
 

@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "Usuario_has_Desafio") // nome igual do banco
+@Table(name = "usuario_has_desafio") // nome igual do banco
 public class UsuarioDesafio {
     
     @Id
@@ -13,12 +13,12 @@ public class UsuarioDesafio {
 
     // RELACIONAMENTO COM USUÁRIO
     @ManyToOne
-    @JoinColumn(name = "Usuario_idUsuario") // Nome da coluna no banco
+    @JoinColumn(name = "usuario_id_usuario") // Nome da coluna no banco
     private Usuario usuario;
 
     // RELACIONAMENTO COM DESAFIO
     @ManyToOne
-    @JoinColumn(name = "Desafio_idDesafio") // Nome da coluna no banco
+    @JoinColumn(name = "desafio_id_desafio") // Nome da coluna no banco
     private Desafio desafio;
 
     // OUTROS CAMPOS 
