@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.renovabio.renovabioapi.model.AcaoUsuario;
+
 // listar desafios
 // usuário participar de desafio
 // atualizar progresso
@@ -17,8 +19,10 @@ import org.springframework.web.server.ResponseStatusException;
 // além de gerar pontuação automaticamente quando um desafio é finalizado.
 import com.renovabio.renovabioapi.model.Desafio;
 import com.renovabio.renovabioapi.model.StatusDesafio;
+import com.renovabio.renovabioapi.model.TipoAcao;
 import com.renovabio.renovabioapi.model.Usuario;
 import com.renovabio.renovabioapi.model.UsuarioDesafio;
+import com.renovabio.renovabioapi.repository.AcaoUsuarioRepository;
 import com.renovabio.renovabioapi.repository.DesafioRepository;
 import com.renovabio.renovabioapi.repository.UsuarioDesafioRepository;
 import com.renovabio.renovabioapi.repository.UsuarioRepository;
@@ -29,15 +33,18 @@ public class DesafioService {
     private final DesafioRepository desafioRepository;
     private final UsuarioRepository usuarioRepository;
     private final UsuarioDesafioRepository usuarioDesafioRepository;
+    private final AcaoUsuarioRepository acaoUsuarioRepository;
 
     public DesafioService(
             DesafioRepository desafioRepository,
             UsuarioRepository usuarioRepository,
-            UsuarioDesafioRepository usuarioDesafioRepository) {
+            UsuarioDesafioRepository usuarioDesafioRepository,
+            AcaoUsuarioRepository acaoUsuarioRepository) {
 
         this.desafioRepository = desafioRepository;
         this.usuarioRepository = usuarioRepository;
         this.usuarioDesafioRepository = usuarioDesafioRepository;
+        this.acaoUsuarioRepository = acaoUsuarioRepository;
     }
 
     public List<Desafio> listarDesafios() {
@@ -94,6 +101,15 @@ public class DesafioService {
         );
 
         usuarioRepository.save(usuario);
+
+        //aqui entra a AcaoUsuario
+        AcaoUsuario acao = new AcaoUsuario();
+        acao.setUsuario(usuario);
+        acao.setTipoAcao(TipoAcao.DESAFIO);
+        acao.setPontosGerados(desafio.getPontos());
+        acao.setIdReferencia(desafio.getId());
+
+        acaoUsuarioRepository.save(acao);
 
         return usuarioDesafioRepository.save(usuarioDesafio);
     }

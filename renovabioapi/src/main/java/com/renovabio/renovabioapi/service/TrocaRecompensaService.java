@@ -21,15 +21,18 @@ public class TrocaRecompensaService {
     private final UsuarioRepository usuarioRepository;
     private final RecompensaRepository recompensaRepository;
     private final TrocaRecompensaRepository trocaRecompensaRepository;
+    private final AcaoUsuarioRepository acaoUsuarioRepository;
 
     public TrocaRecompensaService(
             UsuarioRepository usuarioRepository,
             RecompensaRepository recompensaRepository,
-            TrocaRecompensaRepository trocaRecompensaRepository) {
+            TrocaRecompensaRepository trocaRecompensaRepository,
+            AcaoUsuarioRepository acaoUsuarioRepository) {
 
         this.usuarioRepository = usuarioRepository;
         this.recompensaRepository = recompensaRepository;
         this.trocaRecompensaRepository = trocaRecompensaRepository;
+        this.acaoUsuarioRepository = acaoUsuarioRepository;
     }
 
     public TrocaRecompensa trocarRecompensa(Long usuarioId, Long recompensaId) {
@@ -58,6 +61,15 @@ public class TrocaRecompensaService {
         );
 
         usuarioRepository.save(usuario);
+
+        // registrar ação do usuário
+        AcaoUsuario acao = new AcaoUsuario();
+        acao.setUsuario(usuario);
+        acao.setTipoAcao(TipoAcao.TROCA_RECOMPENSA);
+        acao.setPontosGerados(-recompensa.getPontosNecessarios());
+        acao.setIdReferencia(recompensa.getId());
+
+        acaoUsuarioRepository.save(acao);
 
         // diminuir estoque
         recompensa.setQuantidadeDisponivel(

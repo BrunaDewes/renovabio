@@ -1,5 +1,16 @@
 package com.renovabio.renovabioapi.service;
 
+/*busca usuário
+busca receita
+↓
+cria AcaoUsuario
+↓
+salva ação
+↓
+atualiza pontuação
+↓
+salva usuário */
+
 import com.renovabio.renovabioapi.model.AcaoUsuario;
 import com.renovabio.renovabioapi.model.Receita;
 import com.renovabio.renovabioapi.model.TipoAcao;

@@ -13,16 +13,12 @@ public class Categoria implements Serializable {
 
     @Column(name = "nomeCategoria", length = 45, nullable = false)  
     private String nome;
-    
-    @Enumerated(EnumType.STRING)
-    private TipoCategoria tipo; 
 
     // Construtores 
     public Categoria() {}
 
-    public Categoria(String nome, TipoCategoria tipo) {
+    public Categoria(String nome) {
         this.nome = nome;
-        this.tipo = tipo;
     }
 
     // Getters e Setters
@@ -31,7 +27,4 @@ public class Categoria implements Serializable {
 
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
-
-    public TipoCategoria getTipo() { return tipo; }
-    public void setTipo(TipoCategoria tipo) { this.tipo = tipo; }
 }

@@ -1,0 +1,42 @@
+package com.renovabio.renovabioapi.service;
+
+import com.renovabio.renovabioapi.model.Feedback;
+import com.renovabio.renovabioapi.model.Usuario;
+import com.renovabio.renovabioapi.repository.FeedbackRepository;
+import com.renovabio.renovabioapi.repository.UsuarioRepository;
+
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Service
+public class FeedbackService {
+
+    private final FeedbackRepository feedbackRepository;
+    private final UsuarioRepository usuarioRepository;
+
+    public FeedbackService(FeedbackRepository feedbackRepository, UsuarioRepository usuarioRepository) {
+        this.feedbackRepository = feedbackRepository;
+        this.usuarioRepository = usuarioRepository;
+    }
+
+    // LISTAR TODOS OS FEEDBACKS
+    public List<Feedback> listarFeedbacks() {
+        return feedbackRepository.findAll();
+    }
+
+    // CRIAR FEEDBACK
+    public Feedback criarFeedback(Long usuarioId, String mensagem) {
+
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        Feedback feedback = new Feedback();
+        feedback.setUsuario(usuario);
+        feedback.setMensagem(mensagem);
+        feedback.setDataEnvio(LocalDateTime.now());
+
+        return feedbackRepository.save(feedback);
+    }
+}

@@ -11,5 +11,5 @@ import org.springframework.stereotype.Repository;
 public interface AcaoUsuarioRepository extends JpaRepository<AcaoUsuario, Long> {
     // métodos prontos --> save(), findAll(), findById(), deleteById()
 
-    List<AcaoUsuario> findByUsuarioIdUsuario(Long usuarioId);  //LISTAR AÇÕES DE UM USUÁRIO E
+    List<AcaoUsuario> findByUsuarioIdUsuario(Long usuarioId);  //LISTAR AÇÕES DE UM USUÁRIO
 }
