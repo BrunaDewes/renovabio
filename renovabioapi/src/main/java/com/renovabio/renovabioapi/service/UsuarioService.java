@@ -72,6 +72,13 @@ public class UsuarioService {
                 .collect(Collectors.toList());
     }
 
+    public UsuarioResponseDTO buscarUsuario(Long id) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Usuario nao encontrado"));
+
+        return toResponseDTO(usuario);
+    }
+
     public void atualizarSenha(Long id, AtualizarSenhaRequestDTO dto) {
         if (dto.getNovaSenha() == null || dto.getNovaSenha().isBlank()) {
             throw new ResponseStatusException(BAD_REQUEST, "A nova senha e obrigatoria");

@@ -4,9 +4,10 @@ import com.renovabio.renovabioapi.model.UsuarioDesafio;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface UsuarioDesafioRepository extends JpaRepository<UsuarioDesafio, Long> {
-    // métodos prontos --> save(), findAll(), findById(), deleteById()
-    boolean existsByUsuarioIdUsuarioAndDesafioIdDesafio(Long usuarioId, Long desafioId); 
-    // |_ verifica se um usuário já está participando de um desafio específico
+    boolean existsByUsuarioIdUsuarioAndDesafioIdDesafio(Long usuarioId, Long desafioId);
+    List<UsuarioDesafio> findByUsuarioIdUsuario(Long usuarioId);
 }

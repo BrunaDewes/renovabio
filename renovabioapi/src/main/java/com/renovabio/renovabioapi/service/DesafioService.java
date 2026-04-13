@@ -1,22 +1,6 @@
 package com.renovabio.renovabioapi.service;
 
-import java.util.List;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-
 import com.renovabio.renovabioapi.model.AcaoUsuario;
-
-// listar desafios
-// usuário participar de desafio
-// atualizar progresso
-// concluir desafio
-// gerar pontuação
-
-//centraliza a lógica de negócios relacionada aos desafios. 
-// Ele controla a participação dos usuários, atualização de progresso e conclusão dos desafios, 
-// além de gerar pontuação automaticamente quando um desafio é finalizado.
 import com.renovabio.renovabioapi.model.Desafio;
 import com.renovabio.renovabioapi.model.StatusDesafio;
 import com.renovabio.renovabioapi.model.TipoAcao;
@@ -26,6 +10,11 @@ import com.renovabio.renovabioapi.repository.AcaoUsuarioRepository;
 import com.renovabio.renovabioapi.repository.DesafioRepository;
 import com.renovabio.renovabioapi.repository.UsuarioDesafioRepository;
 import com.renovabio.renovabioapi.repository.UsuarioRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 
 @Service
 public class DesafioService {
@@ -51,44 +40,43 @@ public class DesafioService {
         return desafioRepository.findAll();
     }
 
-    public UsuarioDesafio participarDesafio(Long usuarioId, Long desafioId) {
+    public List<UsuarioDesafio> listarParticipacoesUsuario(Long usuarioId) {
+        return usuarioDesafioRepository.findByUsuarioIdUsuario(usuarioId);
+    }
 
-        if(usuarioDesafioRepository.existsByUsuarioIdUsuarioAndDesafioIdDesafio(usuarioId, desafioId)){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário já está participando deste desafio");
+    public UsuarioDesafio participarDesafio(Long usuarioId, Long desafioId) {
+        if (usuarioDesafioRepository.existsByUsuarioIdUsuarioAndDesafioIdDesafio(usuarioId, desafioId)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuario ja esta participando deste desafio");
         }
 
         Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario nao encontrado"));
 
         Desafio desafio = desafioRepository.findById(desafioId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Desafio nao encontrado"));
 
         UsuarioDesafio usuarioDesafio = new UsuarioDesafio(usuario, desafio, StatusDesafio.EM_ANDAMENTO);
-
         return usuarioDesafioRepository.save(usuarioDesafio);
     }
 
     public UsuarioDesafio atualizarProgresso(Long usuarioDesafioId, int progresso) {
-
         UsuarioDesafio usuarioDesafio = usuarioDesafioRepository.findById(usuarioDesafioId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Registro não encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Registro nao encontrado"));
 
-        if(progresso > 100){
+        if (progresso > 100) {
             progresso = 100;
         }
 
         usuarioDesafio.setProgresso(progresso);
-
         return usuarioDesafioRepository.save(usuarioDesafio);
     }
 
     public UsuarioDesafio concluirDesafio(Long usuarioDesafioId) {
-
         UsuarioDesafio usuarioDesafio = usuarioDesafioRepository.findById(usuarioDesafioId)
-                .orElseThrow(() -> new RuntimeException("Registro não encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Registro nao encontrado"));
 
-        if(usuarioDesafio.getStatus() == StatusDesafio.CONCLUIDO){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Desafio já foi concluído");
+        if (usuarioDesafio.getStatus() == StatusDesafio.CONCLUIDO) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Desafio ja foi concluido");
         }
 
         usuarioDesafio.setStatus(StatusDesafio.CONCLUIDO);
@@ -96,19 +84,14 @@ public class DesafioService {
         Usuario usuario = usuarioDesafio.getUsuario();
         Desafio desafio = usuarioDesafio.getDesafio();
 
-        usuario.setPontuacaoAtual(
-                usuario.getPontuacaoAtual() + desafio.getPontos()
-        );
-
+        usuario.setPontuacaoAtual(usuario.getPontuacaoAtual() + desafio.getPontos());
         usuarioRepository.save(usuario);
 
-        //aqui entra a AcaoUsuario
         AcaoUsuario acao = new AcaoUsuario();
         acao.setUsuario(usuario);
         acao.setTipoAcao(TipoAcao.DESAFIO);
         acao.setPontosGerados(desafio.getPontos());
         acao.setIdReferencia(desafio.getId());
-
         acaoUsuarioRepository.save(acao);
 
         return usuarioDesafioRepository.save(usuarioDesafio);

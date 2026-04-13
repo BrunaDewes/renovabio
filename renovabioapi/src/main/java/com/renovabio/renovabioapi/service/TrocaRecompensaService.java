@@ -1,19 +1,19 @@
 package com.renovabio.renovabioapi.service;
 
-/*usuario ganha pontos
-↓
-consulta recompensas
-↓
-troca pontos
-↓
-gera voucher */
-
-import com.renovabio.renovabioapi.model.*;
-import com.renovabio.renovabioapi.repository.*;
-
-import org.springframework.stereotype.Service;
-
+import com.renovabio.renovabioapi.model.AcaoUsuario;
+import com.renovabio.renovabioapi.model.Recompensa;
+import com.renovabio.renovabioapi.model.StatusTroca;
+import com.renovabio.renovabioapi.model.TipoAcao;
+import com.renovabio.renovabioapi.model.TrocaRecompensa;
+import com.renovabio.renovabioapi.model.Usuario;
+import com.renovabio.renovabioapi.repository.AcaoUsuarioRepository;
+import com.renovabio.renovabioapi.repository.RecompensaRepository;
+import com.renovabio.renovabioapi.repository.TrocaRecompensaRepository;
+import com.renovabio.renovabioapi.repository.UsuarioRepository;
 import java.util.UUID;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class TrocaRecompensaService {
@@ -36,49 +36,37 @@ public class TrocaRecompensaService {
     }
 
     public TrocaRecompensa trocarRecompensa(Long usuarioId, Long recompensaId) {
-
         Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario nao encontrado"));
 
         Recompensa recompensa = recompensaRepository.findById(recompensaId)
-                .orElseThrow(() -> new RuntimeException("Recompensa não encontrada"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Recompensa nao encontrada"));
 
-        if (!recompensa.getAtivo()) {
-            throw new RuntimeException("Recompensa não está ativa");
+        if (Boolean.FALSE.equals(recompensa.getAtivo())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Recompensa nao esta ativa");
         }
 
-        if (recompensa.getQuantidadeDisponivel() <= 0) {
-            throw new RuntimeException("Recompensa esgotada");
+        if (recompensa.getQuantidadeDisponivel() == null || recompensa.getQuantidadeDisponivel() <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Recompensa esgotada");
         }
 
-        if (usuario.getPontuacaoAtual() < recompensa.getPontosNecessarios()) {
-            throw new RuntimeException("Pontos insuficientes");
+        if (usuario.getPontuacaoAtual() == null || usuario.getPontuacaoAtual() < recompensa.getPontosNecessarios()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Pontos insuficientes");
         }
 
-        // descontar pontos
-        usuario.setPontuacaoAtual(
-                usuario.getPontuacaoAtual() - recompensa.getPontosNecessarios()
-        );
-
+        usuario.setPontuacaoAtual(usuario.getPontuacaoAtual() - recompensa.getPontosNecessarios());
         usuarioRepository.save(usuario);
 
-        // registrar ação do usuário
         AcaoUsuario acao = new AcaoUsuario();
         acao.setUsuario(usuario);
         acao.setTipoAcao(TipoAcao.TROCA_RECOMPENSA);
         acao.setPontosGerados(-recompensa.getPontosNecessarios());
         acao.setIdReferencia(recompensa.getId());
-
         acaoUsuarioRepository.save(acao);
 
-        // diminuir estoque
-        recompensa.setQuantidadeDisponivel(
-                recompensa.getQuantidadeDisponivel() - 1
-        );
-
+        recompensa.setQuantidadeDisponivel(recompensa.getQuantidadeDisponivel() - 1);
         recompensaRepository.save(recompensa);
 
-        // gerar voucher
         String voucher = UUID.randomUUID().toString().substring(0, 8);
 
         TrocaRecompensa troca = new TrocaRecompensa();

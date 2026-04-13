@@ -4,10 +4,10 @@ import com.renovabio.renovabioapi.model.Recompensa;
 import com.renovabio.renovabioapi.model.TrocaRecompensa;
 import com.renovabio.renovabioapi.repository.RecompensaRepository;
 import com.renovabio.renovabioapi.service.TrocaRecompensaService;
-
-import org.springframework.web.bind.annotation.*;
-
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/recompensas")
@@ -32,10 +32,16 @@ public class RecompensaController {
 
     // TROCAR RECOMPENSA
     @PostMapping("/trocar")
-    public TrocaRecompensa trocar(
+    public Map<String, Object> trocar(
             @RequestParam Long usuarioId,
             @RequestParam Long recompensaId) {
 
-        return trocaRecompensaService.trocarRecompensa(usuarioId, recompensaId);
+        TrocaRecompensa troca = trocaRecompensaService.trocarRecompensa(usuarioId, recompensaId);
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("id", troca.getId());
+        response.put("codigoVoucher", troca.getCodigoVoucher());
+        response.put("status", troca.getStatus() != null ? troca.getStatus().name() : null);
+        response.put("mensagem", "Recompensa resgatada com sucesso");
+        return response;
     }
 }

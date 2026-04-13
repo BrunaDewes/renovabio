@@ -37,6 +37,11 @@ public class UsuarioController {
         return usuarioService.listarUsuarios();
     }
 
+    @GetMapping("/{id}")
+    public UsuarioResponseDTO buscarUsuario(@PathVariable Long id) {
+        return usuarioService.buscarUsuario(id);
+    }
+
     @PatchMapping("/{id}/senha")
     public void atualizarSenha(@PathVariable Long id, @RequestBody AtualizarSenhaRequestDTO dto) {
         usuarioService.atualizarSenha(id, dto);
