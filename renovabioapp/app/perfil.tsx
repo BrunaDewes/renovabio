@@ -17,7 +17,11 @@ import {
 import { Avatar } from '../components/avatar';
 import { PasswordInput } from '../components/password-input';
 import { useAuth } from '../context/auth-context';
-import { getApiBaseUrl } from '../utils/api';
+import { createImageFormData, getApiBaseUrl, getAuthHeaders, toApiFileUrl } from '../utils/api';
+
+type UsuarioResponse = {
+  photoUri?: string | null;
+};
 
 export default function Perfil() {
   const { signOut, updateUser, user } = useAuth();
@@ -51,6 +55,10 @@ export default function Perfil() {
   }
 
   async function editarFoto() {
+    if (!user?.id) {
+      return;
+    }
+
     const permissao = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permissao.granted) {
       Alert.alert('Permissao', 'Permita o acesso a galeria para selecionar uma foto.');
@@ -70,13 +78,39 @@ export default function Perfil() {
 
     setSalvandoFoto(true);
     try {
-      await updateUser({ photoUri: resultado.assets[0].uri });
+      const response = await fetch(`${apiBaseUrl}/usuarios/${user?.id}/foto`, {
+        method: 'POST',
+        headers: getAuthHeaders(user.token),
+        body: createImageFormData(resultado.assets[0].uri),
+      });
+
+      if (!response.ok) {
+        Alert.alert('Perfil', 'Nao foi possivel enviar a foto para o servidor.');
+        return;
+      }
+
+      const usuarioAtualizado = (await response.json()) as UsuarioResponse;
+      await updateUser({ photoUri: toApiFileUrl(usuarioAtualizado.photoUri) });
     } finally {
       setSalvandoFoto(false);
     }
   }
 
   async function removerFoto() {
+    if (!user?.id) {
+      return;
+    }
+
+    const response = await fetch(`${apiBaseUrl}/usuarios/${user.id}/foto`, {
+      method: 'DELETE',
+      headers: getAuthHeaders(user.token),
+    });
+
+    if (!response.ok) {
+      Alert.alert('Perfil', 'Nao foi possivel remover a foto.');
+      return;
+    }
+
     await updateUser({ photoUri: null });
   }
 
@@ -107,6 +141,7 @@ export default function Perfil() {
       const response = await fetch(`${apiBaseUrl}/usuarios/${user.id}/senha`, {
         method: 'PATCH',
         headers: {
+          ...getAuthHeaders(user.token),
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({

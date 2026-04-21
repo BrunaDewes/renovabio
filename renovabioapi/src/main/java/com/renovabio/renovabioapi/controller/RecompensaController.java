@@ -1,5 +1,6 @@
 package com.renovabio.renovabioapi.controller;
 
+import com.renovabio.renovabioapi.dto.HistoricoTrocaRecompensaDTO;
 import com.renovabio.renovabioapi.model.Recompensa;
 import com.renovabio.renovabioapi.model.TrocaRecompensa;
 import com.renovabio.renovabioapi.repository.RecompensaRepository;
@@ -28,6 +29,11 @@ public class RecompensaController {
     @GetMapping
     public List<Recompensa> listarRecompensas() {
         return recompensaRepository.findAll();
+    }
+
+    @GetMapping("/usuario/{usuarioId}/trocas")
+    public List<HistoricoTrocaRecompensaDTO> listarTrocasUsuario(@PathVariable Long usuarioId) {
+        return trocaRecompensaService.listarTrocasUsuario(usuarioId);
     }
 
     // TROCAR RECOMPENSA

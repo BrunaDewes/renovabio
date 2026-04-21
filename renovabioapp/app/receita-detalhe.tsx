@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 
 import { useAuth } from '../context/auth-context';
-import { getApiBaseUrl } from '../utils/api';
+import { getApiBaseUrl, getAuthHeaders } from '../utils/api';
 import { formatarListaTexto, getRecipeImage, Receita } from '../utils/receitas';
 
 export default function ReceitaDetalhe() {
@@ -64,6 +64,7 @@ export default function ReceitaDetalhe() {
     try {
       const response = await fetch(`${apiBaseUrl}/receitas/${receita.id}/testar?usuarioId=${user.id}`, {
         method: 'POST',
+        headers: getAuthHeaders(user.token),
       });
 
       if (!response.ok) {

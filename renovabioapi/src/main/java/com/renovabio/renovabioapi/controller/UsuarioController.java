@@ -2,6 +2,7 @@ package com.renovabio.renovabioapi.controller;
 
 import com.renovabio.renovabioapi.dto.AtualizarSenhaRequestDTO;
 import com.renovabio.renovabioapi.dto.LoginRequestDTO;
+import com.renovabio.renovabioapi.dto.RecuperarSenhaRequestDTO;
 import com.renovabio.renovabioapi.dto.UsuarioRequestDTO;
 import com.renovabio.renovabioapi.dto.UsuarioResponseDTO;
 import com.renovabio.renovabioapi.model.AcaoUsuario;
@@ -9,6 +10,7 @@ import com.renovabio.renovabioapi.repository.AcaoUsuarioRepository;
 import com.renovabio.renovabioapi.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -45,6 +47,21 @@ public class UsuarioController {
     @PatchMapping("/{id}/senha")
     public void atualizarSenha(@PathVariable Long id, @RequestBody AtualizarSenhaRequestDTO dto) {
         usuarioService.atualizarSenha(id, dto);
+    }
+
+    @PatchMapping("/recuperar-senha")
+    public void recuperarSenha(@RequestBody RecuperarSenhaRequestDTO dto) {
+        usuarioService.recuperarSenha(dto);
+    }
+
+    @PostMapping("/{id}/foto")
+    public UsuarioResponseDTO atualizarFotoPerfil(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+        return usuarioService.atualizarFotoPerfil(id, file);
+    }
+
+    @DeleteMapping("/{id}/foto")
+    public UsuarioResponseDTO removerFotoPerfil(@PathVariable Long id) {
+        return usuarioService.removerFotoPerfil(id);
     }
 
     @GetMapping("/{id}/acoes")

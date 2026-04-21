@@ -5,12 +5,21 @@ import { ActivityIndicator, ImageBackground, ScrollView, Text, TouchableOpacity,
 
 import { useAuth } from '../context/auth-context';
 import { getApiBaseUrl, getAuthHeaders } from '../utils/api';
-import { calcularDiasConcluidos, UsuarioDesafio } from '../utils/desafios';
 
-export default function HistoricoDesafios() {
+type TrocaRecompensaHistorico = {
+  id: number;
+  recompensaDescricao?: string;
+  parceiroNome?: string;
+  pontosUtilizados?: number;
+  codigoVoucher?: string;
+  status?: string;
+  dataTroca?: string;
+};
+
+export default function HistoricoRecompensas() {
   const { user } = useAuth();
   const apiBaseUrl = useMemo(() => getApiBaseUrl(), []);
-  const [participacoes, setParticipacoes] = useState<UsuarioDesafio[]>([]);
+  const [trocas, setTrocas] = useState<TrocaRecompensaHistorico[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState('');
 
@@ -25,16 +34,16 @@ export default function HistoricoDesafios() {
     setErro('');
 
     try {
-      const response = await fetch(`${apiBaseUrl}/desafios/usuario/${user.id}`, {
+      const response = await fetch(`${apiBaseUrl}/recompensas/usuario/${user.id}/trocas`, {
         headers: getAuthHeaders(user.token),
       });
       if (!response.ok) {
-        setErro('Nao foi possivel carregar o historico.');
+        setErro('Nao foi possivel carregar o historico de vouchers.');
         return;
       }
 
-      const data = (await response.json()) as UsuarioDesafio[];
-      setParticipacoes(data);
+      const data = (await response.json()) as TrocaRecompensaHistorico[];
+      setTrocas(data);
     } catch {
       setErro(`Nao foi possivel acessar a API em ${apiBaseUrl}.`);
     } finally {
@@ -46,7 +55,7 @@ export default function HistoricoDesafios() {
     void carregarHistorico();
   }, [carregarHistorico]);
 
-  const concluidos = participacoes.filter((participacao) => participacao.status === 'CONCLUIDO').length;
+  const pontosUsados = trocas.reduce((total, troca) => total + (troca.pontosUtilizados ?? 0), 0);
 
   return (
     <ImageBackground
@@ -60,7 +69,7 @@ export default function HistoricoDesafios() {
             <Ionicons name="arrow-back" size={28} color="#0B7A43" />
           </TouchableOpacity>
 
-          <Text style={styles.title}>Historico de Desafios</Text>
+          <Text style={styles.title}>Historico de Vouchers</Text>
 
           <View style={styles.backButton} />
         </View>
@@ -74,6 +83,9 @@ export default function HistoricoDesafios() {
         {!carregando && erro ? (
           <View style={styles.messageCard}>
             <Text style={styles.messageText}>{erro}</Text>
+            <TouchableOpacity onPress={() => void carregarHistorico()} style={styles.retryButton}>
+              <Text style={styles.retryText}>Tentar novamente</Text>
+            </TouchableOpacity>
           </View>
         ) : null}
 
@@ -81,42 +93,44 @@ export default function HistoricoDesafios() {
           <>
             <View style={styles.summaryCard}>
               <View style={styles.summaryItem}>
-                <Text style={styles.summaryValue}>{participacoes.length}</Text>
-                <Text style={styles.summaryLabel}>Desafios iniciados</Text>
+                <Text style={styles.summaryValue}>{trocas.length}</Text>
+                <Text style={styles.summaryLabel}>Vouchers gerados</Text>
               </View>
 
               <View style={styles.summaryDivider} />
 
               <View style={styles.summaryItem}>
-                <Text style={styles.summaryValue}>{concluidos}</Text>
-                <Text style={styles.summaryLabel}>Desafios concluidos</Text>
+                <Text style={styles.summaryValue}>{pontosUsados}</Text>
+                <Text style={styles.summaryLabel}>Pontos trocados</Text>
               </View>
             </View>
 
-            {participacoes.length === 0 ? (
+            {trocas.length === 0 ? (
               <View style={styles.messageCard}>
-                <Text style={styles.messageText}>Nenhum desafio registrado ainda.</Text>
+                <Text style={styles.messageText}>Voce ainda nao resgatou nenhuma recompensa.</Text>
               </View>
             ) : (
               <View style={styles.listWrapper}>
-                {participacoes.map((participacao) => {
-                  const dias = calcularDiasConcluidos(participacao);
-                  const total = participacao.desafio?.duracaoDias ?? 0;
-                  const concluido = participacao.status === 'CONCLUIDO';
-
-                  return (
-                    <View key={participacao.id} style={styles.historyCard}>
-                      <View style={styles.historyHeader}>
-                        <Text style={styles.challengeTitle}>{participacao.desafio?.titulo}</Text>
-                        <Text style={[styles.statusBadge, concluido ? styles.statusDone : styles.statusProgress]}>
-                          {concluido ? 'Concluido' : 'Em andamento'}
-                        </Text>
-                      </View>
-
-                      <Text style={styles.historyInfo}>• Progresso registrado: {dias}/{total}</Text>
+                {trocas.map((troca) => (
+                  <View key={troca.id} style={styles.voucherCard}>
+                    <View style={styles.voucherHeader}>
+                      <Text style={styles.rewardTitle}>{troca.recompensaDescricao || 'Recompensa'}</Text>
+                      <Text style={styles.statusBadge}>{formatarStatus(troca.status)}</Text>
                     </View>
-                  );
-                })}
+
+                    <Text style={styles.partnerText}>{troca.parceiroNome || 'Parceiro nao informado'}</Text>
+
+                    <View style={styles.voucherBox}>
+                      <Text style={styles.voucherLabel}>Codigo do voucher</Text>
+                      <Text style={styles.voucherCode}>{troca.codigoVoucher || 'Nao informado'}</Text>
+                    </View>
+
+                    <View style={styles.infoRow}>
+                      <Text style={styles.infoText}>{troca.pontosUtilizados ?? 0} pontos utilizados</Text>
+                      <Text style={styles.infoText}>{formatarData(troca.dataTroca)}</Text>
+                    </View>
+                  </View>
+                ))}
               </View>
             )}
           </>
@@ -124,6 +138,31 @@ export default function HistoricoDesafios() {
       </ScrollView>
     </ImageBackground>
   );
+}
+
+function formatarStatus(status?: string) {
+  if (status === 'RESGATADO') {
+    return 'Resgatado';
+  }
+
+  if (status === 'CANCELADO') {
+    return 'Cancelado';
+  }
+
+  return 'Gerado';
+}
+
+function formatarData(data?: string) {
+  if (!data) {
+    return 'Data nao informada';
+  }
+
+  const date = new Date(data);
+  if (Number.isNaN(date.getTime())) {
+    return 'Data nao informada';
+  }
+
+  return date.toLocaleDateString('pt-BR');
 }
 
 const styles = {
@@ -144,16 +183,15 @@ const styles = {
     alignItems: 'flex-start' as const,
   },
   title: {
+    flex: 1,
     color: '#0B7A43',
-    fontSize: 28,
+    fontSize: 25,
     fontWeight: '800' as const,
     textAlign: 'center' as const,
   },
   centerState: {
-    flex: 1,
     marginTop: 80,
     alignItems: 'center' as const,
-    justifyContent: 'center' as const,
   },
   summaryCard: {
     flexDirection: 'row' as const,
@@ -188,40 +226,65 @@ const styles = {
   listWrapper: {
     gap: 14,
   },
-  historyCard: {
-    backgroundColor: 'rgba(255,255,255,0.9)',
-    borderRadius: 22,
+  voucherCard: {
+    backgroundColor: 'rgba(250,245,228,0.96)',
+    borderRadius: 24,
     padding: 18,
   },
-  historyHeader: {
-    marginBottom: 10,
+  voucherHeader: {
+    gap: 10,
+    marginBottom: 8,
   },
-  challengeTitle: {
+  rewardTitle: {
     color: '#0B7A43',
-    fontSize: 19,
+    fontSize: 20,
     fontWeight: '800' as const,
-    marginBottom: 10,
+    lineHeight: 26,
   },
   statusBadge: {
     alignSelf: 'flex-start' as const,
+    backgroundColor: '#DCE8C7',
     borderRadius: 999,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    overflow: 'hidden' as const,
-    color: '#FFFFFF',
+    color: '#14532D',
     fontSize: 13,
-    fontWeight: '700' as const,
+    fontWeight: '800' as const,
+    overflow: 'hidden' as const,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
   },
-  statusDone: {
-    backgroundColor: '#1F7A3D',
-  },
-  statusProgress: {
-    backgroundColor: '#D97706',
-  },
-  historyInfo: {
+  partnerText: {
     color: '#35506B',
     fontSize: 15,
-    lineHeight: 24,
+    marginBottom: 14,
+  },
+  voucherBox: {
+    backgroundColor: '#0B7A43',
+    borderRadius: 18,
+    padding: 16,
+    marginBottom: 14,
+  },
+  voucherLabel: {
+    color: '#DCE8C7',
+    fontSize: 13,
+    fontWeight: '700' as const,
+    marginBottom: 4,
+  },
+  voucherCode: {
+    color: '#F7F3DF',
+    fontSize: 26,
+    fontWeight: '800' as const,
+    letterSpacing: 2,
+  },
+  infoRow: {
+    flexDirection: 'row' as const,
+    justifyContent: 'space-between' as const,
+    gap: 12,
+  },
+  infoText: {
+    flex: 1,
+    color: '#35506B',
+    fontSize: 14,
+    fontWeight: '700' as const,
   },
   messageCard: {
     backgroundColor: 'rgba(244,235,214,0.94)',
@@ -233,5 +296,16 @@ const styles = {
     fontSize: 16,
     lineHeight: 24,
     textAlign: 'center' as const,
+  },
+  retryButton: {
+    marginTop: 14,
+    backgroundColor: '#0B7A43',
+    borderRadius: 18,
+    paddingVertical: 12,
+    alignItems: 'center' as const,
+  },
+  retryText: {
+    color: '#F7F3DF',
+    fontWeight: '700' as const,
   },
 };

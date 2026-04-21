@@ -1,9 +1,11 @@
 package com.renovabio.renovabioapi.controller;
 
+import com.renovabio.renovabioapi.dto.ComprovacaoDesafioDTO;
 import com.renovabio.renovabioapi.model.Desafio;
 import com.renovabio.renovabioapi.model.UsuarioDesafio;
 import com.renovabio.renovabioapi.service.DesafioService;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -40,5 +42,17 @@ public class DesafioController {
     @PutMapping("/concluir")
     public UsuarioDesafio concluirDesafio(@RequestParam Long usuarioDesafioId) {
         return desafioService.concluirDesafio(usuarioDesafioId);
+    }
+
+    @GetMapping("/comprovacoes/{usuarioDesafioId}")
+    public List<ComprovacaoDesafioDTO> listarComprovacoes(@PathVariable Long usuarioDesafioId) {
+        return desafioService.listarComprovacoes(usuarioDesafioId);
+    }
+
+    @PostMapping("/comprovacoes")
+    public ComprovacaoDesafioDTO registrarComprovacao(
+            @RequestParam Long usuarioDesafioId,
+            @RequestParam("file") MultipartFile file) {
+        return desafioService.registrarComprovacao(usuarioDesafioId, file);
     }
 }

@@ -13,8 +13,14 @@ import {
 } from 'react-native';
 
 import { useAuth } from '../context/auth-context';
-import { getApiBaseUrl } from '../utils/api';
-import { calcularDiasConcluidos, Desafio, listarComprovacoes, salvarComprovacao, UsuarioDesafio } from '../utils/desafios';
+import { createImageFormData, getApiBaseUrl, getAuthHeaders, toApiFileUrl } from '../utils/api';
+import { calcularDiasConcluidos, Desafio, UsuarioDesafio } from '../utils/desafios';
+
+type ComprovacaoDesafio = {
+  id: number;
+  imagemUrl?: string | null;
+  dataEnvio?: string;
+};
 
 export default function DesafioDetalhe() {
   const { id } = useLocalSearchParams<{ id?: string }>();
@@ -22,11 +28,22 @@ export default function DesafioDetalhe() {
   const apiBaseUrl = useMemo(() => getApiBaseUrl(), []);
   const [desafio, setDesafio] = useState<Desafio | null>(null);
   const [participacao, setParticipacao] = useState<UsuarioDesafio | null>(null);
-  const [comprovacoes, setComprovacoes] = useState<string[]>([]);
+  const [comprovacoes, setComprovacoes] = useState<ComprovacaoDesafio[]>([]);
   const [arquivoSelecionado, setArquivoSelecionado] = useState<string | null>(null);
   const [carregando, setCarregando] = useState(true);
   const [processando, setProcessando] = useState(false);
   const [erro, setErro] = useState('');
+
+  const carregarComprovacoes = useCallback(async (usuarioDesafioId: number) => {
+    const response = await fetch(`${apiBaseUrl}/desafios/comprovacoes/${usuarioDesafioId}`, {
+      headers: getAuthHeaders(user?.token),
+    });
+    if (!response.ok) {
+      return [];
+    }
+
+    return (await response.json()) as ComprovacaoDesafio[];
+  }, [apiBaseUrl, user?.token]);
 
   const carregarDetalhes = useCallback(async () => {
     if (!user?.id || !id) {
@@ -41,7 +58,9 @@ export default function DesafioDetalhe() {
     try {
       const [desafiosResponse, participacoesResponse] = await Promise.all([
         fetch(`${apiBaseUrl}/desafios`),
-        fetch(`${apiBaseUrl}/desafios/usuario/${user.id}`),
+        fetch(`${apiBaseUrl}/desafios/usuario/${user.id}`, {
+          headers: getAuthHeaders(user.token),
+        }),
       ]);
 
       if (!desafiosResponse.ok || !participacoesResponse.ok) {
@@ -59,8 +78,8 @@ export default function DesafioDetalhe() {
       setParticipacao(participacaoAtual);
 
       if (participacaoAtual?.id) {
-        const lista = await listarComprovacoes(participacaoAtual.id);
-        setComprovacoes(lista.map((item) => item.data));
+        const lista = await carregarComprovacoes(participacaoAtual.id);
+        setComprovacoes(lista);
       } else {
         setComprovacoes([]);
       }
@@ -69,7 +88,7 @@ export default function DesafioDetalhe() {
     } finally {
       setCarregando(false);
     }
-  }, [apiBaseUrl, id, user?.id]);
+  }, [apiBaseUrl, carregarComprovacoes, id, user?.id, user?.token]);
 
   useEffect(() => {
     void carregarDetalhes();
@@ -82,6 +101,7 @@ export default function DesafioDetalhe() {
 
     const response = await fetch(`${apiBaseUrl}/desafios/${desafioId}/participar?usuarioId=${user.id}`, {
       method: 'POST',
+      headers: getAuthHeaders(user.token),
     });
 
     if (!response.ok) {
@@ -120,7 +140,7 @@ export default function DesafioDetalhe() {
   }
 
   async function registrarComprovante() {
-    if (!desafio) {
+    if (!desafio || !user) {
       return;
     }
 
@@ -150,12 +170,22 @@ export default function DesafioDetalhe() {
       const proximoDia = Math.min(duracao, diasAtuais + 1);
       const proximoProgresso = Math.round((proximoDia / duracao) * 100);
 
-      await salvarComprovacao(participacaoAtual.id, arquivoSelecionado);
+      const uploadResponse = await fetch(`${apiBaseUrl}/desafios/comprovacoes?usuarioDesafioId=${participacaoAtual.id}`, {
+        method: 'POST',
+        headers: getAuthHeaders(user.token),
+        body: createImageFormData(arquivoSelecionado),
+      });
+
+      if (!uploadResponse.ok) {
+        Alert.alert('Desafios', 'Nao foi possivel enviar a foto para o servidor.');
+        return;
+      }
 
       const progressoResponse = await fetch(
         `${apiBaseUrl}/desafios/progresso?usuarioDesafioId=${participacaoAtual.id}&progresso=${proximoProgresso}`,
         {
           method: 'PUT',
+          headers: getAuthHeaders(user.token),
         },
       );
 
@@ -171,6 +201,7 @@ export default function DesafioDetalhe() {
           `${apiBaseUrl}/desafios/concluir?usuarioDesafioId=${participacaoAtual.id}`,
           {
             method: 'PUT',
+            headers: getAuthHeaders(user.token),
           },
         );
 
@@ -181,8 +212,8 @@ export default function DesafioDetalhe() {
       }
 
       setParticipacao(participacaoAtualizada);
-      const lista = await listarComprovacoes(participacaoAtual.id);
-      setComprovacoes(lista.map((item) => item.data));
+      const lista = await carregarComprovacoes(participacaoAtual.id);
+      setComprovacoes(lista);
       setArquivoSelecionado(null);
 
       Alert.alert(
@@ -296,9 +327,11 @@ export default function DesafioDetalhe() {
                 <Text style={styles.historyEmpty}>Nenhum registro enviado ainda.</Text>
               ) : (
                 comprovacoes.map((item, index) => (
-                  <View key={`${item}-${index}`} style={styles.historyRow}>
+                  <View key={`${item.id}-${index}`} style={styles.historyRow}>
                     <View style={styles.historyDot} />
-                    <Text style={styles.historyItem}>{item}</Text>
+                    <Text style={styles.historyItem}>
+                      {formatarDataComprovacao(item.dataEnvio)} {toApiFileUrl(item.imagemUrl) ? '- foto enviada' : ''}
+                    </Text>
                   </View>
                 ))
               )}
@@ -308,6 +341,19 @@ export default function DesafioDetalhe() {
       </ScrollView>
     </ImageBackground>
   );
+}
+
+function formatarDataComprovacao(data?: string) {
+  if (!data) {
+    return 'Data nao informada';
+  }
+
+  const date = new Date(data);
+  if (Number.isNaN(date.getTime())) {
+    return 'Data nao informada';
+  }
+
+  return date.toLocaleDateString('pt-BR');
 }
 
 function ResumoItem({

@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import {
@@ -11,7 +12,7 @@ import {
 } from 'react-native';
 
 import { useAuth } from '../context/auth-context';
-import { getApiBaseUrl } from '../utils/api';
+import { getApiBaseUrl, getAuthHeaders } from '../utils/api';
 
 export default function Feedback() {
   const { user } = useAuth();
@@ -40,6 +41,7 @@ export default function Feedback() {
 
       const response = await fetch(`${apiBaseUrl}/feedbacks?${params.toString()}`, {
         method: 'POST',
+        headers: getAuthHeaders(user.token),
       });
 
       if (!response.ok) {
@@ -63,7 +65,7 @@ export default function Feedback() {
       resizeMode="cover"
     >
       <TouchableOpacity onPress={() => router.back()} style={{ marginTop: 50, alignSelf: 'flex-start' }}>
-        <Text style={{ color: '#1B5E20', fontSize: 16, fontWeight: '700' }}>Voltar</Text>
+        <Ionicons name="arrow-back" size={28} color="#1B5E20" />
       </TouchableOpacity>
 
       <Text

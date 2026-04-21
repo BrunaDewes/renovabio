@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { ImageBackground, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
@@ -10,14 +11,14 @@ export default function Descarte() {
     >
       <ScrollView contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 52, paddingBottom: 32 }}>
         <TouchableOpacity onPress={() => router.back()} style={{ alignSelf: 'flex-start', marginBottom: 24 }}>
-          <Text style={{ color: '#1B4332', fontSize: 16, fontWeight: '700' }}>Voltar</Text>
+          <Ionicons name="arrow-back" size={28} color="#0B7A43" />
         </TouchableOpacity>
 
-        <Text style={{ color: '#1B4332', fontSize: 28, fontWeight: '800', marginBottom: 10 }}>
+        <Text style={{ color: '#0B7A43', fontSize: 35, fontWeight: '800', marginBottom: 10 }}>
           Como descartar corretamente
         </Text>
 
-        <Text style={{ color: '#2a463a', fontSize: 15, lineHeight: 22, marginBottom: 22 }}>
+        <Text style={{ color: '#0B7A43', fontSize: 15, lineHeight: 22, marginBottom: 22 }}>
           Separar os residuos da forma certa reduz contaminacao, facilita a reciclagem e melhora o aproveitamento do
           lixo organico.
         </Text>
@@ -57,7 +58,7 @@ export default function Descarte() {
 
         <View
           style={{
-            backgroundColor: 'rgba(27,67,50,0.88)',
+            backgroundColor: '#0B7A43',
             borderRadius: 24,
             padding: 18,
           }}
@@ -77,13 +78,13 @@ function InfoCard({ titulo, itens }: { titulo: string; itens: string[] }) {
   return (
     <View
       style={{
-        backgroundColor: 'rgba(255,255,255,0.92)',
+        backgroundColor: 'rgba(244,235,214,0.95)',
         borderRadius: 24,
         padding: 18,
         marginBottom: 16,
       }}
     >
-      <Text style={{ fontSize: 18, fontWeight: '800', color: '#1B4332', marginBottom: 12 }}>{titulo}</Text>
+      <Text style={{ fontSize: 18, fontWeight: '800', color: '#0B7A43', marginBottom: 12 }}>{titulo}</Text>
 
       {itens.map((item) => (
         <Text key={item} style={{ color: '#374151', lineHeight: 22, marginBottom: 6 }}>

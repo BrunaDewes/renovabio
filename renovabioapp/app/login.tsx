@@ -13,13 +13,15 @@ import {
 
 import { useAuth } from '../context/auth-context';
 import { PasswordInput } from '../components/password-input';
-import { getApiBaseUrl } from '../utils/api';
+import { getApiBaseUrl, toApiFileUrl } from '../utils/api';
 
 type LoginResponse = {
   id: number;
   nome: string;
   email: string;
   pontuacao: number;
+  photoUri?: string | null;
+  token?: string;
 };
 
 export default function LoginScreen() {
@@ -68,7 +70,7 @@ export default function LoginScreen() {
       }
 
       const usuario = data as LoginResponse;
-      await signIn(usuario);
+      await signIn({ ...usuario, photoUri: toApiFileUrl(usuario.photoUri) });
       router.replace('/home');
     } catch {
       Alert.alert('Conexao', `Nao foi possivel acessar a API em ${apiBaseUrl}.`);

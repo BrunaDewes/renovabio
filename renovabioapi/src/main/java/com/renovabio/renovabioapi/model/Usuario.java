@@ -35,6 +35,9 @@ public class Usuario implements Serializable {
 
     private Boolean ativo = true;
 
+    @Column(name = "fotoPerfilUrl", length = 255)
+    private String fotoPerfilUrl;
+
 
     // getters e setters
     public Long getidUsuario() {
@@ -107,5 +110,13 @@ public class Usuario implements Serializable {
 
     public void setAtivo(Boolean ativo) {
         this.ativo = ativo;
+    }
+
+    public String getFotoPerfilUrl() {
+        return fotoPerfilUrl;
+    }
+
+    public void setFotoPerfilUrl(String fotoPerfilUrl) {
+        this.fotoPerfilUrl = fotoPerfilUrl;
     }
 }

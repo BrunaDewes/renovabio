@@ -86,7 +86,7 @@ export default function Receitas() {
           <TextInput
             value={busca}
             onChangeText={setBusca}
-            placeholder="Digite um ingrediente. Ex: casca de banana"
+            placeholder="Digite um ingrediente. Ex: arroz"
             placeholderTextColor="#C8C8B8"
             style={styles.searchInput}
           />
@@ -182,7 +182,7 @@ const styles = {
     fontWeight: '800' as const,
   },
   subtitle: {
-    color: '#6A7A63',
+    color: '#0B7A43',
     fontSize: 15,
     lineHeight: 21,
     textAlign: 'center' as const,

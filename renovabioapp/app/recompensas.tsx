@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 
 import { useAuth } from '../context/auth-context';
-import { getApiBaseUrl } from '../utils/api';
+import { getApiBaseUrl, getAuthHeaders, toApiFileUrl } from '../utils/api';
 
 type Parceiro = {
   id?: number;
@@ -38,6 +38,8 @@ type UsuarioResponse = {
   nome: string;
   email: string;
   pontuacao: number;
+  photoUri?: string | null;
+  token?: string;
 };
 
 export default function Recompensas() {
@@ -79,20 +81,25 @@ export default function Recompensas() {
     }
 
     try {
-      const response = await fetch(`${apiBaseUrl}/usuarios/${user.id}`);
+      const response = await fetch(`${apiBaseUrl}/usuarios/${user.id}`, {
+        headers: getAuthHeaders(user.token),
+      });
       if (!response.ok) {
         return null;
       }
 
       const usuarioAtualizado = (await response.json()) as UsuarioResponse;
       if (usuarioAtualizado.pontuacao !== (user?.pontuacao ?? 0)) {
-        await updateUser({ pontuacao: usuarioAtualizado.pontuacao });
+        await updateUser({
+          pontuacao: usuarioAtualizado.pontuacao,
+          photoUri: toApiFileUrl(usuarioAtualizado.photoUri),
+        });
       }
       return usuarioAtualizado.pontuacao;
     } catch {
       return null;
     }
-  }, [apiBaseUrl, updateUser, user?.id, user?.pontuacao]);
+  }, [apiBaseUrl, updateUser, user?.id, user?.pontuacao, user?.token]);
 
   useEffect(() => {
     void sincronizarPontuacaoUsuario();
@@ -133,7 +140,10 @@ export default function Recompensas() {
     try {
       const response = await fetch(
         `${apiBaseUrl}/recompensas/trocar?usuarioId=${user.id}&recompensaId=${recompensa.id}`,
-        { method: 'POST' },
+        {
+          method: 'POST',
+          headers: getAuthHeaders(user.token),
+        },
       );
 
       if (!response.ok) {
@@ -162,6 +172,10 @@ export default function Recompensas() {
         troca.codigoVoucher
           ? `Seu codigo de voucher e ${troca.codigoVoucher}.`
           : 'Sua recompensa foi resgatada com sucesso.',
+        [
+          { text: 'Fechar', style: 'cancel' },
+          { text: 'Ver historico', onPress: () => router.push('/historico-recompensas') },
+        ],
       );
     } catch {
       Alert.alert('Troca de pontos', `Nao foi possivel acessar a API em ${apiBaseUrl}.`);
@@ -195,6 +209,11 @@ export default function Recompensas() {
         <Text style={styles.subtitle}>
           Troque sua pontuacao por recompensas oferecidas pelos parceiros.
         </Text>
+
+        <TouchableOpacity onPress={() => router.push('/historico-recompensas')} style={styles.historyButton}>
+          <Ionicons name="receipt-outline" size={18} color="#F7F3DF" />
+          <Text style={styles.historyButtonText}>Historico de vouchers</Text>
+        </TouchableOpacity>
 
         {carregando ? (
           <View style={styles.centerState}>
@@ -339,7 +358,7 @@ const styles = {
     fontWeight: '800' as const,
   },
   subtitle: {
-    color: '#6A7A63',
+    color: '#0B7A43',
     fontSize: 15,
     lineHeight: 22,
     textAlign: 'center' as const,
@@ -348,6 +367,22 @@ const styles = {
   centerState: {
     marginTop: 90,
     alignItems: 'center' as const,
+  },
+  historyButton: {
+    alignSelf: 'center' as const,
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    gap: 8,
+    backgroundColor: '#0B7A43',
+    borderRadius: 999,
+    paddingVertical: 12,
+    paddingHorizontal: 22,
+    marginBottom: 22,
+  },
+  historyButtonText: {
+    color: '#F7F3DF',
+    fontSize: 15,
+    fontWeight: '700' as const,
   },
   cardsWrapper: {
     gap: 16,

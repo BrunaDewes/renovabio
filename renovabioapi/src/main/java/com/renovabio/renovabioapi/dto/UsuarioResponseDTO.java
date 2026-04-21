@@ -7,6 +7,8 @@ public class UsuarioResponseDTO {
     private String nome;
     private String email;
     private Integer pontuacao;
+    private String photoUri;
+    private String token;
 
     // getters e setters
     public Long getId() { return id; }
@@ -20,4 +22,10 @@ public class UsuarioResponseDTO {
 
     public Integer getPontuacao() { return pontuacao; }
     public void setPontuacao(Integer pontuacao) { this.pontuacao = pontuacao; }
+
+    public String getPhotoUri() { return photoUri; }
+    public void setPhotoUri(String photoUri) { this.photoUri = photoUri; }
+
+    public String getToken() { return token; }
+    public void setToken(String token) { this.token = token; }
 }

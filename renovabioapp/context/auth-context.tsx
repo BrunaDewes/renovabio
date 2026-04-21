@@ -7,6 +7,7 @@ export type AuthUser = {
   email: string;
   pontuacao: number;
   photoUri?: string | null;
+  token?: string;
 };
 
 type AuthContextValue = {
@@ -34,7 +35,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const storedValue = await AsyncStorage.getItem(STORAGE_KEY);
         if (storedValue) {
-          setUser(JSON.parse(storedValue) as AuthUser);
+          const storedUser = JSON.parse(storedValue) as AuthUser;
+          if (storedUser.token) {
+            setUser(storedUser);
+          } else {
+            await AsyncStorage.removeItem(STORAGE_KEY);
+          }
         }
       } finally {
         setIsReady(true);
@@ -50,9 +56,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user,
       async signIn(nextUser) {
         const storedPhotoUri = await AsyncStorage.getItem(getPhotoKey(nextUser.id));
+        const hasServerPhoto = Object.prototype.hasOwnProperty.call(nextUser, 'photoUri');
         const normalizedUser = {
           ...nextUser,
-          photoUri: nextUser.photoUri ?? storedPhotoUri ?? null,
+          photoUri: hasServerPhoto ? (nextUser.photoUri ?? null) : (storedPhotoUri ?? null),
         };
         setUser(normalizedUser);
         await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(normalizedUser));

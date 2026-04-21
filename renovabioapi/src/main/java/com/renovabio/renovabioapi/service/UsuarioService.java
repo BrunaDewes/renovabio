@@ -2,6 +2,7 @@ package com.renovabio.renovabioapi.service;
 
 import com.renovabio.renovabioapi.dto.AtualizarSenhaRequestDTO;
 import com.renovabio.renovabioapi.dto.LoginRequestDTO;
+import com.renovabio.renovabioapi.dto.RecuperarSenhaRequestDTO;
 import com.renovabio.renovabioapi.dto.UsuarioRequestDTO;
 import com.renovabio.renovabioapi.dto.UsuarioResponseDTO;
 import com.renovabio.renovabioapi.model.Cidade;
@@ -9,7 +10,9 @@ import com.renovabio.renovabioapi.model.Usuario;
 import com.renovabio.renovabioapi.repository.CidadeRepository;
 import com.renovabio.renovabioapi.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -29,6 +32,15 @@ public class UsuarioService {
     @Autowired
     private CidadeRepository cidadeRepository;
 
+    @Autowired
+    private FileStorageService fileStorageService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private TokenService tokenService;
+
     public UsuarioResponseDTO criarUsuario(UsuarioRequestDTO dto) {
         if (usuarioRepository.findByEmail(dto.getEmail()).isPresent()) {
             throw new ResponseStatusException(CONFLICT, "Email ja cadastrado");
@@ -40,7 +52,7 @@ public class UsuarioService {
         Usuario usuario = new Usuario();
         usuario.setNome(dto.getNome());
         usuario.setEmail(dto.getEmail());
-        usuario.setSenha(dto.getSenha());
+        usuario.setSenha(passwordEncoder.encode(dto.getSenha()));
         usuario.setCidade(cidade);
 
         Usuario salvo = usuarioRepository.save(usuario);
@@ -59,11 +71,18 @@ public class UsuarioService {
             throw new ResponseStatusException(UNAUTHORIZED, "Usuario inativo");
         }
 
-        if (!usuario.getSenha().equals(dto.getSenha())) {
+        if (!senhaConfere(dto.getSenha(), usuario.getSenha())) {
             throw new ResponseStatusException(UNAUTHORIZED, "Email ou senha invalidos");
         }
 
-        return toResponseDTO(usuario);
+        if (!usuario.getSenha().startsWith("$2")) {
+            usuario.setSenha(passwordEncoder.encode(dto.getSenha()));
+            usuarioRepository.save(usuario);
+        }
+
+        UsuarioResponseDTO response = toResponseDTO(usuario);
+        response.setToken(tokenService.gerarToken(usuario.getidUsuario()));
+        return response;
     }
 
     public List<UsuarioResponseDTO> listarUsuarios() {
@@ -87,8 +106,46 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Usuario nao encontrado"));
 
-        usuario.setSenha(dto.getNovaSenha());
+        usuario.setSenha(passwordEncoder.encode(dto.getNovaSenha()));
         usuarioRepository.save(usuario);
+    }
+
+    public void recuperarSenha(RecuperarSenhaRequestDTO dto) {
+        if (dto.getEmail() == null || dto.getEmail().isBlank()) {
+            throw new ResponseStatusException(BAD_REQUEST, "Email e obrigatorio");
+        }
+
+        if (dto.getNovaSenha() == null || dto.getNovaSenha().isBlank()) {
+            throw new ResponseStatusException(BAD_REQUEST, "A nova senha e obrigatoria");
+        }
+
+        if (dto.getNovaSenha().trim().length() < 4) {
+            throw new ResponseStatusException(BAD_REQUEST, "A nova senha precisa ter pelo menos 4 caracteres");
+        }
+
+        Usuario usuario = usuarioRepository.findByEmail(dto.getEmail().trim())
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Email nao encontrado"));
+
+        usuario.setSenha(passwordEncoder.encode(dto.getNovaSenha().trim()));
+        usuarioRepository.save(usuario);
+    }
+
+    public UsuarioResponseDTO atualizarFotoPerfil(Long id, MultipartFile file) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Usuario nao encontrado"));
+
+        String fotoUrl = fileStorageService.salvarImagem(file, "perfil");
+        usuario.setFotoPerfilUrl(fotoUrl);
+
+        return toResponseDTO(usuarioRepository.save(usuario));
+    }
+
+    public UsuarioResponseDTO removerFotoPerfil(Long id) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Usuario nao encontrado"));
+
+        usuario.setFotoPerfilUrl(null);
+        return toResponseDTO(usuarioRepository.save(usuario));
     }
 
     private UsuarioResponseDTO toResponseDTO(Usuario usuario) {
@@ -97,6 +154,19 @@ public class UsuarioService {
         dto.setNome(usuario.getNome());
         dto.setEmail(usuario.getEmail());
         dto.setPontuacao(usuario.getPontuacaoAtual());
+        dto.setPhotoUri(usuario.getFotoPerfilUrl());
         return dto;
+    }
+
+    private boolean senhaConfere(String senhaDigitada, String senhaSalva) {
+        if (senhaSalva == null) {
+            return false;
+        }
+
+        if (senhaSalva.startsWith("$2")) {
+            return passwordEncoder.matches(senhaDigitada, senhaSalva);
+        }
+
+        return senhaSalva.equals(senhaDigitada);
     }
 }

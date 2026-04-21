@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 
 import { useAuth } from '../context/auth-context';
-import { getApiBaseUrl } from '../utils/api';
+import { getApiBaseUrl, getAuthHeaders } from '../utils/api';
 import { calcularDiasConcluidos, Desafio, UsuarioDesafio } from '../utils/desafios';
 
 export default function Desafios() {
@@ -37,7 +37,9 @@ export default function Desafios() {
     try {
       const [desafiosResponse, participacoesResponse] = await Promise.all([
         fetch(`${apiBaseUrl}/desafios`),
-        fetch(`${apiBaseUrl}/desafios/usuario/${user.id}`),
+        fetch(`${apiBaseUrl}/desafios/usuario/${user.id}`, {
+          headers: getAuthHeaders(user.token),
+        }),
       ]);
 
       if (!desafiosResponse.ok || !participacoesResponse.ok) {
@@ -55,7 +57,7 @@ export default function Desafios() {
     } finally {
       setCarregando(false);
     }
-  }, [apiBaseUrl, user?.id]);
+  }, [apiBaseUrl, user?.id, user?.token]);
 
   useEffect(() => {
     void carregarDados();
@@ -248,7 +250,7 @@ const styles = {
     gap: 16,
   },
   card: {
-    backgroundColor: '#37A24C',
+    backgroundColor: '#0B7A43',
     borderRadius: 22,
     padding: 18,
     shadowColor: '#0B7A43',
@@ -277,10 +279,10 @@ const styles = {
     paddingHorizontal: 10,
   },
   statusDone: {
-    backgroundColor: '#14532D',
+    backgroundColor: '#A3E635',
   },
   statusProgress: {
-    backgroundColor: '#1F7A3D',
+    backgroundColor: '#14532D',
   },
   statusText: {
     color: '#F7F3DF',
