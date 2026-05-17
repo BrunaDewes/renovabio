@@ -5,7 +5,7 @@ Painel web administrativo do RenovaBio, desenvolvido com React e Vite.
 ## Responsabilidades
 
 - Exibir tela de login da prefeitura.
-- Consumir a API local em `http://localhost:8080`.
+- Consumir a API publicada no Railway.
 - Mostrar metricas de usuarios, pontuacao, parceiros, recompensas, feedbacks e acoes sustentaveis.
 - Permitir navegacao entre Inicio, Parceiros, Feedbacks e Configuracoes.
 - Usar dados de fallback quando a API estiver indisponivel.

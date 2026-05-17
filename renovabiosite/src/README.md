@@ -9,7 +9,7 @@ Esta pasta contem o codigo-fonte principal do painel web.
 
 ## API
 
-O painel usa `http://localhost:8080` como URL base. Para usar outro ambiente, altere a constante `API_URL` em `App.jsx`.
+O painel usa a API publicada no Railway como URL base. Para usar outro ambiente, configure `VITE_API_URL` ou altere a constante `API_URL` em `App.jsx`.
 
 ## Padrao
 
