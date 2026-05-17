@@ -27,7 +27,7 @@ export default function ReceitaDetalhe() {
 
   const carregarReceita = useCallback(async () => {
     if (!id) {
-      setErro('Receita nao encontrada.');
+      setErro('Receita não encontrada.');
       setCarregando(false);
       return;
     }
@@ -38,14 +38,14 @@ export default function ReceitaDetalhe() {
     try {
       const response = await fetch(`${apiBaseUrl}/receitas/${id}`);
       if (!response.ok) {
-        setErro('Nao foi possivel carregar a receita.');
+        setErro('Não foi possível carregar a receita.');
         return;
       }
 
       const data = (await response.json()) as Receita;
       setReceita(data);
     } catch {
-      setErro(`Nao foi possivel acessar a API em ${apiBaseUrl}.`);
+      setErro(`Não foi possível acessar a API em ${apiBaseUrl}.`);
     } finally {
       setCarregando(false);
     }
@@ -68,14 +68,14 @@ export default function ReceitaDetalhe() {
       });
 
       if (!response.ok) {
-        Alert.alert('Receitas', 'Nao foi possivel registrar essa receita.');
+        Alert.alert('Receitas', 'Não foi possível registrar essa receita.');
         return;
       }
 
       await updateUser({ pontuacao: (user?.pontuacao ?? 0) + (receita.pontos ?? 0) });
       Alert.alert('Receitas', 'Receita testada com sucesso. Seus pontos foram atualizados.');
     } catch {
-      Alert.alert('Receitas', `Nao foi possivel acessar a API em ${apiBaseUrl}.`);
+      Alert.alert('Receitas', `Não foi possível acessar a API em ${apiBaseUrl}.`);
     } finally {
       setTestando(false);
     }
@@ -115,11 +115,11 @@ export default function ReceitaDetalhe() {
             <View style={styles.summaryCard}>
               <ResumoItem titulo="Tempo de preparo" valor={`${receita.tempoPreparo} min`} />
               <ResumoItem titulo="Dificuldade" valor={receita.dificuldade} />
-              <ResumoItem titulo="Pontuacao" valor={`${receita.pontos} pontos`} destaque="#0B7A43" />
+              <ResumoItem titulo="Pontuação" valor={`${receita.pontos} pontos`} destaque="#0B7A43" />
             </View>
 
             <View style={styles.block}>
-              <Text style={styles.sectionTitle}>Descricao</Text>
+              <Text style={styles.sectionTitle}>Descrição</Text>
               <Text style={styles.text}>{receita.descricao}</Text>
             </View>
 

@@ -18,6 +18,7 @@ import { Avatar } from '../components/avatar';
 import { PasswordInput } from '../components/password-input';
 import { useAuth } from '../context/auth-context';
 import { createImageFormData, getApiBaseUrl, getAuthHeaders, toApiFileUrl } from '../utils/api';
+import { cancelDailyMissionReminder, requestNotificationPermission, scheduleDailyMissionReminder } from '../utils/notifications';
 
 type UsuarioResponse = {
   photoUri?: string | null;
@@ -172,9 +173,23 @@ export default function Perfil() {
     }
 
     setSalvandoNotificacoes(true);
-    setNotificacoesAtivas(valor);
 
     try {
+      if (valor) {
+        const permitido = await requestNotificationPermission();
+        if (!permitido) {
+          setNotificacoesAtivas(false);
+          await AsyncStorage.setItem(`renovabio:notificacoes:${user.id}`, 'false');
+          Alert.alert('Notificacoes', 'Permita as notificacoes do app para receber o lembrete diario.');
+          return;
+        }
+
+        await scheduleDailyMissionReminder(user.id);
+      } else {
+        await cancelDailyMissionReminder(user.id);
+      }
+
+      setNotificacoesAtivas(valor);
       await AsyncStorage.setItem(`renovabio:notificacoes:${user.id}`, String(valor));
     } finally {
       setSalvandoNotificacoes(false);
@@ -270,7 +285,7 @@ export default function Perfil() {
           />
 
           <PasswordInput
-            placeholder="Confirmacao de senha"
+            placeholder="Confirmação de senha"
             placeholderTextColor="#FFFFFF"
             value={confirmacaoSenha}
             onChangeText={setConfirmacaoSenha}
@@ -306,7 +321,7 @@ export default function Perfil() {
           )}
         </TouchableOpacity>
 
-        <Text style={{ color: '#FFFFFF', marginTop: 30 }}>Ativar notificacoes</Text>
+        <Text style={{ color: '#FFFFFF', marginTop: 30 }}>Ativar notificações</Text>
 
         <View
           style={{

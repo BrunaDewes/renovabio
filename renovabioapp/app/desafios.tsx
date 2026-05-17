@@ -26,7 +26,7 @@ export default function Desafios() {
 
   const carregarDados = useCallback(async () => {
     if (!user?.id) {
-      setErro('Usuario nao autenticado.');
+      setErro('Usuário não autenticado.');
       setCarregando(false);
       return;
     }
@@ -43,7 +43,7 @@ export default function Desafios() {
       ]);
 
       if (!desafiosResponse.ok || !participacoesResponse.ok) {
-        setErro('Nao foi possivel carregar os desafios.');
+        setErro('Não foi possível carregar os desafios.');
         return;
       }
 
@@ -53,7 +53,7 @@ export default function Desafios() {
       setDesafios(desafiosData.filter((desafio) => desafio.ativo !== false));
       setParticipacoes(participacoesData);
     } catch {
-      setErro(`Nao foi possivel acessar a API em ${apiBaseUrl}.`);
+      setErro(`Não foi possível acessar a API em ${apiBaseUrl}.`);
     } finally {
       setCarregando(false);
     }
@@ -91,7 +91,7 @@ export default function Desafios() {
         <View style={styles.summaryCard}>
           <View style={styles.summaryItem}>
             <Text style={styles.summaryValue}>{desafios.length}</Text>
-            <Text style={styles.summaryLabel}>Disponiveis</Text>
+            <Text style={styles.summaryLabel}>Disponíveis</Text>
           </View>
 
           <View style={styles.summaryDivider} />
@@ -119,7 +119,7 @@ export default function Desafios() {
 
         {!carregando && !erro && desafios.length === 0 ? (
           <View style={styles.feedbackCard}>
-            <Text style={styles.feedbackText}>Nenhum desafio disponivel no momento.</Text>
+            <Text style={styles.feedbackText}>Nenhum desafio disponível no momento.</Text>
           </View>
         ) : null}
 
@@ -166,7 +166,7 @@ export default function Desafios() {
 
         {!carregando && !erro ? (
           <TouchableOpacity onPress={() => router.push('/historico-desafios')} style={styles.historyButton}>
-            <Text style={styles.historyText}>Historico de Desafios</Text>
+            <Text style={styles.historyText}>Histórico de Desafios</Text>
           </TouchableOpacity>
         ) : null}
       </ScrollView>
@@ -175,10 +175,10 @@ export default function Desafios() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalCard}>
             <Text style={styles.modalTitle}>Como funcionam os desafios?</Text>
-            <Text style={styles.modalItem}>• Voce deve cumprir o desafio durante os dias estipulados.</Text>
+            <Text style={styles.modalItem}>• Você deve cumprir o desafio durante os dias estipulados.</Text>
             <Text style={styles.modalItem}>• Cada dia precisa ser registrado com uma comprovação em foto.</Text>
             <Text style={styles.modalItem}>• Quando todos os dias forem completados, o desafio pode ser concluído.</Text>
-            <Text style={styles.modalItem}>• Ao concluir, voce recebe pontos no aplicativo.</Text>
+            <Text style={styles.modalItem}>• Ao concluir, você recebe pontos no aplicativo.</Text>
 
             <TouchableOpacity onPress={() => setModalAberto(false)} style={styles.modalClose}>
               <Text style={styles.modalCloseText}>Fechar</Text>

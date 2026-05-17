@@ -29,14 +29,14 @@ export default function Receitas() {
     try {
       const response = await fetch(`${apiBaseUrl}/receitas`);
       if (!response.ok) {
-        setErro('Nao foi possivel carregar as receitas.');
+        setErro('Não foi possível carregar as receitas.');
         return;
       }
 
       const data = (await response.json()) as Receita[];
       setReceitas(data);
     } catch {
-      setErro(`Nao foi possivel acessar a API em ${apiBaseUrl}.`);
+      setErro(`Não foi possível acessar a API em ${apiBaseUrl}.`);
     } finally {
       setCarregando(false);
     }
@@ -77,7 +77,7 @@ export default function Receitas() {
         </View>
 
         <Text style={styles.subtitle}>
-          Aprenda a reaproveitar sobras e residuos organicos do dia a dia, reduzindo o desperdicio e contribuindo para o
+          Aprenda a reaproveitar sobras e resíduos orgânicos do dia a dia, reduzindo o desperdício e contribuindo para o
           meio ambiente.
         </Text>
 
@@ -154,7 +154,7 @@ export default function Receitas() {
 
 function formatarDificuldade(dificuldade?: string) {
   if (!dificuldade) {
-    return 'Nao informado';
+    return 'Não informado';
   }
 
   return dificuldade.charAt(0) + dificuldade.slice(1).toLowerCase();

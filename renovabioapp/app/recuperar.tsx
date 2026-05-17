@@ -31,7 +31,7 @@ export default function Recuperar() {
     }
 
     if (novaSenha !== confirmacaoSenha) {
-      setErro('As senhas nao coincidem.');
+      setErro('As senhas não coincidem.');
       return;
     }
 
@@ -60,11 +60,11 @@ export default function Recuperar() {
         return;
       }
 
-      Alert.alert('Senha atualizada', 'Sua senha foi alterada. Faca login com a nova senha.', [
+      Alert.alert('Senha atualizada', 'Sua senha foi alterada. Faça login com a nova senha.', [
         { text: 'Ir para login', onPress: () => router.replace('/login') },
       ]);
     } catch {
-      Alert.alert('Conexao', `Nao foi possivel acessar a API em ${apiBaseUrl}.`);
+      Alert.alert('Conexao', `Não foi possível acessar a API em ${apiBaseUrl}.`);
     } finally {
       setCarregando(false);
     }
@@ -140,13 +140,13 @@ async function extrairMensagemErro(response: Response) {
   try {
     const bodyText = await response.text();
     if (!bodyText) {
-      return 'Nao foi possivel atualizar a senha.';
+      return 'Não foi possível atualizar a senha.';
     }
 
     const data = JSON.parse(bodyText) as { message?: string; detail?: string; error?: string };
-    return data.message || data.detail || data.error || 'Nao foi possivel atualizar a senha.';
+    return data.message || data.detail || data.error || 'Não foi possível atualizar a senha.';
   } catch {
-    return 'Nao foi possivel atualizar a senha.';
+    return 'Não foi possível atualizar a senha.';
   }
 }
 

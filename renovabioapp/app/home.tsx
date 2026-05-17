@@ -30,7 +30,7 @@ export default function Home() {
       >
         <TouchableOpacity
           onPress={() =>
-            Alert.alert('Sessao', 'Deseja sair da sua conta?', [
+            Alert.alert('Sessão', 'Deseja sair da sua conta?', [
               { text: 'Cancelar', style: 'cancel' },
               { text: 'Sair', onPress: () => void sair() },
             ])
@@ -39,7 +39,7 @@ export default function Home() {
           <Text style={{ fontSize: 16, fontWeight: '700' }}>Sair</Text>
         </TouchableOpacity>
 
-        <Text style={{ fontWeight: 'bold' }}>Ola, {nomeUsuario}!</Text>
+        <Text style={{ fontWeight: 'bold' }}>Olá, {nomeUsuario}!</Text>
 
         <TouchableOpacity onPress={() => router.push('/perfil')}>
           <Avatar size={40} photoUri={user?.photoUri} borderColor="#FFFFFF" backgroundColor="#DCE8C7" iconColor="#1B4332" />
@@ -64,7 +64,7 @@ export default function Home() {
         <Botao texto="Trocar Pontos" onPress={() => router.push('/recompensas')} />
         <Botao texto="Receitas" onPress={() => router.push('/receitas')} />
         <Botao texto="Como fazer compostagem caseira" onPress={() => router.push('/compostagem')} />
-        <Botao texto="Como descartar residuos corretamente" onPress={() => router.push('/descarte')} />
+        <Botao texto="Como descartar resíduos corretamente" onPress={() => router.push('/descarte')} />
       </View>
 
       <TouchableOpacity

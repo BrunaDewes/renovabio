@@ -47,7 +47,7 @@ export default function DesafioDetalhe() {
 
   const carregarDetalhes = useCallback(async () => {
     if (!user?.id || !id) {
-      setErro('Desafio nao encontrado.');
+      setErro('Desafio não encontrado.');
       setCarregando(false);
       return;
     }
@@ -64,7 +64,7 @@ export default function DesafioDetalhe() {
       ]);
 
       if (!desafiosResponse.ok || !participacoesResponse.ok) {
-        setErro('Nao foi possivel carregar o desafio.');
+        setErro('Não foi possível carregar o desafio.');
         return;
       }
 
@@ -84,7 +84,7 @@ export default function DesafioDetalhe() {
         setComprovacoes([]);
       }
     } catch {
-      setErro(`Nao foi possivel acessar a API em ${apiBaseUrl}.`);
+      setErro(`Não foi possível acessar a API em ${apiBaseUrl}.`);
     } finally {
       setCarregando(false);
     }
@@ -107,21 +107,21 @@ export default function DesafioDetalhe() {
     if (!response.ok) {
       const bodyText = await response.text();
       const data = bodyText ? (JSON.parse(bodyText) as { message?: string }) : null;
-      Alert.alert('Desafios', data?.message || 'Nao foi possivel participar do desafio.');
+      Alert.alert('Desafios', data?.message || 'Não foi possível participar do desafio.');
       return null;
     }
 
     const novaParticipacao = (await response.json()) as UsuarioDesafio;
     setParticipacao(novaParticipacao);
     setComprovacoes([]);
-    Alert.alert('Desafios', 'Voce entrou no desafio com sucesso.');
+    Alert.alert('Desafios', 'Você entrou no desafio com sucesso.');
     return novaParticipacao;
   }
 
   async function escolherArquivo() {
     const permissao = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permissao.granted) {
-      Alert.alert('Desafios', 'Permita acesso a galeria para selecionar a foto de comprovacao.');
+      Alert.alert('Desafios', 'Permita acesso a galeria para selecionar a foto de comprovação.');
       return;
     }
 
@@ -156,7 +156,7 @@ export default function DesafioDetalhe() {
       }
 
       if (participacaoAtual.status === 'CONCLUIDO') {
-        Alert.alert('Desafios', 'Esse desafio ja foi concluido.');
+        Alert.alert('Desafios', 'Esse desafio já foi concluído.');
         return;
       }
 
@@ -177,7 +177,7 @@ export default function DesafioDetalhe() {
       });
 
       if (!uploadResponse.ok) {
-        Alert.alert('Desafios', 'Nao foi possivel enviar a foto para o servidor.');
+        Alert.alert('Desafios', 'Não foi possível enviar a foto para o servidor.');
         return;
       }
 
@@ -190,7 +190,7 @@ export default function DesafioDetalhe() {
       );
 
       if (!progressoResponse.ok) {
-        Alert.alert('Desafios', 'Nao foi possivel atualizar o progresso do desafio.');
+        Alert.alert('Desafios', 'Não foi possível atualizar o progresso do desafio.');
         return;
       }
 
@@ -219,11 +219,11 @@ export default function DesafioDetalhe() {
       Alert.alert(
         'Desafios',
         participacaoAtualizada.status === 'CONCLUIDO'
-          ? 'Comprovante registrado e desafio concluido.'
+          ? 'Comprovante registrado e desafio concluído.'
           : 'Comprovante do dia registrado com sucesso.',
       );
     } catch {
-      Alert.alert('Desafios', `Nao foi possivel acessar a API em ${apiBaseUrl}.`);
+      Alert.alert('Desafios', `Não foi possível acessar a API em ${apiBaseUrl}.`);
     } finally {
       setProcessando(false);
     }
@@ -258,17 +258,17 @@ export default function DesafioDetalhe() {
             <Text style={styles.title}>{desafio.titulo}</Text>
 
             <View style={styles.summaryCard}>
-              <ResumoItem titulo="Duracao esperada" valor={`${desafio.duracaoDias} dias`} />
-              <ResumoItem titulo="Comprovacoes registradas" valor={`${diasConcluidos}/${desafio.duracaoDias}`} />
-              <ResumoItem titulo="Pontuacao do desafio" valor={`${desafio.pontos} pontos`} destaque="#0B7A43" />
+              <ResumoItem titulo="Duração esperada" valor={`${desafio.duracaoDias} dias`} />
+              <ResumoItem titulo="Comprovações registradas" valor={`${diasConcluidos}/${desafio.duracaoDias}`} />
+              <ResumoItem titulo="Pontuação do desafio" valor={`${desafio.pontos} pontos`} destaque="#0B7A43" />
               <ResumoItem
                 titulo="Status"
                 valor={
                   participacao?.status === 'CONCLUIDO'
-                    ? 'Concluido'
+                    ? 'Concluído'
                     : participacao
                       ? 'Em andamento'
-                      : 'Nao iniciado'
+                      : 'Não iniciado'
                 }
                 destaque={
                   participacao?.status === 'CONCLUIDO'
@@ -281,14 +281,14 @@ export default function DesafioDetalhe() {
             </View>
 
             <View style={styles.block}>
-              <Text style={styles.sectionTitle}>Descricao</Text>
+              <Text style={styles.sectionTitle}>Descrição</Text>
               <Text style={styles.description}>{desafio.descricao}</Text>
             </View>
 
             <View style={styles.block}>
-              <Text style={styles.sectionTitle}>Comprovacao do dia</Text>
+              <Text style={styles.sectionTitle}>Comprovação do dia</Text>
               <Text style={styles.supportText}>
-                Escolha uma imagem da galeria para registrar o que voce fez hoje no desafio.
+                Escolha uma imagem da galeria para registrar o que você fez hoje no desafio.
               </Text>
 
               <TouchableOpacity onPress={() => void escolherArquivo()} style={styles.fileButton}>
@@ -345,12 +345,12 @@ export default function DesafioDetalhe() {
 
 function formatarDataComprovacao(data?: string) {
   if (!data) {
-    return 'Data nao informada';
+    return 'Data não informada';
   }
 
   const date = new Date(data);
   if (Number.isNaN(date.getTime())) {
-    return 'Data nao informada';
+    return 'Data não informada';
   }
 
   return date.toLocaleDateString('pt-BR');

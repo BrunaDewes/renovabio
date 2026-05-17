@@ -1,204 +1,101 @@
 INSERT INTO cidade (id, estado, nome) VALUES
-(1, 'RS', 'Caibaté'),
-(2, 'RS', 'São Luiz Gonzaga'),
-(3, 'RS', 'Santo Ângelo'),
+(1, 'RS', 'Caibate'),
+(2, 'RS', 'Sao Luiz Gonzaga'),
+(3, 'RS', 'Santo Angelo'),
 (4, 'RS', 'Bossoroca'),
 (5, 'RS', 'Cerro Largo'),
 (6, 'RS', 'Dezesseis de Novembro'),
-(7, 'RS', 'Entre-Ijuís'),
-(8, 'RS', 'Eugênio de Castro'),
+(7, 'RS', 'Entre-Ijuis'),
+(8, 'RS', 'Eugenio de Castro'),
 (9, 'RS', 'Garruchos'),
-(10, 'RS', 'Giruá'),
-(11, 'RS', 'Guarani das Missões'),
+(10, 'RS', 'Girua'),
+(11, 'RS', 'Guarani das Missoes'),
 (12, 'RS', 'Mato Queimado'),
-(13, 'RS', 'Pirapó'),
+(13, 'RS', 'Pirapo'),
 (14, 'RS', 'Porto Xavier'),
 (15, 'RS', 'Rolador'),
 (16, 'RS', 'Roque Gonzales'),
-(17, 'RS', 'Salvador das Missões'),
-(18, 'RS', 'Santo Antônio das Missões'),
-(19, 'RS', 'São Borja'),
-(20, 'RS', 'São Miguel das Missões'),
-(21, 'RS', 'São Paulo das Missões'),
-(22, 'RS', 'São Nicolau'),
-(23, 'RS', 'São Pedro do Butiá'),
+(17, 'RS', 'Salvador das Missoes'),
+(18, 'RS', 'Santo Antonio das Missoes'),
+(19, 'RS', 'Sao Borja'),
+(20, 'RS', 'Sao Miguel das Missoes'),
+(21, 'RS', 'Sao Paulo das Missoes'),
+(22, 'RS', 'Sao Nicolau'),
+(23, 'RS', 'Sao Pedro do Butia'),
 (24, 'RS', 'Sete de Setembro'),
 (25, 'RS', 'Ubiretama'),
-(26, 'RS', 'Vitória das Missões');
-
-
+(26, 'RS', 'Vitoria das Missoes');
 
 INSERT INTO categoria (id_Categoria, nome_Categoria, tipo) VALUES
 (1,'Doces','RECEITA'),
 (2,'Reaproveitamento','RECEITA'),
 (3,'Compostagem','DESAFIO'),
-(4,'Redução de resíduos','DESAFIO'),
+(4,'Reducao de residuos','DESAFIO'),
 (5,'Reciclagem','DESAFIO'),
 (6,'Salgados','RECEITA'),
 (7,'Bebidas','RECEITA');
 
-
 INSERT INTO parceiro (id_parceiros, ativo, descricao, nome_parceiro, cidade_id_cidade) VALUES
-(1,1,'Descontos em produtos','Supermercado Laçador',1),
+(1,1,'Descontos em produtos','Supermercado Lacador',1),
 (2,1,'Descontos em produtos','SB Malhas',1),
-(3,0,'Descontos em produtos','Farmácia São João',3),
-(4,1,'Descontos em combustíveis','Posto Ipiranga',12),
+(3,0,'Descontos em produtos','Farmacia Sao Joao',3),
+(4,1,'Descontos em combustiveis','Posto Ipiranga',12),
 (5,1,'Descontos em produtos','Padaria Both',1),
 (6,1,'Descontos em produtos','Loja da Economia',20);
 
-
 INSERT INTO receita (id_receita, titulo_receita, descricao, ingredientes, modo_preparo, tempo_preparo, dificuldade, pontos, categoria_id_categoria) VALUES
-(1,'Bolo de Casca de Banana','Reaproveitamento de casca',
-'Cascas de banana, farinha','Misturar e assar',40,'FACIL',10,1),
-
-(2,'Arroz de Sobras','Reaproveitamento de arroz',
-'Arroz cozido, temperos','Refogar ingredientes',25,'FACIL',10,1),
-
-(3,'Bolo de Laranja com Casca','Reaproveitamento da casca da laranja',
-'Laranja com casca, ovos, acucar, oleo, farinha, fermento',
-'Bater os ingredientes liquidos no liquidificador, misturar com farinha e fermento e assar.',
-40,'FACIL',10,1),
-
-(4,'Bolo de Laranja com Casca de Maca e Aveia','Aproveitamento de cascas de frutas',
-'Suco de laranja, maca com casca, aveia, ovos, farinha, acucar mascavo',
-'Misturar ingredientes secos, adicionar liquidos e assar.',
-40,'MEDIA',12,1),
-
-(5,'Geleia de Manga Sem Acucar','Aproveitamento de frutas maduras',
-'Manga, suco de laranja, sal',
-'Cozinhar a manga com suco ate reduzir e atingir consistencia de geleia.',
-30,'FACIL',10,1),
-
-(6,'Doce de Casca de Mamao','Reaproveitamento da casca do mamao',
-'Cascas de mamao, acucar',
-'Cozinhar as cascas, bater e levar ao fogo ate dar ponto.',
-45,'MEDIA',12,1),
-
-(7,'Bolo de Casca de Abacaxi','Reaproveitamento da casca do abacaxi',
-'Ovos, farinha, acucar, caldo da casca de abacaxi',
-'Preparar massa com o caldo da casca e assar.',
-40,'FACIL',10,1),
-
-(8,'Casca de Laranja Cristalizada','Aproveitamento da casca de laranja',
-'Cascas de laranja, acucar, agua',
-'Cozinhar as cascas e finalizar em calda de acucar.',
-35,'MEDIA',12,1),
-
-(9,'Docinho de Abacaxi com Coco','Reaproveitamento da casca de abacaxi',
-'Suco da casca de abacaxi, coco ralado, acucar, gemas',
-'Cozinhar todos os ingredientes até formar massa consistente.',
-30,'MEDIA',12,1),
-
-(10,'Cocada de Entrecasca de Melancia','Reaproveitamento da entrecasca da melancia',
-'Entrecasca de melancia, coco, acucar',
-'Cozinhar ate obter consistencia de cocada.',
-35,'MEDIA',12,1),
-
-(11,'Pao Doce de Abacaxi','Uso do suco da casca de abacaxi na massa',
-'Fermento, acucar, ovos, suco de casca de abacaxi, farinha',
-'Preparar massa, deixar crescer e assar.',
-60,'MEDIA',15,1),
-
-(12,'Arroz de Talos','Aproveitamento de talos de verduras',
-'Arroz, talos de salsa e couve, alho',
-'Refogar os talos com arroz e cozinhar.',
-25,'FACIL',10,1),
-
-(13,'Arroz de Casca de Abobora','Reaproveitamento de casca de abobora',
-'Cascas de abobora, arroz cozido, creme de leite',
-'Cozinhar as cascas e misturar com arroz e creme.',
-30,'FACIL',10,1),
-
-(14,'Chips de Cascas e Sementes','Snack sustentavel',
-'Cascas de cenoura, batata, sementes de abobora, azeite',
-'Temperar e assar até dourar.',
-20,'FACIL',10,1),
-
-(15,'Farofa de Casca de Melancia','Reaproveitamento da casca da melancia',
-'Cascas de melancia, farinha de mandioca, alho',
-'Refogar e misturar com farinha.',
-20,'FACIL',10,1),
-
-(16,'Pao de Folhas e Talos','Uso integral de folhas e talos',
-'Folhas e talos variados, farinha, fermento',
-'Bater ingredientes, preparar massa e assar.',
-50,'MEDIA',15,1),
-
-(17,'Pao de Abobora com Sementes','Uso de sementes e polpa da abobora',
-'Farinha, abobora, sementes, fermento',
-'Preparar massa e assar.',
-45,'MEDIA',15,1),
-
-(18,'Bolinho de Casca de Batata','Reaproveitamento da casca da batata',
-'Cascas de batata, ovos, farinha',
-'Preparar massa e fritar bolinhos.',
-25,'FACIL',10,1),
-
-(19,'Bolinho de Folhas e Talos','Aproveitamento integral de vegetais',
-'Folhas, talos, ovos, farinha',
-'Refogar folhas, misturar com massa e fritar.',
-25,'FACIL',10,1),
-
-(20,'Gratinado de Folhas de Couve-Flor','Uso das folhas da couve-flor',
-'Folhas de couve-flor, azeite, queijo',
-'Refogar folhas e gratinar no forno.',
-25,'FACIL',10,1),
-
-(21,'Sopa de Talos e Cascas','Sopa nutritiva com reaproveitamento',
-'Talos, cascas de legumes, cebola, alho',
-'Cozinhar ingredientes e bater ate formar sopa.',
-35,'FACIL',12,1),
-
-(22,'Refogado de Cascas de Legumes','Reaproveitamento de cascas variadas',
-'Cascas de batata, cenoura e chuchu',
-'Refogar com temperos.',
-20,'FACIL',10,1),
-
-(23,'Bife de Casca de Banana','Substituto vegetal usando casca de banana',
-'Cascas de banana, farinha, ovos',
-'Empanar e fritar.',
-25,'FACIL',12,1),
-
-(24,'Bolinho de Arroz','Aproveitamento de arroz cozido',
-'Arroz, ovos, farinha',
-'Misturar e fritar bolinhos.',
-20,'FACIL',10,1);
-
+(1,'Bolo de Casca de Banana','Reaproveitamento de casca','2 xicaras de cascas de banana madura higienizadas, 1/2 xicara de agua, 5 colheres rasas de oleo de soja, 4 gemas, 2 xicaras de acucar, 3 xicaras de farinha de trigo, 2 colheres de fermento em po, 4 claras em neve, canela em po para polvilhar','Bata no liquidificador as cascas de banana com a agua e reserve. Na batedeira, coloque o oleo, as gemas e o acucar, batendo ate a mistura ficar homogenea. Acrescente as cascas de banana batidas, a farinha e o fermento. Por fim, incorpore delicadamente as claras em neve e polvilhe com canela. Despeje a massa em uma forma untada de 30x40 cm e leve ao forno a 180 graus por 40 minutos. Depois de pronto, conservar em temperatura ambiente.',40,'FACIL',10,1),
+(2,'Arroz de Talos','Aproveitamento de talos de verduras','1 fio de oleo, 1 colher de alho, sal a gosto, 1 xicara de arroz, talos de salsa e de couve manteiga a gosto, 2 xicaras de agua','Em uma panela media, aqueca o oleo e refogue o alho picado com sal, arroz e os talos. Adicione a agua e tampe a panela pela metade ate que a agua seque e o arroz cozinhe e fique macio. Se necessario, adicione mais agua. Depois de pronto, sirva; se sobrar, conserve na geladeira.',25,'FACIL',10,6),
+(3,'Bolo de Laranja com Casca','Reaproveitamento da casca da laranja','1 laranja inteira com casca e sem sementes, 3 ovos inteiros, 1 xicara e meia de acucar, 1 xicara de oleo, 1 colher de fermento, 2 xicaras de farinha de trigo','Bata no liquidificador a laranja com casca e sem sementes, os ovos, o acucar e o oleo. Despeje a mistura em uma tigela, acrescente a farinha de trigo e o fermento e misture ate formar uma massa uniforme. Leve para assar em forma untada ate dourar.',40,'FACIL',10,1),
+(4,'Bolo de Laranja com Maca e Aveia','Aproveitamento de cascas de frutas','1 xicara de suco de laranja natural, 2 xicaras de maca picada com casca, 1 xicara de aveia em flocos, 2 ovos, 1 colher de cha de canela, 1 xicara de farinha de trigo, 1/2 xicara de oleo de canola, 1 xicara de farinha integral, 1 xicara de acucar mascavo, 1 colher de fermento em po','Em uma tigela grande, misture as farinhas com o acucar mascavo, a canela, a aveia e o fermento. Adicione os ovos e o oleo e mexa com um garfo ate que a massa fique umida. Acrescente aos poucos o suco de laranja e, depois, as macas picadas com casca. Misture ate incorporar todos os ingredientes. Despeje em uma assadeira redonda forrada com papel manteiga e leve ao forno medio preaquecido por 30 minutos ou ate dourar. Retire do forno, desenforme e sirva.',40,'MEDIA',12,1),
+(5,'Geleia de Manga Sem Acucar','Aproveitamento de frutas maduras','1 manga, 1 xicara rasa de suco de laranja lima, 1 pitada de sal','Descasque a manga e corte em fatias. Cozinhe com o suco de laranja lima e o sal ate amolecer. Se usar panela de pressao, cozinhe por 15 minutos apos o inicio da pressao. Destampe e mexa ate secar bem o caldo. Para chegar ao ponto de geleia, cozinhe ate soltar bem do fundo da panela. Depois de pronta, conserve na geladeira.',30,'FACIL',10,1),
+(6,'Doce de Casca de Mamao','Reaproveitamento da casca do mamao','Cascas de 6 mamoes maduros bem lavadas, 3 1/2 xicaras de acucar','Deixe as cascas dos mamoes de molho em agua de um dia para o outro. Pique, coloque em uma panela e de tres fervuras, trocando a agua a cada fervura. Na quarta fervura, deixe esfriar, bata no liquidificador com 1 xicara de agua e passe por uma peneira. Leve ao fogo com o acucar ate dar ponto, quando desprender do fundo da panela. Depois de pronto, conserve na geladeira.',45,'MEDIA',12,1),
+(7,'Bolo de Casca de Abacaxi','Reaproveitamento da casca do abacaxi','2 ovos, 1 colher de fermento em po, 2 xicaras de farinha de trigo, 2 xicaras de caldo de casca de abacaxi, 2 xicaras de acucar','Para obter o caldo, retire as cascas de um abacaxi e ferva com 4 xicaras de agua por cerca de 20 minutos. Reserve. Bata as claras em neve, misture as gemas e continue batendo. Acrescente aos poucos o acucar e a farinha, sem parar de mexer. Adicione o fermento e 1 xicara do caldo de casca de abacaxi. Misture bem e asse em forma untada, em forno moderado. Depois de assado, vire em um prato, fure ainda quente com um garfo e despeje o restante do caldo misturado com 1 colher de acucar. Depois de pronto, conserve em temperatura ambiente.',40,'FACIL',10,1),
+(8,'Casca de Laranja Cristalizada','Aproveitamento da casca de laranja','Cascas de 8 laranjas, 1 litro de agua, 1 xicara de acucar, 3 xicaras de acucar para a calda, 2 xicaras de agua para a calda','Lave muito bem as cascas e corte em tirinhas. Leve ao fogo com 1 litro de agua e deixe cozinhar. Descarte a agua e lave as cascas em agua corrente. Em uma panela, coloque o acucar e a agua da calda e leve ao fogo para ferver. Quando comecar a engrossar, acrescente as cascas e deixe no fogo ate ficarem cozidas. Sirva gelada com calda ou retire da calda, escorra em uma peneira, passe no acucar e deixe secar. Depois de pronta, conserve em temperatura ambiente.',35,'MEDIA',12,1),
+(9,'Docinho de Abacaxi com Coco','Reaproveitamento da casca de abacaxi','2 xicaras de suco de casca de abacaxi, 2 xicaras de residuo da casca de abacaxi, 1 xicara de coco ralado, 3 gemas, 2 xicaras de acucar, 1 colher de manteiga','Coloque em uma panela o suco, o residuo da casca de abacaxi, o coco ralado, as gemas, o acucar e a manteiga. Leve ao fogo e cozinhe, mexendo sempre, ate soltar do fundo da panela. Deixe esfriar, enrole em bolinhas e coloque em forminhas de papel. Se desejar, passe as bolinhas em coco ralado. Depois de pronto, conserve na geladeira.',30,'MEDIA',12,1),
+(10,'Cocada de Entrecasca de Melancia','Reaproveitamento da entrecasca da melancia','500 g de entrecasca de melancia, 350 g de acucar, 1 coco, 20 g de manteiga','Caramelize 100 g de acucar. Acrescente a entrecasca de melancia ralada e mexa em fogo brando. Adicione o coco ralado, os 250 g restantes de acucar e 300 ml de agua. Cozinhe ate soltar do fundo da panela. Passe a manteiga em uma superficie lisa e coloque o doce em colheradas. Depois de pronta, conserve a cocada na geladeira.',35,'MEDIA',12,1),
+(11,'Pao Doce de Abacaxi','Uso do suco da casca de abacaxi na massa','30 g de fermento biologico, 4 colheres de acucar, 3 gemas, 50 g de margarina, 1 xicara de suco de casca de abacaxi, 1 colher de cha de sal, 1/2 kg de farinha de trigo aproximadamente, 1 gema para pincelar','Dissolva o fermento no acucar. Acrescente as gemas, a margarina, o suco de casca de abacaxi e o sal. Misture a farinha de trigo aos poucos ate formar uma massa que nao grude nas maos. Divida a massa em duas ou tres partes, enrole os paes e deixe crescer ate dobrar de tamanho. Pincele com gema e leve para assar. Depois de pronto, reserve o pao na geladeira.',60,'MEDIA',15,1),
+(12,'Arroz de Casca de Abobora','Reaproveitamento de casca de abobora','1 cebola picada, cascas de 1 abobora, 1 xicara de agua, 3 xicaras de arroz cozido, 1 xicara de abobora picada, 1/2 caixinha de creme de leite, 1/2 copo de requeijao, sal a gosto','Refogue a cebola em uma panela. Adicione a casca de abobora ralada e a agua e deixe cozinhar por 15 minutos. Acrescente a abobora picada e refogue bem. Aos poucos, coloque o arroz ja cozido, alternando com o creme de leite e o requeijao. Tempere com sal a gosto.',30,'FACIL',10,6),
+(13,'Chips de Cascas e Sementes','Snack sustentavel','Cascas de 2 a 3 cenouras, cascas de 2 a 3 batatas, 3 colheres de semente de abobora, 5 colheres de azeite de oliva, 2 colheres de cheiro-verde e cebolinha, 1/2 colher de sal, 1 pitada de pimenta-do-reino','Distribua em um tabuleiro as cascas e sementes higienizadas e regue com azeite. Adicione o cheiro-verde, a cebolinha, o sal e a pimenta-do-reino a gosto. Leve ao forno baixo por aproximadamente 15 minutos ou ate que fiquem douradas. Sirva. Depois de pronto, conserve em temperatura ambiente.',20,'FACIL',10,6),
+(14,'Farofa de Casca de Melancia','Reaproveitamento da casca da melancia','5 dentes de alho, 1/2 xicara de manteiga ou oleo, 6 xicaras de farinha de mandioca, 250 g de casca de melancia parte verde, 1 colher de sal','Separe a casca verde da entrecasca da melancia e lave. Rale as cascas ate ficarem em pedacos pequenos. Em uma panela, refogue o alho na manteiga ou no oleo. Adicione a farinha de mandioca, a casca de melancia e o sal. Misture e sirva. Depois de pronta, conserve na geladeira.',20,'FACIL',10,6),
+(15,'Pao de Folhas e Talos','Uso integral de folhas e talos','2 xicaras de folhas e talos picados, 1 1/2 xicara de agua, 1 ovo, 1 colher de cha de acucar, 3 colheres de cha de sal, 1 tablete de fermento biologico, 3 colheres de oleo, 4 1/2 xicaras de farinha de trigo, oleo e farinha para untar','Coloque as folhas e talos no liquidificador com a agua e bata bem. Junte o ovo, o acucar, o sal, o fermento e o oleo e continue batendo. Em uma vasilha, coloque a farinha de trigo e despeje a mistura do liquidificador. Amasse ate desgrudar das maos. Deixe descansar ate dobrar de volume. Amasse novamente, modele os paes e coloque em assadeira untada. Deixe crescer novamente e asse em forno moderado a 180 graus por aproximadamente 40 minutos. Depois de pronto, conserve em temperatura ambiente.',50,'MEDIA',15,6),
+(16,'Pao de Abobora com Sementes','Uso de sementes e polpa da abobora','2 xicaras de farinha de trigo, 1 colher de oleo, 1 ovo, 1 colher de sobremesa de sal, 1 colher de sobremesa de acucar, 1/2 tablete de fermento biologico, 1 1/2 colher de leite, 1 xicara de abobora sem casca, 4 colheres de semente de abobora in natura','Cozinhe a abobora com 3 xicaras de agua ate ficar macia. Escorra e amasse com um garfo, formando um pure. Deixe esfriar. Misture a farinha, o acucar, o ovo, a abobora, as sementes, o fermento, o sal, o oleo e, por ultimo, o leite. Amasse bem. Deixe descansar coberta por plastico em assadeira untada por 15 minutos. Transfira para uma mesa enfarinhada, divida a massa ao meio e modele em espiral. Coloque os paes em assadeira untada, deixe fermentar por 30 a 40 minutos e asse em forno preaquecido a 160 graus por aproximadamente 20 minutos. Depois de pronto, conserve em temperatura ambiente.',45,'MEDIA',15,6),
+(17,'Bolinho de Casca de Batata','Reaproveitamento da casca da batata','2 xicaras de cascas de batata, 2 ovos, 2 xicaras de farinha de trigo, sal a gosto, 1 colher de sobremesa de fermento em po, 2 colheres de salsinha picada com talos, oleo para fritar','Cozinhe as cascas das batatas e bata no liquidificador. Coloque a massa em uma tigela, acrescente os ovos, a farinha, o sal, o fermento e a salsinha. Misture bem. Aqueca o oleo, modele os bolinhos com ajuda de uma colher e frite. Depois de pronto, conserve em temperatura ambiente.',25,'FACIL',10,6),
+(18,'Bolinho de Folhas e Talos','Aproveitamento integral de vegetais','2 xicaras de folhas e talos lavados e picados, 2 ovos, 2 colheres de azeite, 10 colheres de farinha de trigo, 1 colher de fermento quimico em po, 1/2 cebola picada, oregano a gosto, sal a gosto, pimenta-do-reino a gosto, oleo para fritar','Aqueca o azeite em uma panela, adicione a cebola e doure. Acrescente as folhas, os talos, o oregano, o sal e a pimenta-do-reino e refogue bem. Desligue e reserve. Em um recipiente, bata os ovos e misture com a farinha de trigo. Junte o refogado reservado e, por ultimo, o fermento, misturando levemente. Aqueca o oleo, modele os bolinhos com uma colher e frite ate dourar. Escorra em papel-toalha e sirva em seguida. As folhas e talos podem ser de beterraba, couve, espinafre, cenoura, brocolis, nabo ou outro vegetal.',25,'FACIL',10,6),
+(19,'Gratinado de Folhas de Couve-Flor','Uso das folhas da couve-flor','2 xicaras de folhas de couve-flor, 2 colheres de azeite, 2 colheres de queijo mucarela ralado, 1 colher de cafe de sal, margarina para untar','Lave as folhas em agua corrente, escorra e corte em tiras. Aqueca o azeite em fogo medio, acrescente as folhas e o sal e refogue por 2 minutos. Desligue e reserve. Unte uma assadeira com margarina e disponha o refogado sobre ela. Polvilhe com o queijo e leve ao forno preaquecido em temperatura media por 10 minutos. Sirva em seguida.',25,'FACIL',10,6),
+(20,'Sopa de Talos e Cascas','Sopa nutritiva com reaproveitamento','Folhas de cenoura e agriao com talo, 1 cebola picada, 1 dente de alho amassado, 1 tomate sem sementes picado, 2 colheres de proteina de soja refogada, 2 litros de agua, sal a gosto, azeite a gosto, salsa a gosto, cebolinha a gosto','Em uma panela, coloque as cascas, cubra com agua e cozinhe ate ficarem macias. Desligue, espere esfriar e transfira para o liquidificador. Adicione a proteina de soja e bata ate obter uma mistura homogenea. Reserve. Em outra panela, aqueca o azeite e doure a cebola, o alho e o tomate. Acrescente a mistura batida e cozinhe ate levantar fervura. Desligue, tempere com sal, salsa e cebolinha e sirva em seguida.',35,'FACIL',12,6),
+(21,'Refogado de Cascas de Legumes','Reaproveitamento de cascas variadas','Cascas de 3 batatas, cascas de 6 cenouras, cascas de 3 chuchus, 1 cebola picada, 1 tomate sem sementes picado, azeite a gosto, cheiro-verde a gosto, sal a gosto','Lave bem as cascas em agua corrente e pique em pedacos pequenos. Reserve. Aqueca o azeite em uma panela, adicione a cebola e o tomate e refogue ate a cebola ficar transparente. Junte as cascas e refogue mais um pouco. Por ultimo, acrescente o cheiro-verde e o sal, misture bem, desligue o fogo e sirva em seguida.',20,'FACIL',10,6),
+(22,'Bife de Casca de Banana','Substituto vegetal usando casca de banana','Cascas de 6 bananas maduras, 3 dentes de alho, 1 xicara de farinha de rosca, 1 xicara de farinha de trigo, 2 ovos, sal a gosto','Higienize as cascas das bananas e lave em agua corrente. Corte as pontas e retire as cascas em formato de bifes, sem partir. Amasse o alho e misture com o sal em uma vasilha. Coloque as cascas nessa mistura. Bata os ovos como omelete. Passe as cascas na farinha de trigo, nos ovos batidos e, por ultimo, na farinha de rosca. Frite em oleo bem quente ate dourar dos dois lados. Sirva quente; se sobrar, conserve na geladeira.',25,'FACIL',12,6),
+(23,'Bolinho de Arroz','Aproveitamento de arroz cozido','2 xicaras de arroz cozido, 1 colher de cebola picada, 1/2 dente de alho, 2 colheres de salsinha, 2 ovos, 1 xicara de farinha de trigo, sal a gosto','Misture todos os ingredientes e forme os bolinhos. Asse em forno medio por 30 minutos ou frite em oleo quente. Depois de pronto, sirva; se sobrar, conserve na geladeira.',20,'FACIL',10,6),
+(24,'Salada de Macarrao com Beterraba','Salada com molho de beterraba e sardinha','4 xicaras de macarrao parafuso, 1 lata de sardinha em agua ou oleo, 1 beterraba assada, 2 potes de iogurte natural sem acucar, caldo de 1 limao, 1/4 de xicara de azeite, 1 1/2 colher de salsinha picada, sal a gosto, brotos de beterraba e agriao para servir','Cozinhe o macarrao em bastante agua fervente com sal ate ficar al dente, retirando 1 minuto antes do tempo indicado na embalagem. Enquanto isso, abra a lata de sardinha, transfira para um prato e descarte a espinha central. Bata no liquidificador a beterraba assada, a sardinha, o iogurte, o azeite, o caldo de limao e o sal ate obter um creme liso. Escorra o macarrao e passe sob agua corrente para esfriar. Misture o macarrao ao molho de beterraba e sirva com salsinha, brotos de beterraba e agriao. Se sobrar, conserve na geladeira.',35,'FACIL',12,6),
+(25,'Sufle de Talos e Pao Amanhecido','Aproveitamento de talos e pao amanhecido','1/2 pao amanhecido, 4 xicaras de talos de agriao, 2 colheres de oleo, 2 colheres de farinha de trigo, 1 xicara de leite, 3 ovos, 1 colher de sobremesa de salsa, oregano a gosto, sal a gosto','Corte o pao em fatias de cerca de 1 cm e deixe de molho com 1/3 de xicara de agua. Aqueca o oleo, doure a farinha, junte o leite e mexa ate engrossar; reserve. Pique os talos e misture com o pao amolecido, as gemas batidas, a salsa, o oregano e o sal. Por ultimo, acrescente as claras em neve, mexa delicadamente e incorpore o creme branco. Coloque em forma untada e asse por 30 minutos. Sirva; se sobrar, conserve na geladeira.',40,'MEDIA',15,6),
+(26,'Fritada de Arroz','Aproveitamento de arroz cozido com recheio','3 ovos, 2 xicaras de arroz cozido, 3 colheres de cheiro-verde, 1 colher de oregano, 1/2 colher de pimenta calabresa, 1/2 colher de sal, 1 colher de fermento em po, 1 colher de queijo parmesao, 1/2 xicara de cenoura ralada, 1 colher de azeite, 150 g de queijo mussarela ralado, 50 g de bacon frito picado, 1 colher de requeijao, 1 colher de brocolis cozido e picado','Misture em um recipiente a mussarela, o requeijao, o bacon e o brocolis e reserve. Em outro recipiente, misture os ovos batidos, o arroz, o cheiro-verde e a pimenta. Junte o fermento, o sal, o parmesao, o azeite e a cenoura e misture bem. Aqueca uma frigideira com um fio de azeite, coloque metade da massa e espalhe. Adicione o recheio reservado e cubra com o restante da massa. Doure bem dos dois lados e sirva.',30,'FACIL',10,6),
+(27,'Arroz Carreteiro com Sobras','Aproveitamento de sobras de churrasco','1/2 pimentao verde em cubos, 1/2 pimentao vermelho em cubos, 1/2 pimentao amarelo em cubos, 2 tomates em cubos, 1 cebola em cubos, 3 dentes de alho em cubos, 2 caldos de carne, 400 g de sobras de churrasco em cubos, 2 xicaras de arroz, salsinha a gosto, cebolinha a gosto, 5 xicaras de agua','Coloque em uma panela os pimentoes, a cebola, o tomate e um pouco de azeite. Acrescente o alho e a carne e misture bem. Dissolva os caldos de carne em 2 xicaras de agua e coloque na panela. Cozinhe por cerca de 5 minutos, acrescente o arroz e o restante da agua. Quando faltar pouco para o arroz ficar pronto, adicione a cebolinha e a salsa. Sirva quente.',35,'FACIL',12,6),
+(28,'Torta com Sobras de Carne','Torta salgada com carne reaproveitada','2 cubos de caldo de carne, 2 xicaras de leite, 1 xicara de oleo, 3 gemas, 1/2 xicara de amido de milho, 2 xicaras de farinha de trigo, 3 claras em neve, 1 colher de fermento em po, 2 xicaras de carne assada desfiada, 1 cebola picada, 3 tomates sem pele e sem sementes picados, azeitonas picadas, cheiro-verde, pimentao vermelho a gosto, 1 cubo de caldo de carne para o recheio','Bata no liquidificador o caldo de carne com o leite, o oleo, as gemas, o amido de milho e a farinha. Despeje sobre as claras em neve, junte o fermento e misture delicadamente. Para o recheio, misture a carne assada desfiada com a cebola, os tomates, as azeitonas, o cheiro-verde, o pimentao e o caldo de carne. Coloque metade da massa em assadeira untada e enfarinhada, espalhe o recheio e cubra com o restante da massa. Leve ao forno medio por 40 minutos.',50,'MEDIA',15,6),
+(29,'Bolinho de Feijoada','Aproveitamento de feijoada em bolinhos','2 litros de agua, 1/2 kg de feijao preto, 100 g de carne seca dessalgada em cubinhos, 100 g de lombo defumado em cubinhos, 100 g de costelinha dessalgada ou defumada, 1 linguica calabresa em cubos, 1 paio em cubos, 3 folhas de louro, 3 colheres de azeite, 3 dentes de alho, 200 g de farinha de mandioca fina, 1 colher de polvilho azedo, 2 macos de couve, 250 g de bacon, 2 dentes de alho para a couve, farinha de rosca para empanar, oleo para fritar, gomos de laranja, torresmo','Na panela de pressao, coloque a agua, o feijao, as carnes e o louro e cozinhe por cerca de 1 hora apos pegar pressao. Bata o feijao cozido com o caldo das carnes no liquidificador. Em uma panela grande, aqueca o azeite, doure o alho e refogue o feijao batido. Acerte o sal e acrescente a farinha de mandioca aos poucos, mexendo ate engrossar e soltar da panela. Deixe esfriar, adicione o polvilho e misture ate formar massa homogenea. Refogue a couve com bacon e alho por 2 minutos. Abra porcoes da massa na mao, recheie com a couve, modele os bolinhos, passe na farinha de rosca e frite em oleo quente. Sirva com laranja e torresmo.',90,'DIFICIL',20,6),
+(30,'Bolinho de Macarrao','Aproveitamento de macarrao cozido','500 g de batata cozida e amassada, 1 xicara de macarrao cozido bem picado, 150 g de queijo mussarela ralado, 50 g de queijo parmesao ralado, 100 g de presunto ralado, 1 colher de sal, 1/2 colher de pimenta-do-reino, 2 colheres de cheiro-verde, 1/2 xicara de farinha de trigo, 1/2 xicara de leite, 1 xicara de farinha de rosca, oleo para fritar','Em uma tigela, coloque a batata cozida e amassada ainda morna. Acrescente o macarrao picado e misture bem. Junte a mussarela, o parmesao e o presunto ralado. Tempere com sal, pimenta-do-reino e cheiro-verde. Misture ate obter uma massa homogenea e firme. Modele bolinhas medias, passe na farinha de trigo, depois no leite e por ultimo na farinha de rosca. Frite em oleo quente ate dourar por igual, escorra em papel-toalha e sirva quente.',35,'FACIL',12,6),
+(31,'Suco de Casca de Manga','Bebida com reaproveitamento da casca da manga','Cascas de 1 manga, acucar a gosto, 200 ml de agua','Bata todos os ingredientes no liquidificador. Sirva coado ou sem coar, conforme preferir. Depois de pronto, conserve na geladeira.',10,'FACIL',8,7),
+(32,'Refrigerante Caseiro','Bebida caseira com cenoura e casca de laranja','4 cenouras grandes, 1 copo de suco de limao, casca de 1 laranja, 3 litros de agua, acucar a gosto, gelo a gosto','Bata as cenouras no liquidificador com 2 copos de agua. Coe em um guardanapo e reserve o residuo. A parte, bata o suco de cenoura, o suco de limao e a casca de laranja. Coe em peneira e acrescente o restante da agua, o acucar e o gelo. Depois de pronto, conserve na geladeira.',15,'FACIL',8,7),
+(33,'Suco de Abacaxi com Couve','Suco com casca de abacaxi e couve','1 litro de suco de casca de abacaxi, 1/2 folha de couve com talo, acucar a gosto','Ferva a casca do abacaxi com 1 litro de agua. Bata no liquidificador e acrescente a couve picada e o acucar. Coe e sirva com gelo. Depois de pronto, conserve na geladeira.',15,'FACIL',8,7),
+(34,'Suco de Beterraba','Suco de beterraba com limao','1 beterraba cozida, 1 limao com casca e sem caroco, 1 litro de agua, acucar a gosto','Bata primeiro a beterraba e coe. Adicione o restante dos ingredientes e bata bem. Coe e bata novamente. Depois de pronto, conserve na geladeira.',10,'FACIL',8,7),
+(35,'Suco de Casca de Abacaxi','Refresco de casca de abacaxi','Casca de abacaxi, agua fria, acucar a gosto','Lave muito bem o abacaxi antes de cortar. Retire as cascas e coloque de molho em agua fria para infusao. Deixe passar uma noite, coe e adoce. Utilize como refresco. Depois de pronto, conserve na geladeira.',10,'FACIL',8,7),
+(36,'Suco de Casca de Maca','Refresco de casca de maca','6 macas, 1 litro de agua, acucar a gosto','Lave bem as macas e descasque. Leve ao fogo as cascas com a agua para ferver. Bata no liquidificador, coe e adoce a gosto. Complete com agua gelada. Se for consumir imediatamente, nao precisa cozinhar. Depois de pronto, conserve na geladeira.',15,'FACIL',8,7),
+(37,'Suco de Cascas de Frutas','Bebida com cascas variadas de frutas','3 xicaras de cascas de frutas variadas, 2 litros de agua, acucar a gosto','Lave bem as cascas e bata no liquidificador com a agua. Coe bem e adoce a gosto. Voce pode usar cascas variadas ou apenas a casca de uma fruta, como abacaxi, maca ou manga. Depois de pronto, conserve na geladeira.',10,'FACIL',8,7),
+(38,'Cha de Frutas','Cha feito com frutas e cascas','1 maca com casca, cascas de 1 abacaxi, 1 laranja com casca, acucar a gosto, 2 cravos-da-india, canela em pau a gosto, 1 litro de agua','Lave bem as frutas e corte em pedacos. Em uma panela, leve ao fogo medio o acucar, o cravo e a canela para caramelizar. Acrescente as frutas e a agua e deixe cozinhar. Se desejar, adicione o cha de sua preferencia. Desligue o fogo e deixe descansar com a panela tampada. Coe antes de servir. Depois de pronto, conserve na geladeira.',20,'FACIL',8,7);
 
 INSERT INTO desafio (id_desafio, ativo, titulo, descricao, pontos, duracao_dias, categoria_id_categoria) VALUES
-(1, 1,'Composte por 7 dias',
-'Separe resíduos orgânicos e utilize uma composteira durante 7 dias consecutivos.',
-50,7,2),
-
-(2, 1,'Reduza o desperdício de alimentos',
-'Durante uma semana, reaproveite cascas, talos ou sobras de alimentos em receitas.',
-40,7,2),
-
-(3, 1,'Separe o lixo corretamente',
-'Separe corretamente o lixo orgânico e reciclável durante 5 dias.',
-30,5,2),
-
-(4, 1,'Produza menos lixo orgânico',
-'Durante 7 dias, tente reduzir a quantidade de resíduos orgânicos gerados em casa.',
-35,7,2),
-
-(5, 1,'Faça uma receita sustentável',
-'Prepare pelo menos uma receita utilizando reaproveitamento de alimentos.',
-20,1,2),
-
-(6, 1,'Construa sua composteira',
-'Monte uma composteira doméstica utilizando baldes, caixas ou outro recipiente adequado para iniciar a compostagem de resíduos orgânicos.',
-60,3,2);
-
+(1, 1,'Composte por 7 dias','Separe residuos organicos e utilize uma composteira durante 7 dias consecutivos.',50,7,2),
+(2, 1,'Reduza o desperdicio de alimentos','Durante uma semana, reaproveite cascas, talos ou sobras de alimentos em receitas.',40,7,2),
+(3, 1,'Separe o lixo corretamente','Separe corretamente o lixo organico e reciclavel durante 5 dias.',30,5,2),
+(4, 1,'Produza menos lixo organico','Durante 7 dias, tente reduzir a quantidade de residuos organicos gerados em casa.',35,7,2),
+(5, 1,'Faca uma receita sustentavel','Prepare pelo menos uma receita utilizando reaproveitamento de alimentos.',20,1,2),
+(6, 1,'Construa sua composteira','Monte uma composteira domestica utilizando baldes, caixas ou outro recipiente adequado para iniciar a compostagem de residuos organicos.',60,3,2);
 
 INSERT INTO recompensa (id_recompensa, ativo, descricao, pontos_necessarios, quantidade_disponivel, parceiro_id_parceiros) VALUES
 (1, 1,'5% desconto nas bebidas',150,20,1),
 (2, 1,'10% desconto nos chocolates',95,20,1),
-(3, 1,'5% desconto nos suéteres',100,20,2),
+(3, 1,'5% desconto nos sueteres',100,20,2),
 (4, 0,'10% desconto em medicamentos',200,30,3),
-(5, 0,'5% desconto em combustíveis',250,15,4),
-(6, 1,'10% desconto em pães e bolos',80,25,5),
-(7, 1,'5% desconto em roupas de verão',170,20,6);
-
-
-
+(5, 0,'5% desconto em combustiveis',250,15,4),
+(6, 1,'10% desconto em paes e bolos',80,25,5),
+(7, 1,'5% desconto em roupas de verao',170,20,6);

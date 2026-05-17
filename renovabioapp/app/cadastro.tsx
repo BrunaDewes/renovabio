@@ -51,7 +51,7 @@ export default function Cadastro() {
       const data = bodyText ? (JSON.parse(bodyText) as Cidade[] | { message?: string }) : [];
 
       if (!response.ok) {
-        const mensagem = !Array.isArray(data) && data.message ? data.message : 'Nao foi possivel carregar as cidades.';
+        const mensagem = !Array.isArray(data) && data.message ? data.message : 'Não foi possível carregar as cidades.';
         setErro(mensagem);
         setCidades([]);
         setCidadeSelecionada(null);
@@ -69,7 +69,7 @@ export default function Cadastro() {
 
       setCidadeSelecionada((atual) => atual ?? lista[0]);
     } catch {
-      setErro(`Nao foi possivel acessar a API em ${apiBaseUrl}.`);
+      setErro(`Não foi possível acessar a API em ${apiBaseUrl}.`);
       setCidades([]);
       setCidadeSelecionada(null);
     } finally {
@@ -113,15 +113,15 @@ export default function Cadastro() {
       const data = bodyText ? (JSON.parse(bodyText) as CadastroResponse | { message?: string }) : null;
 
       if (!response.ok) {
-        const mensagem = data && 'message' in data && data.message ? data.message : 'Nao foi possivel concluir o cadastro.';
+        const mensagem = data && 'message' in data && data.message ? data.message : 'Não foi possível concluir o cadastro.';
         setErro(mensagem);
         return;
       }
 
-      Alert.alert('Cadastro concluido', 'Sua conta foi criada. Agora faca login.');
+      Alert.alert('Cadastro concluido', 'Sua conta foi criada. Agora faça login.');
       router.replace((`/login?email=${encodeURIComponent(email.trim())}`) as never);
     } catch {
-      Alert.alert('Conexao', `Nao foi possivel acessar a API em ${apiBaseUrl}.`);
+      Alert.alert('Conexão', `Não foi possível acessar a API em ${apiBaseUrl}.`);
     } finally {
       setCarregandoCadastro(false);
     }

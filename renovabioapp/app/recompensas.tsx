@@ -58,14 +58,14 @@ export default function Recompensas() {
       const response = await fetch(`${apiBaseUrl}/recompensas`);
 
       if (!response.ok) {
-        setErro('Nao foi possivel carregar as recompensas.');
+        setErro('Não foi possivel carregar as recompensas.');
         return;
       }
 
       const data = (await response.json()) as Recompensa[];
       setRecompensas(data.filter((item) => item.ativo !== false));
     } catch {
-      setErro(`Nao foi possivel acessar a API em ${apiBaseUrl}.`);
+      setErro(`Não foi possível acessar a API em ${apiBaseUrl}.`);
     } finally {
       setCarregando(false);
     }
@@ -131,7 +131,7 @@ export default function Recompensas() {
     const pontosDisponiveis = pontuacaoSincronizada ?? user.pontuacao ?? 0;
 
     if (pontosDisponiveis < (recompensa.pontosNecessarios ?? 0)) {
-      Alert.alert('Troca de pontos', 'Voce nao tem pontos suficientes para essa recompensa.');
+      Alert.alert('Troca de pontos', 'Você não tem pontos suficientes para essa recompensa.');
       return;
     }
 
@@ -170,15 +170,15 @@ export default function Recompensas() {
       Alert.alert(
         'Resgate realizado',
         troca.codigoVoucher
-          ? `Seu codigo de voucher e ${troca.codigoVoucher}.`
+          ? `Seu código de voucher e ${troca.codigoVoucher}.`
           : 'Sua recompensa foi resgatada com sucesso.',
         [
           { text: 'Fechar', style: 'cancel' },
-          { text: 'Ver historico', onPress: () => router.push('/historico-recompensas') },
+          { text: 'Ver histórico', onPress: () => router.push('/historico-recompensas') },
         ],
       );
     } catch {
-      Alert.alert('Troca de pontos', `Nao foi possivel acessar a API em ${apiBaseUrl}.`);
+      Alert.alert('Troca de pontos', `Não foi possível acessar a API em ${apiBaseUrl}.`);
     } finally {
       setResgatandoId(null);
     }
@@ -202,17 +202,17 @@ export default function Recompensas() {
         </View>
 
         <View style={styles.pointsCard}>
-          <Text style={styles.pointsLabel}>Seus pontos disponiveis</Text>
+          <Text style={styles.pointsLabel}>Seus pontos disponíveis</Text>
           <Text style={styles.pointsValue}>{user?.pontuacao ?? 0}</Text>
         </View>
 
         <Text style={styles.subtitle}>
-          Troque sua pontuacao por recompensas oferecidas pelos parceiros.
+          Troque sua pontuação por recompensas oferecidas pelos parceiros.
         </Text>
 
         <TouchableOpacity onPress={() => router.push('/historico-recompensas')} style={styles.historyButton}>
           <Ionicons name="receipt-outline" size={18} color="#F7F3DF" />
-          <Text style={styles.historyButtonText}>Historico de vouchers</Text>
+          <Text style={styles.historyButtonText}>Histórico de vouchers</Text>
         </TouchableOpacity>
 
         {carregando ? (
@@ -232,7 +232,7 @@ export default function Recompensas() {
 
         {!carregando && !erro && recompensas.length === 0 ? (
           <View style={styles.feedbackCard}>
-            <Text style={styles.feedbackText}>Nenhuma recompensa disponivel no momento.</Text>
+            <Text style={styles.feedbackText}>Nenhuma recompensa disponível no momento.</Text>
           </View>
         ) : null}
 
@@ -262,7 +262,7 @@ export default function Recompensas() {
                   <View style={styles.metaRow}>
                     <InfoItem
                       icon="gift-outline"
-                      label={semEstoque ? 'Esgotado' : `${recompensa.quantidadeDisponivel} disponiveis`}
+                      label={semEstoque ? 'Esgotado' : `${recompensa.quantidadeDisponivel} disponíveis`}
                     />
                     <InfoItem
                       icon="leaf-outline"
@@ -278,7 +278,7 @@ export default function Recompensas() {
                     {resgatando ? (
                       <ActivityIndicator color="#F7F3DF" />
                     ) : (
-                      <Text style={styles.actionText}>{semEstoque ? 'Indisponivel' : 'Trocar pontos'}</Text>
+                      <Text style={styles.actionText}>{semEstoque ? 'Indisponível' : 'Trocar pontos'}</Text>
                     )}
                   </TouchableOpacity>
                 </View>
@@ -304,7 +304,7 @@ async function extrairMensagemErro(response: Response) {
   try {
     const bodyText = await response.text();
     if (!bodyText) {
-      return 'Nao foi possivel concluir a troca.';
+      return 'Não foi possível concluir a troca.';
     }
 
     try {
@@ -314,7 +314,7 @@ async function extrairMensagemErro(response: Response) {
       return bodyText;
     }
   } catch {
-    return 'Nao foi possivel concluir a troca.';
+    return 'Não foi possível concluir a troca.';
   }
 }
 

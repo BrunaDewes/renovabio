@@ -16,7 +16,7 @@ export default function HistoricoDesafios() {
 
   const carregarHistorico = useCallback(async () => {
     if (!user?.id) {
-      setErro('Usuario nao autenticado.');
+      setErro('Usuario não autenticado.');
       setCarregando(false);
       return;
     }
@@ -29,14 +29,14 @@ export default function HistoricoDesafios() {
         headers: getAuthHeaders(user.token),
       });
       if (!response.ok) {
-        setErro('Nao foi possivel carregar o historico.');
+        setErro('Não foi possível carregar o histórico.');
         return;
       }
 
       const data = (await response.json()) as UsuarioDesafio[];
       setParticipacoes(data);
     } catch {
-      setErro(`Nao foi possivel acessar a API em ${apiBaseUrl}.`);
+      setErro(`Não foi possível acessar a API em ${apiBaseUrl}.`);
     } finally {
       setCarregando(false);
     }
@@ -60,7 +60,7 @@ export default function HistoricoDesafios() {
             <Ionicons name="arrow-back" size={28} color="#0B7A43" />
           </TouchableOpacity>
 
-          <Text style={styles.title}>Historico de Desafios</Text>
+          <Text style={styles.title}>Histórico de Desafios</Text>
 
           <View style={styles.backButton} />
         </View>
@@ -89,7 +89,7 @@ export default function HistoricoDesafios() {
 
               <View style={styles.summaryItem}>
                 <Text style={styles.summaryValue}>{concluidos}</Text>
-                <Text style={styles.summaryLabel}>Desafios concluidos</Text>
+                <Text style={styles.summaryLabel}>Desafios concluídos</Text>
               </View>
             </View>
 
@@ -109,7 +109,7 @@ export default function HistoricoDesafios() {
                       <View style={styles.historyHeader}>
                         <Text style={styles.challengeTitle}>{participacao.desafio?.titulo}</Text>
                         <Text style={[styles.statusBadge, concluido ? styles.statusDone : styles.statusProgress]}>
-                          {concluido ? 'Concluido' : 'Em andamento'}
+                          {concluido ? 'Concluído' : 'Em andamento'}
                         </Text>
                       </View>
 

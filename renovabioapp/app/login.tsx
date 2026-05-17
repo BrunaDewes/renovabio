@@ -64,7 +64,7 @@ export default function LoginScreen() {
       const data = bodyText ? (JSON.parse(bodyText) as LoginResponse | { message?: string }) : null;
 
       if (!response.ok) {
-        const mensagem = data && 'message' in data && data.message ? data.message : 'Nao foi possivel fazer login.';
+        const mensagem = data && 'message' in data && data.message ? data.message : 'Não foi possível fazer login.';
         setErro(mensagem);
         return;
       }
@@ -73,7 +73,7 @@ export default function LoginScreen() {
       await signIn({ ...usuario, photoUri: toApiFileUrl(usuario.photoUri) });
       router.replace('/home');
     } catch {
-      Alert.alert('Conexao', `Nao foi possivel acessar a API em ${apiBaseUrl}.`);
+      Alert.alert('Conexao', `Não foi possível acessar a API em ${apiBaseUrl}.`);
     } finally {
       setCarregando(false);
     }

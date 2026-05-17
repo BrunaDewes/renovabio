@@ -25,7 +25,7 @@ export default function HistoricoRecompensas() {
 
   const carregarHistorico = useCallback(async () => {
     if (!user?.id) {
-      setErro('Usuario nao autenticado.');
+      setErro('Usuario não autenticado.');
       setCarregando(false);
       return;
     }
@@ -38,14 +38,14 @@ export default function HistoricoRecompensas() {
         headers: getAuthHeaders(user.token),
       });
       if (!response.ok) {
-        setErro('Nao foi possivel carregar o historico de vouchers.');
+        setErro('Não foi possível carregar o histórico de vouchers.');
         return;
       }
 
       const data = (await response.json()) as TrocaRecompensaHistorico[];
       setTrocas(data);
     } catch {
-      setErro(`Nao foi possivel acessar a API em ${apiBaseUrl}.`);
+      setErro(`Não foi possível acessar a API em ${apiBaseUrl}.`);
     } finally {
       setCarregando(false);
     }
@@ -69,7 +69,7 @@ export default function HistoricoRecompensas() {
             <Ionicons name="arrow-back" size={28} color="#0B7A43" />
           </TouchableOpacity>
 
-          <Text style={styles.title}>Historico de Vouchers</Text>
+          <Text style={styles.title}>Histórico de Vouchers</Text>
 
           <View style={styles.backButton} />
         </View>
@@ -107,7 +107,7 @@ export default function HistoricoRecompensas() {
 
             {trocas.length === 0 ? (
               <View style={styles.messageCard}>
-                <Text style={styles.messageText}>Voce ainda nao resgatou nenhuma recompensa.</Text>
+                <Text style={styles.messageText}>Você ainda não resgatou nenhuma recompensa.</Text>
               </View>
             ) : (
               <View style={styles.listWrapper}>
@@ -118,11 +118,11 @@ export default function HistoricoRecompensas() {
                       <Text style={styles.statusBadge}>{formatarStatus(troca.status)}</Text>
                     </View>
 
-                    <Text style={styles.partnerText}>{troca.parceiroNome || 'Parceiro nao informado'}</Text>
+                    <Text style={styles.partnerText}>{troca.parceiroNome || 'Parceiro não informado'}</Text>
 
                     <View style={styles.voucherBox}>
                       <Text style={styles.voucherLabel}>Codigo do voucher</Text>
-                      <Text style={styles.voucherCode}>{troca.codigoVoucher || 'Nao informado'}</Text>
+                      <Text style={styles.voucherCode}>{troca.codigoVoucher || 'Código não informado'}</Text>
                     </View>
 
                     <View style={styles.infoRow}>
@@ -154,12 +154,12 @@ function formatarStatus(status?: string) {
 
 function formatarData(data?: string) {
   if (!data) {
-    return 'Data nao informada';
+    return 'Data não informada';
   }
 
   const date = new Date(data);
   if (Number.isNaN(date.getTime())) {
-    return 'Data nao informada';
+    return 'Data não informada';
   }
 
   return date.toLocaleDateString('pt-BR');

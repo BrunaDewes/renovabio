@@ -87,7 +87,7 @@ export default function Feedback() {
           color: '#1B5E20',
         }}
       >
-        Deixe aqui suas criticas, elogios e sugestoes
+        Deixe aqui suas críticas, elogios e sugestões.
       </Text>
 
       <View

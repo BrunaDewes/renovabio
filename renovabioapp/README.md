@@ -1,50 +1,45 @@
-# Welcome to your Expo app 👋
+# RenovaBio App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Aplicativo mobile do RenovaBio desenvolvido com Expo, React Native, TypeScript e Expo Router.
 
-## Get started
+## Responsabilidades
 
-1. Install dependencies
+- Permitir cadastro, login e recuperacao de senha.
+- Exibir home, perfil, receitas, desafios, recompensas e historicos.
+- Enviar feedbacks e comprovacoes para a API.
+- Consumir a API do RenovaBio e montar URLs de imagens enviadas.
+- Manter contexto de autenticacao e dados do usuario no app.
 
-   ```bash
-   npm install
-   ```
+## Pastas principais
 
-2. Start the app
+- `app`: telas e rotas do Expo Router.
+- `components`: componentes reutilizaveis de interface.
+- `components/ui`: componentes visuais de apoio e adaptacoes por plataforma.
+- `constants`: tokens de tema, cores e valores compartilhados.
+- `context`: providers e estados globais, como autenticacao.
+- `hooks`: hooks reutilizaveis de tema e plataforma.
+- `utils`: funcoes de API, dados auxiliares e formatacao usada nas telas.
+- `assets`: imagens usadas pelo aplicativo.
+- `scripts`: scripts auxiliares do projeto Expo.
 
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Comandos uteis
 
 ```bash
-npm run reset-project
+npm install
+npm start
+npm run android
+npm run ios
+npm run web
+npm run lint
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Observacao sobre notificacoes e APK
 
-## Learn more
+- O app passou a usar `expo-notifications` para lembretes diarios locais.
+- Como isso e uma dependencia nativa, depois dessa mudanca e necessario gerar e instalar uma nova build/APK para testar notificacoes no aplicativo instalado.
+- Se a mudanca for apenas de texto, layout ou regra de tela, normalmente nao precisa reinstalar APK por causa disso sozinho.
+- Antes da build final, revise os textos do app para corrigir erros de escrita e evitar que eles aparecam na versao instalada.
 
-To learn more about developing your project with Expo, look at the following resources:
+## API
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+A URL base consumida pelo app fica em `utils/api.ts`. Atualmente ela aponta para a API publicada em Railway.

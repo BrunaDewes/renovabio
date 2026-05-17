@@ -16,7 +16,7 @@ export default function Compostagem() {
 
         <Text style={styles.title}>Compostagem caseira</Text>
         <Text style={styles.subtitle}>
-          Transforme restos organicos em adubo natural, reduza o lixo da casa e ajude o solo a ficar mais saudavel.
+          Transforme restos orgânicos em adubo natural, reduza o lixo da casa e ajude o solo a ficar mais saudável.
         </Text>
 
         <View style={styles.heroCard}>
@@ -24,7 +24,7 @@ export default function Compostagem() {
           <View style={{ flex: 1 }}>
             <Text style={styles.heroTitle}>A regra principal</Text>
             <Text style={styles.heroText}>
-              Alterne camadas de residuos umidos com materiais secos. Isso evita mau cheiro e ajuda a compostagem a
+              Alterne camadas de resíduos umidos com materiais secos. Isso evita mau cheiro e ajuda a compostagem a
               acontecer do jeito certo.
             </Text>
           </View>
@@ -35,7 +35,7 @@ export default function Compostagem() {
           itens={[
             'Separe um balde, composteira ou caixa com tampa e furos pequenos',
             'Coloque uma camada de folhas secas, serragem ou papelao picado no fundo',
-            'Adicione cascas e restos organicos em pedacos pequenos',
+            'Adicione cascas e restos orgânicos em pedacos pequenos',
             'Cubra sempre com material seco para evitar cheiro e mosquitos',
             'Misture de vez em quando para entrar ar e acelerar o processo',
           ]}

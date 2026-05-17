@@ -19,12 +19,12 @@ export default function Descarte() {
         </Text>
 
         <Text style={{ color: '#0B7A43', fontSize: 15, lineHeight: 22, marginBottom: 22 }}>
-          Separar os residuos da forma certa reduz contaminacao, facilita a reciclagem e melhora o aproveitamento do
-          lixo organico.
+          Separar os resíduos da forma certa reduz contaminação, facilita a reciclagem e melhora o aproveitamento do
+          lixo orgânico.
         </Text>
 
         <InfoCard
-          titulo="Pode descartar no organico"
+          titulo="Pode descartar no orgânico"
           itens={[
             'Cascas de frutas, legumes e verduras',
             'Restos de arroz, feijao, pao e massas',
@@ -35,7 +35,7 @@ export default function Descarte() {
         />
 
         <InfoCard
-          titulo="Nao deve ir no organico"
+          titulo="Nao deve ir no orgânico"
           itens={[
             'Plasticos, vidros, metais e isopor',
             'Papel higienico e fraldas',
@@ -46,12 +46,12 @@ export default function Descarte() {
         />
 
         <InfoCard
-          titulo="Dicas rapidas"
+          titulo="Dicas rápidas"
           itens={[
             'Separe reciclavel, organico e rejeito em recipientes diferentes',
             'Escorra bem os alimentos antes de descartar',
             'Use recipiente com tampa para evitar cheiro forte',
-            'Quando possivel, encaminhe o organico para compostagem',
+            'Quando possivel, encaminhe o orgânico para compostagem',
             'Lave reciclaveis sujos para nao contaminar o restante',
           ]}
         />
@@ -65,8 +65,8 @@ export default function Descarte() {
         >
           <Text style={{ color: '#F7F3DF', fontSize: 18, fontWeight: '800', marginBottom: 8 }}>Resumo</Text>
           <Text style={{ color: '#F7F3DF', lineHeight: 22 }}>
-            O ideal e separar o que pode ser reciclado, manter o lixo organico limpo de contaminantes e evitar misturar
-            materiais perigosos com residuos domesticos comuns.
+            O ideal é separar o que pode ser reciclado, manter o lixo orgânico limpo de contaminantes e evitar misturar
+            materiais perigosos com resíduos domésticos comuns.
           </Text>
         </View>
       </ScrollView>
