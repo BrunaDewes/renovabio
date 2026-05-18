@@ -122,7 +122,7 @@ export default function Receitas() {
                 onPress={() => router.push((`/receita-detalhe?id=${receita.id}`) as never)}
                 style={styles.card}
               >
-                <Image source={{ uri: getRecipeImage(receita.titulo) }} style={styles.cardImage} />
+                <Image source={getRecipeImage(receita.titulo)} style={styles.cardImage} />
 
                 <View style={styles.cardContent}>
                   <Text style={styles.cardTitle}>{receita.titulo}</Text>

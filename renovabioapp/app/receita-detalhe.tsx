@@ -108,7 +108,7 @@ export default function ReceitaDetalhe() {
 
         {!carregando && !erro && receita ? (
           <>
-            <Image source={{ uri: getRecipeImage(receita.titulo) }} style={styles.heroImage} />
+            <Image source={getRecipeImage(receita.titulo)} style={styles.heroImage} />
 
             <Text style={styles.title}>{receita.titulo}</Text>
 
