@@ -19,40 +19,40 @@ export default function Descarte() {
         </Text>
 
         <Text style={{ color: '#0B7A43', fontSize: 15, lineHeight: 22, marginBottom: 22 }}>
-          Separar os resíduos da forma certa reduz contaminação, facilita a reciclagem e melhora o aproveitamento do
-          lixo orgânico.
+          Separar os resíduos corretamente ajuda a reduzir a poluição, melhora a reciclagem e evita que materiais
+          reaproveitáveis acabem em aterros sanitários.
         </Text>
 
         <InfoCard
-          titulo="Pode descartar no orgânico"
+          titulo="Pode ir no orgânico"
           itens={[
             'Cascas de frutas, legumes e verduras',
-            'Restos de arroz, feijao, pao e massas',
-            'Borra de cafe e saquinhos de cha',
+            'Restos de arroz, feijão, pão e massas',
+            'Borra de café e saquinhos de chá',
             'Cascas de ovo',
-            'Folhas secas, flores e pequenos restos de poda',
+            'Folhas secas e restos de poda',
           ]}
         />
 
         <InfoCard
-          titulo="Nao deve ir no orgânico"
+          titulo="Não deve ir no orgânico"
           itens={[
-            'Plasticos, vidros, metais e isopor',
-            'Papel higienico e fraldas',
-            'Oleos, gorduras e liquidos em excesso',
-            'Pilhas, baterias e eletronicos',
-            'Remedios, seringas e residuos contaminados',
+            'Plásticos, vidros, metais e isopor',
+            'Papel higiênico e fraldas',
+            'Óleo e gordura em excesso',
+            'Pilhas, baterias e eletrônicos',
+            'Medicamentos e materiais contaminados',
           ]}
         />
 
         <InfoCard
           titulo="Dicas rápidas"
           itens={[
-            'Separe reciclavel, organico e rejeito em recipientes diferentes',
-            'Escorra bem os alimentos antes de descartar',
-            'Use recipiente com tampa para evitar cheiro forte',
-            'Quando possivel, encaminhe o orgânico para compostagem',
-            'Lave reciclaveis sujos para nao contaminar o restante',
+            'Separe reciclável, orgânico e rejeito',
+            'Escorra alimentos antes de descartar',
+            'Use recipiente com tampa',
+            'Lave recicláveis sujos',
+            'Sempre que possível, faça compostagem',
           ]}
         />
 
@@ -65,8 +65,8 @@ export default function Descarte() {
         >
           <Text style={{ color: '#F7F3DF', fontSize: 18, fontWeight: '800', marginBottom: 8 }}>Resumo</Text>
           <Text style={{ color: '#F7F3DF', lineHeight: 22 }}>
-            O ideal é separar o que pode ser reciclado, manter o lixo orgânico limpo de contaminantes e evitar misturar
-            materiais perigosos com resíduos domésticos comuns.
+            Separar corretamente os resíduos reduz a contaminação, melhora o reaproveitamento dos materiais e ajuda o
+            meio ambiente.
           </Text>
         </View>
       </ScrollView>
@@ -87,9 +87,26 @@ function InfoCard({ titulo, itens }: { titulo: string; itens: string[] }) {
       <Text style={{ fontSize: 18, fontWeight: '800', color: '#0B7A43', marginBottom: 12 }}>{titulo}</Text>
 
       {itens.map((item) => (
-        <Text key={item} style={{ color: '#374151', lineHeight: 22, marginBottom: 6 }}>
-          • {item}
-        </Text>
+        <View
+          key={item}
+          style={{
+            flexDirection: 'row',
+            alignItems: 'flex-start',
+            marginBottom: 8,
+          }}
+        >
+          <View
+            style={{
+              width: 8,
+              height: 8,
+              borderRadius: 999,
+              backgroundColor: '#0B7A43',
+              marginTop: 7,
+              marginRight: 10,
+            }}
+          />
+          <Text style={{ flex: 1, color: '#374151', lineHeight: 22 }}>{item}</Text>
+        </View>
       ))}
     </View>
   );

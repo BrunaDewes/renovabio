@@ -14,7 +14,14 @@ import {
 
 import { useAuth } from '../context/auth-context';
 import { getApiBaseUrl, getAuthHeaders } from '../utils/api';
-import { formatarListaTexto, getRecipeImage, Receita } from '../utils/receitas';
+import {
+  formatarDificuldadeReceita,
+  formatarListaTexto,
+  formatarModoPreparoEmPassos,
+  formatarReceita,
+  getRecipeImage,
+  Receita,
+} from '../utils/receitas';
 
 export default function ReceitaDetalhe() {
   const { id } = useLocalSearchParams<{ id?: string }>();
@@ -43,7 +50,7 @@ export default function ReceitaDetalhe() {
       }
 
       const data = (await response.json()) as Receita;
-      setReceita(data);
+      setReceita(formatarReceita(data));
     } catch {
       setErro(`Não foi possível acessar a API em ${apiBaseUrl}.`);
     } finally {
@@ -82,6 +89,7 @@ export default function ReceitaDetalhe() {
   }
 
   const ingredientes = receita ? formatarListaTexto(receita.ingredientes) : [];
+  const passosPreparo = receita ? formatarModoPreparoEmPassos(receita.modoPreparo) : [];
 
   return (
     <ImageBackground
@@ -114,7 +122,7 @@ export default function ReceitaDetalhe() {
 
             <View style={styles.summaryCard}>
               <ResumoItem titulo="Tempo de preparo" valor={`${receita.tempoPreparo} min`} />
-              <ResumoItem titulo="Dificuldade" valor={receita.dificuldade} />
+              <ResumoItem titulo="Dificuldade" valor={formatarDificuldadeReceita(receita.dificuldade)} />
               <ResumoItem titulo="Pontuação" valor={`${receita.pontos} pontos`} destaque="#0B7A43" />
             </View>
 
@@ -139,7 +147,18 @@ export default function ReceitaDetalhe() {
 
             <View style={styles.block}>
               <Text style={styles.sectionTitle}>Modo de preparo</Text>
-              <Text style={styles.text}>{receita.modoPreparo}</Text>
+              {passosPreparo.length === 0 ? (
+                <Text style={styles.text}>{receita.modoPreparo}</Text>
+              ) : (
+                passosPreparo.map((passo, index) => (
+                  <View key={`${passo}-${index}`} style={styles.stepRow}>
+                    <View style={styles.stepBadge}>
+                      <Text style={styles.stepBadgeText}>{index + 1}</Text>
+                    </View>
+                    <Text style={styles.stepText}>{passo}</Text>
+                  </View>
+                ))
+              )}
             </View>
 
             <TouchableOpacity onPress={() => void testarReceita()} style={styles.primaryButton} disabled={testando}>
@@ -256,6 +275,32 @@ const styles = {
     color: '#35506B',
     fontSize: 16,
     lineHeight: 24,
+  },
+  stepRow: {
+    flexDirection: 'row' as const,
+    alignItems: 'flex-start' as const,
+    gap: 12,
+    marginBottom: 14,
+  },
+  stepBadge: {
+    width: 28,
+    height: 28,
+    borderRadius: 999,
+    backgroundColor: '#0B7A43',
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    marginTop: 2,
+  },
+  stepBadgeText: {
+    color: '#F7F3DF',
+    fontWeight: '800' as const,
+    fontSize: 14,
+  },
+  stepText: {
+    flex: 1,
+    color: '#35506B',
+    fontSize: 16,
+    lineHeight: 25,
   },
   primaryButton: {
     backgroundColor: '#0B7A43',

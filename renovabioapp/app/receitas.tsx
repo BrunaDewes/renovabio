@@ -13,7 +13,12 @@ import {
 } from 'react-native';
 
 import { getApiBaseUrl } from '../utils/api';
-import { getRecipeImage, Receita } from '../utils/receitas';
+import {
+  formatarDificuldadeReceita,
+  formatarReceita,
+  getRecipeImage,
+  Receita,
+} from '../utils/receitas';
 
 export default function Receitas() {
   const apiBaseUrl = useMemo(() => getApiBaseUrl(), []);
@@ -34,7 +39,7 @@ export default function Receitas() {
       }
 
       const data = (await response.json()) as Receita[];
-      setReceitas(data);
+      setReceitas(data.map(formatarReceita));
     } catch {
       setErro(`Não foi possível acessar a API em ${apiBaseUrl}.`);
     } finally {
@@ -132,7 +137,7 @@ export default function Receitas() {
                   </Text>
 
                   <Text style={styles.infoLine}>
-                    <Text style={styles.infoLabel}>Dificuldade:</Text> {formatarDificuldade(receita.dificuldade)}
+                    <Text style={styles.infoLabel}>Dificuldade:</Text> {formatarDificuldadeReceita(receita.dificuldade)}
                   </Text>
 
                   <View style={styles.cardFooter}>
@@ -150,14 +155,6 @@ export default function Receitas() {
       </ScrollView>
     </ImageBackground>
   );
-}
-
-function formatarDificuldade(dificuldade?: string) {
-  if (!dificuldade) {
-    return 'Não informado';
-  }
-
-  return dificuldade.charAt(0) + dificuldade.slice(1).toLowerCase();
 }
 
 const styles = {

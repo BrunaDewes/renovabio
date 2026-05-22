@@ -16,28 +16,40 @@ export default function Compostagem() {
 
         <Text style={styles.title}>Compostagem caseira</Text>
         <Text style={styles.subtitle}>
-          Transforme restos orgânicos em adubo natural, reduza o lixo da casa e ajude o solo a ficar mais saudável.
+          Transforme restos orgânicos em adubo natural e reduza o lixo da sua casa. Com poucos cuidados, é possível
+          evitar mau cheiro, diminuir resíduos enviados ao aterro e ainda produzir um composto rico para plantas e
+          hortas.
         </Text>
 
         <View style={styles.heroCard}>
           <Ionicons name="leaf" size={34} color="#F7F3DF" />
           <View style={{ flex: 1 }}>
-            <Text style={styles.heroTitle}>A regra principal</Text>
-            <Text style={styles.heroText}>
-              Alterne camadas de resíduos umidos com materiais secos. Isso evita mau cheiro e ajuda a compostagem a
-              acontecer do jeito certo.
-            </Text>
+            <Text style={styles.heroTitle}>A regra mais importante</Text>
+            <Text style={styles.heroText}>Misture resíduos úmidos com materiais secos.</Text>
           </View>
         </View>
 
         <SectionCard
+          titulo="Isso ajuda a evitar"
+          itens={[
+            'Restos úmidos: frutas, verduras, borra de café',
+            'Materiais secos: folhas secas, serragem, papelão picado',
+            'Cheiro forte, excesso de umidade e mosquitos',
+          ]}
+          icon="checkmark-circle"
+        />
+
+        <SectionCard
           titulo="Passo a passo"
           itens={[
-            'Separe um balde, composteira ou caixa com tampa e furos pequenos',
-            'Coloque uma camada de folhas secas, serragem ou papelao picado no fundo',
-            'Adicione cascas e restos orgânicos em pedacos pequenos',
-            'Cubra sempre com material seco para evitar cheiro e mosquitos',
-            'Misture de vez em quando para entrar ar e acelerar o processo',
+            'Escolha um balde, caixa ou composteira com tampa',
+            'Faça pequenos furos para entrada de ar',
+            'Coloque uma camada de folhas secas ou serragem no fundo',
+            'Adicione os resíduos orgânicos em pedaços pequenos',
+            'Cubra sempre com material seco',
+            'Misture o conteúdo de vez em quando para ventilar',
+            'Evite excesso de água',
+            'Mantenha em local protegido do sol forte e da chuva',
           ]}
         />
 
@@ -45,55 +57,109 @@ export default function Compostagem() {
           titulo="Pode colocar"
           itens={[
             'Cascas de frutas, legumes e verduras',
-            'Borra de cafe e filtro de papel',
+            'Borra de café e filtro de papel',
             'Cascas de ovo trituradas',
-            'Folhas secas, flores e pequenos restos de poda',
-            'Guardanapo sem gordura em pouca quantidade',
+            'Folhas secas e restos de poda',
+            'Saquinhos de chá sem plástico',
+            'Papel toalha ou guardanapo sem gordura (em pouca quantidade)',
           ]}
         />
 
         <SectionCard
           titulo="Evite colocar"
           itens={[
-            'Carnes, ossos e peixe',
-            'Leite, queijo e alimentos muito gordurosos',
-            'Fezes de animais domesticos',
-            'Oleos, molhos e comida com muito sal',
-            'Plastico, vidro, metal ou qualquer material reciclavel',
+            'Carnes, peixes e ossos',
+            'Leite, queijo e alimentos gordurosos',
+            'Óleo, gordura e molhos',
+            'Fezes de animais domésticos',
+            'Alimentos muito salgados ou temperados',
+            'Plástico, metal, vidro e recicláveis',
           ]}
         />
 
-        <SectionCard
-          titulo="Se der problema"
-          itens={[
-            'Cheiro ruim: coloque mais folhas secas ou serragem',
-            'Muito seco: borrife um pouco de agua',
-            'Mosquitos: cubra melhor os restos com material seco',
-            'Demora demais: corte os residuos em pedacos menores',
-          ]}
-        />
+        <ProblemCard />
 
         <View style={styles.summaryCard}>
-          <Text style={styles.summaryTitle}>Quando o adubo fica pronto?</Text>
-          <Text style={styles.summaryText}>
-            Em geral, o composto fica escuro, com cheiro de terra e sem identificar os restos originais. Esse adubo pode
-            ser usado em vasos, hortas e jardins.
-          </Text>
+          <Text style={styles.summaryTitle}>Quando o adubo está pronto?</Text>
+          <ChecklistItem texto="Escuro" />
+          <ChecklistItem texto="Com cheiro de terra" />
+          <ChecklistItem texto="Solto e úmido" />
+          <ChecklistItem texto="Sem identificar os restos originais" />
+          <Text style={styles.summaryText}>Ele pode ser usado em vasos, hortas e jardins.</Text>
         </View>
       </ScrollView>
     </ImageBackground>
   );
 }
 
-function SectionCard({ titulo, itens }: { titulo: string; itens: string[] }) {
+function SectionCard({
+  titulo,
+  itens,
+  icon,
+}: {
+  titulo: string;
+  itens: string[];
+  icon?: keyof typeof Ionicons.glyphMap;
+}) {
   return (
     <View style={styles.card}>
       <Text style={styles.cardTitle}>{titulo}</Text>
 
       {itens.map((item) => (
         <View key={item} style={styles.itemRow}>
-          <View style={styles.dot} />
+          {icon ? (
+            <Ionicons name={icon} size={18} color="#0B7A43" style={styles.iconBullet} />
+          ) : (
+            <View style={styles.dot} />
+          )}
           <Text style={styles.itemText}>{item}</Text>
+        </View>
+      ))}
+    </View>
+  );
+}
+
+function ChecklistItem({ texto }: { texto: string }) {
+  return (
+    <View style={styles.itemRow}>
+      <Ionicons name="checkmark-circle" size={18} color="#0B7A43" style={styles.iconBullet} />
+      <Text style={styles.itemText}>{texto}</Text>
+    </View>
+  );
+}
+
+function ProblemCard() {
+  const problemas = [
+    {
+      titulo: 'Mau cheiro',
+      descricao: 'Adicione folhas secas, serragem ou papel picado.',
+    },
+    {
+      titulo: 'Muito molhado',
+      descricao: 'Misture mais material seco e revolva a compostagem.',
+    },
+    {
+      titulo: 'Muito seco',
+      descricao: 'Borrife um pouco de água.',
+    },
+    {
+      titulo: 'Mosquitos',
+      descricao: 'Cubra os restos orgânicos com material seco.',
+    },
+    {
+      titulo: 'Decomposição lenta',
+      descricao: 'Corte os resíduos em pedaços menores e misture melhor.',
+    },
+  ];
+
+  return (
+    <View style={styles.card}>
+      <Text style={styles.cardTitle}>Problemas comuns</Text>
+
+      {problemas.map((problema) => (
+        <View key={problema.titulo} style={styles.problemBlock}>
+          <Text style={styles.problemTitle}>{problema.titulo}</Text>
+          <Text style={styles.problemText}>{problema.descricao}</Text>
         </View>
       ))}
     </View>
@@ -168,8 +234,26 @@ const styles = {
     marginTop: 7,
     marginRight: 10,
   },
+  iconBullet: {
+    marginTop: 2,
+    marginRight: 10,
+  },
   itemText: {
     flex: 1,
+    color: '#374151',
+    fontSize: 15,
+    lineHeight: 22,
+  },
+  problemBlock: {
+    marginBottom: 12,
+  },
+  problemTitle: {
+    color: '#2A463A',
+    fontSize: 15,
+    fontWeight: '800' as const,
+    marginBottom: 4,
+  },
+  problemText: {
     color: '#374151',
     fontSize: 15,
     lineHeight: 22,
@@ -183,11 +267,12 @@ const styles = {
     color: '#0B7A43',
     fontSize: 18,
     fontWeight: '800' as const,
-    marginBottom: 8,
+    marginBottom: 10,
   },
   summaryText: {
     color: '#2A463A',
     fontSize: 15,
     lineHeight: 23,
+    marginTop: 8,
   },
 };
