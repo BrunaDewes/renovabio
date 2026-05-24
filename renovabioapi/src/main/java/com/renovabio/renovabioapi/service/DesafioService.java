@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -76,6 +78,17 @@ public class DesafioService {
 
         if (usuarioDesafio.getStatus() == StatusDesafio.CONCLUIDO) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Desafio ja foi concluido");
+        }
+
+        LocalDate hoje = LocalDate.now();
+        LocalDateTime inicioDoDia = hoje.atStartOfDay();
+        LocalDateTime fimDoDia = hoje.plusDays(1).atStartOfDay().minusNanos(1);
+        if (comprovacaoDesafioRepository.existsByUsuarioDesafioIdAndDataEnvioBetween(
+                usuarioDesafioId,
+                inicioDoDia,
+                fimDoDia
+        )) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ja existe comprovante registrado para hoje");
         }
 
         String imagemUrl = fileStorageService.salvarImagem(file, "comprovacoes");

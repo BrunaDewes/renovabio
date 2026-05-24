@@ -92,10 +92,10 @@ INSERT INTO desafio (id_desafio, ativo, titulo, descricao, pontos, duracao_dias,
 (6, 1,'Construa sua composteira','Monte uma composteira domestica utilizando baldes, caixas ou outro recipiente adequado para iniciar a compostagem de residuos organicos.',60,3,2);
 
 INSERT INTO recompensa (id_recompensa, ativo, descricao, pontos_necessarios, quantidade_disponivel, parceiro_id_parceiros) VALUES
-(1, 1,'5% desconto nas bebidas',150,20,1),
-(2, 1,'10% desconto nos chocolates',95,20,1),
-(3, 1,'5% desconto nos sueteres',100,20,2),
+(1, 1,'5% desconto nas bebidas',80,20,1),
+(2, 1,'5% desconto nos chocolates',85,20,1),
+(3, 1,'5% desconto nos sueteres',90,20,2),
 (4, 0,'10% desconto em medicamentos',200,30,3),
 (5, 0,'5% desconto em combustiveis',250,15,4),
-(6, 1,'10% desconto em paes e bolos',80,25,5),
-(7, 1,'5% desconto em roupas de verao',170,20,6);
+(6, 0,'10% desconto em paes e bolos',80,25,5),
+(7, 0,'5% desconto em roupas de verao',170,20,6);

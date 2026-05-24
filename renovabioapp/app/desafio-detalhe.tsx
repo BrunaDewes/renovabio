@@ -119,6 +119,11 @@ export default function DesafioDetalhe() {
   }
 
   async function escolherArquivo() {
+    if (jaRegistrouHoje) {
+      Alert.alert('Desafios', 'Voce ja registrou um comprovante hoje. Volte amanha para enviar outro.');
+      return;
+    }
+
     const permissao = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permissao.granted) {
       Alert.alert('Desafios', 'Permita acesso a galeria para selecionar a foto de comprovação.');
@@ -160,6 +165,11 @@ export default function DesafioDetalhe() {
         return;
       }
 
+      if (jaRegistrouHoje) {
+        Alert.alert('Desafios', 'Voce ja registrou um comprovante hoje. Volte amanha para enviar outro.');
+        return;
+      }
+
       if (!arquivoSelecionado) {
         Alert.alert('Desafios', 'Escolha uma foto antes de registrar o comprovante.');
         return;
@@ -177,6 +187,12 @@ export default function DesafioDetalhe() {
       });
 
       if (!uploadResponse.ok) {
+        const bodyText = await uploadResponse.text();
+        const data = bodyText ? (JSON.parse(bodyText) as { message?: string }) : null;
+        if (data?.message) {
+          Alert.alert('Desafios', data.message);
+          return;
+        }
         Alert.alert('Desafios', 'Não foi possível enviar a foto para o servidor.');
         return;
       }
@@ -230,6 +246,8 @@ export default function DesafioDetalhe() {
   }
 
   const diasConcluidos = desafio && participacao ? calcularDiasConcluidos(participacao) : 0;
+  const jaRegistrouHoje = comprovacoes.some((item) => isDataDeHoje(item.dataEnvio));
+  const bloqueadoParaComprovante = processando || participacao?.status === 'CONCLUIDO' || jaRegistrouHoje;
   return (
     <ImageBackground
       source={require('../assets/images/backgroundoutros.png')}
@@ -291,7 +309,15 @@ export default function DesafioDetalhe() {
                 Escolha uma imagem da galeria para registrar o que você fez hoje no desafio.
               </Text>
 
-              <TouchableOpacity onPress={() => void escolherArquivo()} style={styles.fileButton}>
+              {jaRegistrouHoje ? (
+                <Text style={styles.warningText}>Voce ja registrou o comprovante de hoje. Volte amanha para enviar outro.</Text>
+              ) : null}
+
+              <TouchableOpacity
+                onPress={() => void escolherArquivo()}
+                style={[styles.fileButton, jaRegistrouHoje ? styles.disabledButton : null]}
+                disabled={jaRegistrouHoje}
+              >
                 <Ionicons name="image-outline" size={18} color="#F7F3DF" />
                 <Text style={styles.fileButtonText}>
                   {arquivoSelecionado ? 'Arquivo selecionado' : 'Escolher arquivo'}
@@ -308,9 +334,9 @@ export default function DesafioDetalhe() {
                 onPress={() => void registrarComprovante()}
                 style={[
                   styles.primaryButton,
-                  participacao?.status === 'CONCLUIDO' ? { opacity: 0.55 } : null,
+                  bloqueadoParaComprovante ? styles.disabledButton : null,
                 ]}
-                disabled={processando || participacao?.status === 'CONCLUIDO'}
+                disabled={bloqueadoParaComprovante}
               >
                 {processando ? (
                   <ActivityIndicator color="#F7F3DF" />
@@ -354,6 +380,20 @@ function formatarDataComprovacao(data?: string) {
   }
 
   return date.toLocaleDateString('pt-BR');
+}
+
+function isDataDeHoje(data?: string) {
+  if (!data) {
+    return false;
+  }
+
+  const date = new Date(data);
+  const hoje = new Date();
+  return (
+    date.getFullYear() === hoje.getFullYear()
+    && date.getMonth() === hoje.getMonth()
+    && date.getDate() === hoje.getDate()
+  );
 }
 
 function ResumoItem({
@@ -439,6 +479,13 @@ const styles = {
     lineHeight: 22,
     marginBottom: 14,
   },
+  warningText: {
+    color: '#D97706',
+    fontSize: 14,
+    fontWeight: '700' as const,
+    lineHeight: 22,
+    marginBottom: 14,
+  },
   fileButton: {
     flexDirection: 'row' as const,
     alignItems: 'center' as const,
@@ -460,6 +507,9 @@ const styles = {
     paddingVertical: 14,
     alignItems: 'center' as const,
     marginTop: 8,
+  },
+  disabledButton: {
+    opacity: 0.55,
   },
   primaryButtonText: {
     color: '#F7F3DF',

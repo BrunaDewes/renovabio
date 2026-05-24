@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   ImageBackground,
@@ -49,8 +50,15 @@ export default function Desafios() {
 
       const desafiosData = (await desafiosResponse.json()) as Desafio[];
       const participacoesData = (await participacoesResponse.json()) as UsuarioDesafio[];
+      const desafiosConcluidos = new Set(
+        participacoesData
+          .filter((participacao) => participacao.status === 'CONCLUIDO')
+          .map((participacao) => participacao.desafio?.id),
+      );
 
-      setDesafios(desafiosData.filter((desafio) => desafio.ativo !== false));
+      setDesafios(
+        desafiosData.filter((desafio) => desafio.ativo !== false && !desafiosConcluidos.has(desafio.id)),
+      );
       setParticipacoes(participacoesData);
     } catch {
       setErro(`Não foi possível acessar a API em ${apiBaseUrl}.`);
@@ -59,9 +67,9 @@ export default function Desafios() {
     }
   }, [apiBaseUrl, user?.id, user?.token]);
 
-  useEffect(() => {
+  useFocusEffect(useCallback(() => {
     void carregarDados();
-  }, [carregarDados]);
+  }, [carregarDados]));
 
   function getParticipacao(desafioId: number) {
     return participacoes.find((participacao) => participacao.desafio?.id === desafioId);

@@ -85,7 +85,7 @@ export default function LoginScreen() {
       style={{ flex: 1 }}
       resizeMode="cover"
     >
-      <SafeAreaView style={{ flex: 1, justifyContent: 'flex-end',paddingBottom: 110, alignItems: 'center', padding: 24 }}>
+      <SafeAreaView style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 110, alignItems: 'center', padding: 24 }}>
       
       <View style={{ width: '100%', alignItems: 'center', gap: 16 }}>
 
