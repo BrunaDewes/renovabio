@@ -4,8 +4,7 @@ Esta pasta contem arquivos estaticos servidos diretamente pelo Vite.
 
 ## Conteudo
 
-- `assets/background.png`
-- `assets/backgroundlogin.png`
+- `assets/backgroundloginprefeitura.png`
 - `assets/icon.png`
 
 ## Uso

@@ -6,6 +6,7 @@ import com.renovabio.renovabioapi.dto.RecuperarSenhaRequestDTO;
 import com.renovabio.renovabioapi.dto.UsuarioRequestDTO;
 import com.renovabio.renovabioapi.dto.UsuarioResponseDTO;
 import com.renovabio.renovabioapi.model.Cidade;
+import com.renovabio.renovabioapi.model.TipoUsuario;
 import com.renovabio.renovabioapi.model.Usuario;
 import com.renovabio.renovabioapi.repository.CidadeRepository;
 import com.renovabio.renovabioapi.repository.UsuarioRepository;
@@ -54,6 +55,7 @@ public class UsuarioService {
         usuario.setEmail(dto.getEmail());
         usuario.setSenha(passwordEncoder.encode(dto.getSenha()));
         usuario.setCidade(cidade);
+        usuario.setTipo(dto.getTipo() != null ? dto.getTipo() : TipoUsuario.CIDADAO);
 
         Usuario salvo = usuarioRepository.save(usuario);
         return toResponseDTO(salvo);
@@ -155,6 +157,7 @@ public class UsuarioService {
         dto.setEmail(usuario.getEmail());
         dto.setPontuacao(usuario.getPontuacaoAtual());
         dto.setPhotoUri(usuario.getFotoPerfilUrl());
+        dto.setTipo(usuario.getTipo());
         return dto;
     }
 

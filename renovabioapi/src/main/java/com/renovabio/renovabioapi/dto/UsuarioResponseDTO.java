@@ -1,5 +1,7 @@
 package com.renovabio.renovabioapi.dto;
 
+import com.renovabio.renovabioapi.model.TipoUsuario;
+
 //retorna dados para o cliente sem senha.
 public class UsuarioResponseDTO {
 
@@ -9,6 +11,7 @@ public class UsuarioResponseDTO {
     private Integer pontuacao;
     private String photoUri;
     private String token;
+    private TipoUsuario tipo;
 
     // getters e setters
     public Long getId() { return id; }
@@ -28,4 +31,7 @@ public class UsuarioResponseDTO {
 
     public String getToken() { return token; }
     public void setToken(String token) { this.token = token; }
+
+    public TipoUsuario getTipo() { return tipo; }
+    public void setTipo(TipoUsuario tipo) { this.tipo = tipo; }
 }

@@ -1,5 +1,7 @@
 package com.renovabio.renovabioapi.dto;
 
+import com.renovabio.renovabioapi.model.TipoUsuario;
+
 // recebe dados do cadastro
 public class UsuarioRequestDTO {
 
@@ -7,6 +9,7 @@ public class UsuarioRequestDTO {
     private String email;
     private String senha;
     private Long cidadeId;
+    private TipoUsuario tipo;
 
     // getters e setters
     public String getNome() { return nome; }
@@ -20,4 +23,7 @@ public class UsuarioRequestDTO {
 
     public Long getCidadeId() { return cidadeId; }
     public void setCidadeId(Long cidadeId) { this.cidadeId = cidadeId;  }
+
+    public TipoUsuario getTipo() { return tipo; }
+    public void setTipo(TipoUsuario tipo) { this.tipo = tipo; }
 }

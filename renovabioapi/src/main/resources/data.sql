@@ -86,10 +86,15 @@ INSERT INTO receita (id_receita, titulo_receita, descricao, ingredientes, modo_p
 INSERT INTO desafio (id_desafio, ativo, titulo, descricao, pontos, duracao_dias, categoria_id_categoria) VALUES
 (1, 1,'Composte por 7 dias','Separe residuos organicos e utilize uma composteira durante 7 dias consecutivos.',50,7,2),
 (2, 1,'Reduza o desperdicio de alimentos','Durante uma semana, reaproveite cascas, talos ou sobras de alimentos em receitas.',40,7,2),
-(3, 1,'Separe o lixo corretamente','Separe corretamente o lixo organico e reciclavel durante 5 dias.',30,5,2),
+(3, 1,'Separe o lixo corretamente','Durante 5 dias, separe corretamente os residuos organicos dos reciclaveis antes do descarte e registre sua organizacao diaria.',30,5,2),
 (4, 1,'Produza menos lixo organico','Durante 7 dias, tente reduzir a quantidade de residuos organicos gerados em casa.',35,7,2),
 (5, 1,'Faca uma receita sustentavel','Prepare pelo menos uma receita utilizando reaproveitamento de alimentos.',20,1,2),
-(6, 1,'Construa sua composteira','Monte uma composteira domestica utilizando baldes, caixas ou outro recipiente adequado para iniciar a compostagem de residuos organicos.',60,3,2);
+(6, 1,'Monte sua composteira','Monte uma composteira domestica utilizando baldes, caixas ou outro recipiente adequado para iniciar a compostagem de residuos organicos.',60,3,2),
+(7, 1, 'Feche o ciclo: Plante algo', 'Utilize o adubo líquido ou sólido gerado na sua composteira para plantar uma erva, tempero ou hortaliça.', 45, 1, 2),
+(8, 1, 'Multiplique o impacto', 'Convença um amigo ou familiar a começar a separar os resíduos orgânicos em casa e registre a iniciativa.', 50, 2, 2),
+(9, 1, 'Descubra a Biodigestão', 'Leia um artigo ou assista a um vídeo sobre como biodigestores transformam resíduos orgânicos em biogás e biofertilizante.', 25, 1, 2),
+(10, 1, 'Auditoria do lixo comum', 'Revise o lixo comum da sua casa hoje e identifique pelo menos um item que foi descartado, mas que poderia ter sido compostado ou reaproveitado.', 35, 1, 2),
+(11, 1, 'Resgate na geladeira', 'Faça uma limpa na geladeira e salve um alimento que está prestes a estragar, transformando-o em uma refeição ou congelando-o.', 20, 1, 2);
 
 INSERT INTO recompensa (id_recompensa, ativo, descricao, pontos_necessarios, quantidade_disponivel, parceiro_id_parceiros) VALUES
 (1, 1,'5% desconto nas bebidas',80,20,1),

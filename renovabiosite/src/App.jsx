@@ -2,30 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 
 const API_URL = import.meta.env.VITE_API_URL || "https://renovabio-production.up.railway.app";
 
-const fallback = {
-  usuarios: [
-    { id: 1, nome: "Ana", email: "ana@email.com", pontuacao: 840, ativo: true },
-    { id: 2, nome: "Bruno", email: "bruno@email.com", pontuacao: 520, ativo: true },
-    { id: 3, nome: "Carla", email: "carla@email.com", pontuacao: 930, ativo: true },
-    { id: 4, nome: "Diego", email: "diego@email.com", pontuacao: 610, ativo: true },
-    { id: 5, nome: "Elisa", email: "elisa@email.com", pontuacao: 440, ativo: false },
-  ],
-  recompensas: [
-    {
-      id: 1,
-      descricao: "5% de desconto nas bebidas",
-      pontosNecessarios: 150,
-      quantidadeDisponivel: 8,
-      parceiro: { nome: "Parceiro A" },
-    },
-    {
-      id: 2,
-      descricao: "10% de desconto nos tapetes",
-      pontosNecessarios: 95,
-      quantidadeDisponivel: 2,
-      parceiro: { nome: "Parceiro B" },
-    },
-  ],
+const emptyData = {
+  usuarios: [],
+  recompensas: [],
   feedbacks: [],
   acoes: [],
 };
@@ -35,6 +14,14 @@ function formatDate(value) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
   return date.toLocaleDateString("pt-BR", { timeZone: "UTC" });
+}
+
+function normalizeText(value) {
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLowerCase();
 }
 
 function metric(label, value, extra = "") {
@@ -76,7 +63,7 @@ function Chart({ title, data }) {
   );
 }
 
-function AuthScreen({ screen, email, onScreenChange, onLogin }) {
+function AuthScreen({ screen, email, onScreenChange, onLogin, onSignup }) {
   const [status, setStatus] = useState("");
   const isLogin = screen === "login";
   const isSignup = screen === "cadastro";
@@ -87,12 +74,18 @@ function AuthScreen({ screen, email, onScreenChange, onLogin }) {
     const form = event.currentTarget;
 
     if (isLogin) {
-      setStatus("Entrando...");
+      setStatus("Conectando com a API...");
       onLogin(form.email.value.trim(), form.senha.value, setStatus);
       return;
     }
 
-    setStatus(isSignup ? "Cadastro registrado para teste do painel." : "Instrucao de recuperacao enviada.");
+    if (isSignup) {
+      setStatus("Cadastrando prefeitura...");
+      onSignup(form.email.value.trim(), form.cidade.value.trim(), form.senha.value, setStatus);
+      return;
+    }
+
+    setStatus("Instrucao de recuperacao enviada.");
   }
 
   return (
@@ -192,6 +185,14 @@ function Dashboard({ data }) {
       </div>
     </>
   );
+}
+
+function extractErrorMessage(error) {
+  if (error instanceof Error && error.message) {
+    return error.message;
+  }
+
+  return "Nao foi possivel conectar com a API.";
 }
 
 function Partners({ recompensas }) {
@@ -354,7 +355,7 @@ function AdminShell({ data, email, activeTab, onTabChange, onLogout, onEmailChan
 export default function App() {
   const [screen, setScreen] = useState("login");
   const [activeTab, setActiveTab] = useState("inicio");
-  const [data, setData] = useState(fallback);
+  const [data, setData] = useState(emptyData);
   const [email, setEmail] = useState(localStorage.getItem("renovabioEmail") || "prefeituracaibate@gmail.com");
   const [token, setToken] = useState(localStorage.getItem("renovabioToken") || "");
 
@@ -362,12 +363,30 @@ export default function App() {
     const headers = { ...(options.headers || {}) };
     if (authToken) headers.Authorization = `Bearer ${authToken}`;
     const response = await fetch(`${API_URL}${path}`, { ...options, headers });
-    if (!response.ok) throw new Error(`Erro ${response.status}`);
+    if (!response.ok) {
+      let message = `Erro ${response.status} ao chamar ${path}`;
+
+      try {
+        const payload = await response.json();
+        message = payload.message || payload.error || message;
+      } catch {
+        const text = await response.text().catch(() => "");
+        if (text) message = text;
+      }
+
+      throw new Error(message);
+    }
+
     if (response.status === 204) return null;
     return response.json();
   }
 
   async function loadData(authToken = token) {
+    if (!authToken) {
+      setData(emptyData);
+      return;
+    }
+
     try {
       const [usuarios, recompensas, feedbacks] = await Promise.all([
         request("/usuarios", {}, authToken),
@@ -382,12 +401,13 @@ export default function App() {
       );
       setData({
         usuarios: userList,
-        recompensas: Array.isArray(recompensas) ? recompensas : fallback.recompensas,
+        recompensas: Array.isArray(recompensas) ? recompensas : [],
         feedbacks: Array.isArray(feedbacks) ? feedbacks : [],
         acoes: actionGroups.flat(),
       });
-    } catch {
-      setData({ ...fallback, feedbacks: [], acoes: [] });
+    } catch (error) {
+      setData(emptyData);
+      throw error;
     }
   }
 
@@ -399,19 +419,63 @@ export default function App() {
         body: JSON.stringify({ email: nextEmail, senha: password }),
       });
       const nextToken = user.token || "";
+
+      if (!Object.hasOwn(user, "tipo")) {
+        throw new Error("A API nao retornou o tipo do usuario. Publique a API atualizada antes de acessar o painel.");
+      }
+
+      if (user.tipo !== "PREFEITURA") {
+        throw new Error("Este acesso e exclusivo para usuarios do tipo PREFEITURA.");
+      }
+
       setToken(nextToken);
       setEmail(nextEmail);
       localStorage.setItem("renovabioToken", nextToken);
       localStorage.setItem("renovabioEmail", nextEmail);
       await loadData(nextToken);
-    } catch {
-      setEmail(nextEmail || email);
-      localStorage.setItem("renovabioEmail", nextEmail || email);
-      setStatus("API indisponivel. O painel abrira sem feedbacks reais.");
-      await new Promise((resolve) => setTimeout(resolve, 700));
+      setStatus("");
+      setScreen("admin");
+    } catch (error) {
+      setToken("");
+      localStorage.removeItem("renovabioToken");
+      setStatus(extractErrorMessage(error));
     }
+  }
 
-    setScreen("admin");
+  async function signupPrefeitura(nextEmail, cityName, password, setStatus) {
+    try {
+      const cidades = await request("/cidades", {}, "");
+      const cidade = Array.isArray(cidades)
+        ? cidades.find((item) => normalizeText(item.nome) === normalizeText(cityName))
+        : null;
+
+      if (!cidade) {
+        throw new Error("Cidade nao encontrada. Digite o nome igual ao cadastro da API.");
+      }
+
+      await request(
+        "/usuarios",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            nome: "Prefeitura",
+            email: nextEmail,
+            senha: password,
+            cidadeId: cidade.id,
+            tipo: "PREFEITURA",
+          }),
+        },
+        "",
+      );
+
+      setEmail(nextEmail);
+      localStorage.setItem("renovabioEmail", nextEmail);
+      setStatus("Cadastro concluido. Faca login para acessar o painel.");
+      setTimeout(() => setScreen("login"), 900);
+    } catch (error) {
+      setStatus(extractErrorMessage(error));
+    }
   }
 
   function updateEmail(nextEmail) {
@@ -426,12 +490,25 @@ export default function App() {
   }
 
   useEffect(() => {
-    loadData();
+    if (token) {
+      loadData(token).catch(() => {
+        setToken("");
+        localStorage.removeItem("renovabioToken");
+      });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (screen !== "admin") {
-    return <AuthScreen screen={screen} email={email} onScreenChange={setScreen} onLogin={login} />;
+    return (
+      <AuthScreen
+        screen={screen}
+        email={email}
+        onScreenChange={setScreen}
+        onLogin={login}
+        onSignup={signupPrefeitura}
+      />
+    );
   }
 
   return (
