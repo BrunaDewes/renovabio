@@ -15,7 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 @Service
 public class FileStorageService {
 
-    private final Path uploadRoot = Paths.get("uploads").toAbsolutePath().normalize();
+    private final Path uploadRoot = Paths.get(System.getProperty("user.dir"), "uploads").toAbsolutePath().normalize();
 
     public String salvarImagem(MultipartFile file, String subdiretorio) {
         if (file == null || file.isEmpty()) {
