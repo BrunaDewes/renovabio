@@ -20,11 +20,14 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class DesafioService {
+
+    private static final ZoneId FUSO_BRASIL = ZoneId.of("America/Sao_Paulo");
 
     private final DesafioRepository desafioRepository;
     private final UsuarioRepository usuarioRepository;
@@ -80,7 +83,7 @@ public class DesafioService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Desafio ja foi concluido");
         }
 
-        LocalDate hoje = LocalDate.now();
+        LocalDate hoje = LocalDate.now(FUSO_BRASIL);
         LocalDateTime inicioDoDia = hoje.atStartOfDay();
         LocalDateTime fimDoDia = hoje.plusDays(1).atStartOfDay().minusNanos(1);
         if (comprovacaoDesafioRepository.existsByUsuarioDesafioIdAndDataEnvioBetween(
@@ -95,6 +98,7 @@ public class DesafioService {
         ComprovacaoDesafio comprovacao = new ComprovacaoDesafio();
         comprovacao.setUsuarioDesafio(usuarioDesafio);
         comprovacao.setImagemUrl(imagemUrl);
+        comprovacao.setDataEnvio(LocalDateTime.now(FUSO_BRASIL));
 
         return toComprovacaoDTO(comprovacaoDesafioRepository.save(comprovacao));
     }
@@ -122,7 +126,7 @@ public class DesafioService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nao e possivel excluir comprovante de desafio concluido");
         }
 
-        if (comprovacao.getDataEnvio() == null || !comprovacao.getDataEnvio().toLocalDate().equals(LocalDate.now())) {
+        if (comprovacao.getDataEnvio() == null || !comprovacao.getDataEnvio().toLocalDate().equals(LocalDate.now(FUSO_BRASIL))) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Apenas o comprovante de hoje pode ser excluido");
         }
 

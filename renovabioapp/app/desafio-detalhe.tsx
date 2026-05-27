@@ -135,8 +135,7 @@ export default function DesafioDetalhe() {
 
     const resultado = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
-      allowsEditing: true,
-      aspect: [4, 4],
+      allowsEditing: false,
       quality: 0.8,
     });
 
@@ -191,9 +190,10 @@ export default function DesafioDetalhe() {
 
       if (!uploadResponse.ok) {
         const bodyText = await uploadResponse.text();
-        const data = bodyText ? (JSON.parse(bodyText) as { message?: string }) : null;
-        if (data?.message) {
-          Alert.alert('Desafios', data.message);
+        const data = bodyText ? (JSON.parse(bodyText) as { message?: string; detail?: string; error?: string }) : null;
+        const mensagem = data?.message || data?.detail || data?.error;
+        if (mensagem) {
+          Alert.alert('Desafios', normalizarMensagemComprovante(mensagem));
           return;
         }
         Alert.alert('Desafios', 'Não foi possível enviar a foto para o servidor.');
@@ -283,8 +283,8 @@ export default function DesafioDetalhe() {
 
       if (!response.ok) {
         const bodyText = await response.text();
-        const data = bodyText ? (JSON.parse(bodyText) as { message?: string }) : null;
-        Alert.alert('Desafios', data?.message || 'Nao foi possivel excluir o comprovante.');
+        const data = bodyText ? (JSON.parse(bodyText) as { message?: string; detail?: string; error?: string }) : null;
+        Alert.alert('Desafios', data?.message || data?.detail || data?.error || 'Nao foi possivel excluir o comprovante.');
         return;
       }
 
@@ -377,9 +377,16 @@ export default function DesafioDetalhe() {
               >
                 <Ionicons name="image-outline" size={18} color="#F7F3DF" />
                 <Text style={styles.fileButtonText}>
-                  {arquivoSelecionado ? 'Arquivo selecionado' : 'Escolher arquivo'}
+                  {arquivoSelecionado ? 'Trocar foto' : 'Escolher arquivo'}
                 </Text>
               </TouchableOpacity>
+
+              {arquivoSelecionado ? (
+                <View style={styles.selectedPhotoCard}>
+                  <Image source={{ uri: arquivoSelecionado }} style={styles.selectedPhoto} resizeMode="cover" />
+                  <Text style={styles.selectedPhotoText}>Foto selecionada para envio</Text>
+                </View>
+              ) : null}
 
               {!participacao ? (
                 <TouchableOpacity onPress={() => void participar(desafio.id)} style={styles.secondaryButton} disabled={processando}>
@@ -398,7 +405,9 @@ export default function DesafioDetalhe() {
                 {processando ? (
                   <ActivityIndicator color="#F7F3DF" />
                 ) : (
-                  <Text style={styles.primaryButtonText}>Registrar comprovante de hoje</Text>
+                  <Text style={styles.primaryButtonText}>
+                    {arquivoSelecionado ? 'Enviar comprovante' : 'Registrar comprovante de hoje'}
+                  </Text>
                 )}
               </TouchableOpacity>
             </View>
@@ -485,6 +494,15 @@ function isDataDeHoje(data?: string) {
     && date.getMonth() === hoje.getMonth()
     && date.getDate() === hoje.getDate()
   );
+}
+
+function normalizarMensagemComprovante(mensagem: string) {
+  const texto = mensagem.toLowerCase();
+  if (texto.includes('comprovante') && (texto.includes('hoje') || texto.includes('registrado'))) {
+    return 'Voce ja registrou o comprovante de hoje. Volte amanha para enviar outro.';
+  }
+
+  return mensagem;
 }
 
 function ResumoItem({
@@ -591,6 +609,24 @@ const styles = {
   fileButtonText: {
     color: '#F7F3DF',
     fontWeight: '700' as const,
+  },
+  selectedPhotoCard: {
+    backgroundColor: 'rgba(11,122,67,0.08)',
+    borderRadius: 16,
+    padding: 10,
+    marginBottom: 12,
+  },
+  selectedPhoto: {
+    width: '100%' as const,
+    height: 180,
+    borderRadius: 12,
+    backgroundColor: '#D1D5DB',
+  },
+  selectedPhotoText: {
+    color: '#35506B',
+    fontSize: 13,
+    fontWeight: '700' as const,
+    marginTop: 8,
   },
   primaryButton: {
     backgroundColor: '#0B7A43',
