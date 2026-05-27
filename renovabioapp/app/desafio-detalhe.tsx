@@ -123,7 +123,7 @@ export default function DesafioDetalhe() {
 
   async function escolherArquivo() {
     if (jaRegistrouHoje) {
-      Alert.alert('Desafios', 'Voce ja registrou um comprovante hoje. Volte amanha para enviar outro.');
+      Alert.alert('Desafios', 'Você já registrou um comprovante hoje. Volte amanhã para enviar outro.');
       return;
     }
 
@@ -168,7 +168,7 @@ export default function DesafioDetalhe() {
       }
 
       if (jaRegistrouHoje) {
-        Alert.alert('Desafios', 'Voce ja registrou um comprovante hoje. Volte amanha para enviar outro.');
+        Alert.alert('Desafios', 'Você já registrou um comprovante hoje. Volte amanhã para enviar outro.');
         return;
       }
 
@@ -255,7 +255,7 @@ export default function DesafioDetalhe() {
 
     Alert.alert(
       'Excluir comprovante',
-      'Deseja excluir a foto enviada hoje? Depois disso voce podera enviar outra.',
+      'Deseja excluir a foto enviada hoje? Depois disso você poderá enviar outra.',
       [
         { text: 'Cancelar', style: 'cancel' },
         {
@@ -284,7 +284,7 @@ export default function DesafioDetalhe() {
       if (!response.ok) {
         const bodyText = await response.text();
         const data = bodyText ? (JSON.parse(bodyText) as { message?: string; detail?: string; error?: string }) : null;
-        Alert.alert('Desafios', data?.message || data?.detail || data?.error || 'Nao foi possivel excluir o comprovante.');
+        Alert.alert('Desafios', data?.message || data?.detail || data?.error || 'Não foi possível excluir o comprovante.');
         return;
       }
 
@@ -294,9 +294,9 @@ export default function DesafioDetalhe() {
       setComprovacoes(lista);
       setArquivoSelecionado(null);
       setFotoAberta(null);
-      Alert.alert('Desafios', 'Comprovante excluido. Voce pode enviar outra foto de hoje.');
+      Alert.alert('Desafios', 'Comprovante excluído. Você pode enviar outra foto de hoje.');
     } catch {
-      Alert.alert('Desafios', `Nao foi possivel acessar a API em ${apiBaseUrl}.`);
+      Alert.alert('Desafios', `Não foi possível acessar a API em ${apiBaseUrl}.`);
     } finally {
       setProcessando(false);
     }

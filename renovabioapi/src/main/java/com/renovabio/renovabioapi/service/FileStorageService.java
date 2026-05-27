@@ -35,12 +35,12 @@ public class FileStorageService {
 
     public String salvarImagem(MultipartFile file, String subdiretorio) {
         if (file == null || file.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Arquivo de imagem e obrigatorio");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Arquivo de imagem e obrigatório");
         }
 
         String contentType = file.getContentType();
         if (contentType == null || !contentType.toLowerCase(Locale.ROOT).startsWith("image/")) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Envie um arquivo de imagem valido");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Envie um arquivo de imagem válido");
         }
 
         validarConfiguracaoCloudinary();
@@ -64,17 +64,17 @@ public class FileStorageService {
 
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() < 200 || response.statusCode() >= 300) {
-                throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Nao foi possivel enviar a imagem para o Cloudinary");
+                throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Não foi possível enviar a imagem para o Cloudinary");
             }
 
             String secureUrl = extrairCampoJson(response.body(), "secure_url");
             if (secureUrl == null || secureUrl.isBlank()) {
-                throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Cloudinary nao retornou a URL da imagem");
+                throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Cloudinary não retornou a URL da imagem");
             }
 
             return secureUrl;
         } catch (IOException exception) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Nao foi possivel salvar a imagem");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Não foi possível salvar a imagem");
         } catch (InterruptedException exception) {
             Thread.currentThread().interrupt();
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Envio da imagem foi interrompido");
@@ -124,7 +124,7 @@ public class FileStorageService {
     private void validarConfiguracaoCloudinary() {
         if (cloudName == null || cloudName.isBlank() || apiKey == null || apiKey.isBlank()
                 || apiSecret == null || apiSecret.isBlank()) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Cloudinary nao configurado na API");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Cloudinary não configurado na API");
         }
     }
 
@@ -187,7 +187,7 @@ public class FileStorageService {
             }
             return hex.toString();
         } catch (Exception exception) {
-            throw new IllegalStateException("Nao foi possivel assinar requisicao do Cloudinary", exception);
+            throw new IllegalStateException("Não foi possível assinar requisição do Cloudinary", exception);
         }
     }
 
