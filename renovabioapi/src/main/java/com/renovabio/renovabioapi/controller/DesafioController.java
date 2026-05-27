@@ -4,6 +4,7 @@ import com.renovabio.renovabioapi.dto.ComprovacaoDesafioDTO;
 import com.renovabio.renovabioapi.model.Desafio;
 import com.renovabio.renovabioapi.model.UsuarioDesafio;
 import com.renovabio.renovabioapi.service.DesafioService;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -54,5 +55,10 @@ public class DesafioController {
             @RequestParam Long usuarioDesafioId,
             @RequestParam("file") MultipartFile file) {
         return desafioService.registrarComprovacao(usuarioDesafioId, file);
+    }
+
+    @DeleteMapping("/comprovacoes/{comprovacaoId}")
+    public UsuarioDesafio excluirComprovacao(@PathVariable Long comprovacaoId, Authentication authentication) {
+        return desafioService.excluirComprovacao(comprovacaoId, (Long) authentication.getPrincipal());
     }
 }

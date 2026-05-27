@@ -105,6 +105,39 @@ public class DesafioService {
                 .collect(Collectors.toList());
     }
 
+    public UsuarioDesafio excluirComprovacao(Long comprovacaoId, Long usuarioId) {
+        ComprovacaoDesafio comprovacao = comprovacaoDesafioRepository.findById(comprovacaoId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Comprovante nao encontrado"));
+
+        UsuarioDesafio usuarioDesafio = comprovacao.getUsuarioDesafio();
+        if (usuarioDesafio == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Comprovante sem desafio vinculado");
+        }
+
+        if (usuarioDesafio.getUsuario() == null || !usuarioDesafio.getUsuario().getidUsuario().equals(usuarioId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Comprovante nao pertence ao usuario autenticado");
+        }
+
+        if (usuarioDesafio.getStatus() == StatusDesafio.CONCLUIDO) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nao e possivel excluir comprovante de desafio concluido");
+        }
+
+        if (comprovacao.getDataEnvio() == null || !comprovacao.getDataEnvio().toLocalDate().equals(LocalDate.now())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Apenas o comprovante de hoje pode ser excluido");
+        }
+
+        fileStorageService.excluirImagem(comprovacao.getImagemUrl());
+        comprovacaoDesafioRepository.delete(comprovacao);
+
+        Desafio desafio = usuarioDesafio.getDesafio();
+        int duracao = Math.max(1, desafio != null && desafio.getDuracaoDias() != null ? desafio.getDuracaoDias() : 1);
+        int diasAtuais = Math.round(((usuarioDesafio.getProgresso() != null ? usuarioDesafio.getProgresso() : 0) / 100f) * duracao);
+        int novoDia = Math.max(0, diasAtuais - 1);
+        usuarioDesafio.setProgresso(Math.round((novoDia / (float) duracao) * 100));
+
+        return usuarioDesafioRepository.save(usuarioDesafio);
+    }
+
     public UsuarioDesafio atualizarProgresso(Long usuarioDesafioId, int progresso) {
         UsuarioDesafio usuarioDesafio = usuarioDesafioRepository.findById(usuarioDesafioId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Registro nao encontrado"));

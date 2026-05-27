@@ -5,7 +5,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
+  Image,
   ImageBackground,
+  Modal,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -33,6 +35,7 @@ export default function DesafioDetalhe() {
   const [carregando, setCarregando] = useState(true);
   const [processando, setProcessando] = useState(false);
   const [erro, setErro] = useState('');
+  const [fotoAberta, setFotoAberta] = useState<string | null>(null);
 
   const carregarComprovacoes = useCallback(async (usuarioDesafioId: number) => {
     const response = await fetch(`${apiBaseUrl}/desafios/comprovacoes/${usuarioDesafioId}`, {
@@ -245,6 +248,60 @@ export default function DesafioDetalhe() {
     }
   }
 
+  async function excluirComprovante(comprovacao: ComprovacaoDesafio) {
+    if (!participacao || !user) {
+      return;
+    }
+
+    Alert.alert(
+      'Excluir comprovante',
+      'Deseja excluir a foto enviada hoje? Depois disso voce podera enviar outra.',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Excluir',
+          style: 'destructive',
+          onPress: () => {
+            void excluirComprovanteConfirmado(comprovacao);
+          },
+        },
+      ],
+    );
+  }
+
+  async function excluirComprovanteConfirmado(comprovacao: ComprovacaoDesafio) {
+    if (!participacao || !user) {
+      return;
+    }
+
+    setProcessando(true);
+    try {
+      const response = await fetch(`${apiBaseUrl}/desafios/comprovacoes/${comprovacao.id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders(user.token),
+      });
+
+      if (!response.ok) {
+        const bodyText = await response.text();
+        const data = bodyText ? (JSON.parse(bodyText) as { message?: string }) : null;
+        Alert.alert('Desafios', data?.message || 'Nao foi possivel excluir o comprovante.');
+        return;
+      }
+
+      const participacaoAtualizada = (await response.json()) as UsuarioDesafio;
+      setParticipacao(participacaoAtualizada);
+      const lista = await carregarComprovacoes(participacao.id);
+      setComprovacoes(lista);
+      setArquivoSelecionado(null);
+      setFotoAberta(null);
+      Alert.alert('Desafios', 'Comprovante excluido. Voce pode enviar outra foto de hoje.');
+    } catch {
+      Alert.alert('Desafios', `Nao foi possivel acessar a API em ${apiBaseUrl}.`);
+    } finally {
+      setProcessando(false);
+    }
+  }
+
   const diasConcluidos = desafio && participacao ? calcularDiasConcluidos(participacao) : 0;
   const jaRegistrouHoje = comprovacoes.some((item) => isDataDeHoje(item.dataEnvio));
   const bloqueadoParaComprovante = processando || participacao?.status === 'CONCLUIDO' || jaRegistrouHoje;
@@ -352,19 +409,53 @@ export default function DesafioDetalhe() {
               {comprovacoes.length === 0 ? (
                 <Text style={styles.historyEmpty}>Nenhum registro enviado ainda.</Text>
               ) : (
-                comprovacoes.map((item, index) => (
-                  <View key={`${item.id}-${index}`} style={styles.historyRow}>
-                    <View style={styles.historyDot} />
-                    <Text style={styles.historyItem}>
-                      {formatarDataComprovacao(item.dataEnvio)} {toApiFileUrl(item.imagemUrl) ? '- foto enviada' : ''}
-                    </Text>
-                  </View>
-                ))
+                comprovacoes.map((item, index) => {
+                  const fotoUrl = toApiFileUrl(item.imagemUrl);
+                  const podeExcluir = isDataDeHoje(item.dataEnvio) && participacao?.status !== 'CONCLUIDO';
+
+                  return (
+                    <View key={`${item.id}-${index}`} style={styles.historyRow}>
+                      <View style={styles.historyDot} />
+                      <View style={styles.historyContent}>
+                        <Text style={styles.historyItem}>
+                          {formatarDataComprovacao(item.dataEnvio)} {fotoUrl ? '- foto enviada' : ''}
+                        </Text>
+                        <View style={styles.historyActions}>
+                          {fotoUrl ? (
+                            <TouchableOpacity onPress={() => setFotoAberta(fotoUrl)} style={styles.actionButton}>
+                              <Text style={styles.actionButtonText}>Ver foto</Text>
+                            </TouchableOpacity>
+                          ) : null}
+                          {podeExcluir ? (
+                            <TouchableOpacity
+                              onPress={() => void excluirComprovante(item)}
+                              style={[styles.actionButton, styles.deleteButton]}
+                              disabled={processando}
+                            >
+                              <Text style={styles.actionButtonText}>Excluir</Text>
+                            </TouchableOpacity>
+                          ) : null}
+                        </View>
+                      </View>
+                    </View>
+                  );
+                })
               )}
             </View>
           </>
         ) : null}
       </ScrollView>
+
+      <Modal transparent visible={Boolean(fotoAberta)} animationType="fade" onRequestClose={() => setFotoAberta(null)}>
+        <View style={styles.photoModalOverlay}>
+          <View style={styles.photoModalCard}>
+            {fotoAberta ? <Image source={{ uri: fotoAberta }} style={styles.photoPreview} resizeMode="contain" /> : null}
+            <TouchableOpacity onPress={() => setFotoAberta(null)} style={styles.photoCloseButton}>
+              <Text style={styles.photoCloseText}>Fechar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </ImageBackground>
   );
 }
@@ -534,7 +625,7 @@ const styles = {
   },
   historyRow: {
     flexDirection: 'row' as const,
-    alignItems: 'center' as const,
+    alignItems: 'flex-start' as const,
     marginBottom: 10,
   },
   historyDot: {
@@ -543,9 +634,65 @@ const styles = {
     borderRadius: 999,
     backgroundColor: '#35506B',
     marginRight: 10,
+    marginTop: 8,
+  },
+  historyContent: {
+    flex: 1,
   },
   historyItem: {
     color: '#35506B',
+    fontSize: 16,
+  },
+  historyActions: {
+    flexDirection: 'row' as const,
+    flexWrap: 'wrap' as const,
+    gap: 8,
+    marginTop: 8,
+  },
+  actionButton: {
+    backgroundColor: '#0B7A43',
+    borderRadius: 14,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+  },
+  deleteButton: {
+    backgroundColor: '#B91C1C',
+  },
+  actionButtonText: {
+    color: '#F7F3DF',
+    fontSize: 13,
+    fontWeight: '700' as const,
+  },
+  photoModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.72)',
+    justifyContent: 'center' as const,
+    alignItems: 'center' as const,
+    padding: 18,
+  },
+  photoModalCard: {
+    width: '100%' as const,
+    maxHeight: '86%' as const,
+    backgroundColor: '#111827',
+    borderRadius: 18,
+    padding: 12,
+  },
+  photoPreview: {
+    width: '100%' as const,
+    height: 430,
+    borderRadius: 12,
+    backgroundColor: '#000000',
+  },
+  photoCloseButton: {
+    marginTop: 12,
+    backgroundColor: '#F7F3DF',
+    borderRadius: 16,
+    paddingVertical: 12,
+    alignItems: 'center' as const,
+  },
+  photoCloseText: {
+    color: '#0B7A43',
+    fontWeight: '800' as const,
     fontSize: 16,
   },
   messageCard: {
