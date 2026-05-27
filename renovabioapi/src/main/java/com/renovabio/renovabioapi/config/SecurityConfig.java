@@ -36,7 +36,7 @@ public class SecurityConfig {
                                 "/cidades",
                                 "/uploads/**"
                         ).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/desafios", "/receitas", "/receitas/*", "/recompensas").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/desafios", "/receitas", "/receitas/*", "/recompensas", "/parceiros").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

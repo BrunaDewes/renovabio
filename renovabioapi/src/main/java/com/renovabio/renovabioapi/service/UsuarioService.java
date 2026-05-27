@@ -93,6 +93,12 @@ public class UsuarioService {
                 .collect(Collectors.toList());
     }
 
+    public List<UsuarioResponseDTO> listarUsuariosPorCidade(Long cidadeId) {
+        return usuarioRepository.findByCidadeId(cidadeId).stream()
+                .map(this::toResponseDTO)
+                .collect(Collectors.toList());
+    }
+
     public UsuarioResponseDTO buscarUsuario(Long id) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Usuario nao encontrado"));

@@ -26,6 +26,10 @@ public class FeedbackService {
         return feedbackRepository.findAll();
     }
 
+    public List<Feedback> listarFeedbacksPorCidade(Long cidadeId) {
+        return feedbackRepository.findByUsuarioCidadeId(cidadeId);
+    }
+
     // CRIAR FEEDBACK
     public Feedback criarFeedback(Long usuarioId, String mensagem) {
 

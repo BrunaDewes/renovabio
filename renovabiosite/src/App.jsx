@@ -4,7 +4,9 @@ const API_URL = import.meta.env.VITE_API_URL || "https://renovabio-production.up
 
 const emptyData = {
   usuarios: [],
+  parceiros: [],
   recompensas: [],
+  cidades: [],
   feedbacks: [],
   acoes: [],
 };
@@ -149,9 +151,8 @@ function AuthScreen({ screen, email, onScreenChange, onLogin, onSignup }) {
 }
 
 function Dashboard({ data }) {
-  const { usuarios, recompensas, acoes } = data;
+  const { usuarios, parceiros, recompensas, acoes } = data;
   const activeUsers = usuarios.filter((user) => user.ativo !== false).length;
-  const partners = new Set(recompensas.map((item) => item.parceiro?.nome).filter(Boolean)).size;
   const totalPoints = usuarios.reduce((total, user) => total + (Number(user.pontuacao ?? user.pontuacaoAtual) || 0), 0);
   const actions = acoes.length;
   const pointsByUser = usuarios
@@ -174,7 +175,7 @@ function Dashboard({ data }) {
       <div className="metrics">
         {metric("Usuarios cadastrados", usuarios.length)}
         {metric("Usuarios ativos", activeUsers)}
-        {metric("Parceiros cadastrados", partners)}
+        {metric("Parceiros cadastrados", parceiros.length)}
         {metric("Recompensas ativas", recompensas.filter((item) => item.ativo !== false).length)}
         {metric("Total de acoes sustentaveis", actions, "wide")}
         {metric("Pontuacao total gerada", totalPoints, "wide")}
@@ -195,13 +196,104 @@ function extractErrorMessage(error) {
   return "Nao foi possivel conectar com a API.";
 }
 
-function Partners({ recompensas }) {
+function Partners({
+  cidades,
+  parceiros,
+  recompensas,
+  onSavePartner,
+  onSaveReward,
+  onTogglePartner,
+  onToggleReward,
+}) {
   const [search, setSearch] = useState("");
+  const [partnerForm, setPartnerForm] = useState(null);
+  const [rewardForm, setRewardForm] = useState(null);
+  const [status, setStatus] = useState("");
+
   const filteredRewards = useMemo(() => {
     const term = search.trim().toLowerCase();
     return recompensas.filter((reward) => `${reward.parceiro?.nome || ""} ${reward.descricao}`.toLowerCase().includes(term));
   }, [recompensas, search]);
-  const partners = new Set(recompensas.map((item) => item.parceiro?.nome).filter(Boolean));
+
+  function startNewPartner() {
+    setStatus("");
+    setRewardForm(null);
+    setPartnerForm({
+      id: null,
+      nome: "",
+      descricao: "",
+      cidadeId: cidades[0]?.id || "",
+      ativo: true,
+    });
+  }
+
+  function startEditPartner(parceiro) {
+    setStatus("");
+    setRewardForm(null);
+    setPartnerForm({
+      id: parceiro.id,
+      nome: parceiro.nome || "",
+      descricao: parceiro.descricao || "",
+      cidadeId: parceiro.cidade?.id || cidades[0]?.id || "",
+      ativo: parceiro.ativo !== false,
+    });
+  }
+
+  function startNewReward() {
+    setStatus("");
+    setPartnerForm(null);
+    setRewardForm({
+      id: null,
+      descricao: "",
+      pontosNecessarios: "",
+      quantidadeDisponivel: "",
+      parceiroId: parceiros[0]?.id || "",
+      ativo: true,
+    });
+  }
+
+  function startEditReward(reward) {
+    setStatus("");
+    setPartnerForm(null);
+    setRewardForm({
+      id: reward.id || reward.idRecompensa,
+      descricao: reward.descricao || "",
+      pontosNecessarios: reward.pontosNecessarios ?? "",
+      quantidadeDisponivel: reward.quantidadeDisponivel ?? "",
+      parceiroId: reward.parceiro?.id || "",
+      ativo: reward.ativo !== false,
+    });
+  }
+
+  async function submitPartner(event) {
+    event.preventDefault();
+    try {
+      await onSavePartner({
+        ...partnerForm,
+        cidadeId: Number(partnerForm.cidadeId),
+      });
+      setPartnerForm(null);
+      setStatus("Parceiro salvo.");
+    } catch (error) {
+      setStatus(extractErrorMessage(error));
+    }
+  }
+
+  async function submitReward(event) {
+    event.preventDefault();
+    try {
+      await onSaveReward({
+        ...rewardForm,
+        pontosNecessarios: Number(rewardForm.pontosNecessarios),
+        quantidadeDisponivel: Number(rewardForm.quantidadeDisponivel),
+        parceiroId: Number(rewardForm.parceiroId),
+      });
+      setRewardForm(null);
+      setStatus("Recompensa salva.");
+    } catch (error) {
+      setStatus(extractErrorMessage(error));
+    }
+  }
 
   return (
     <>
@@ -214,16 +306,64 @@ function Partners({ recompensas }) {
       />
       <div className="partner-stats">
         <article className="summary-card">
-          <strong className="summary-number">{partners.size}</strong>
+          <strong className="summary-number">{parceiros.length}</strong>
           <span className="summary-label">Parceiros cadastrados</span>
-          <button className="small-btn">+ Novo parceiro</button>
+          <button className="small-btn" type="button" onClick={startNewPartner}>+ Novo parceiro</button>
         </article>
         <article className="summary-card">
           <strong className="summary-number">{recompensas.length}</strong>
           <span className="summary-label">Recompensas cadastradas</span>
-          <button className="small-btn">+ Nova recompensa</button>
+          <button className="small-btn" type="button" onClick={startNewReward}>+ Nova recompensa</button>
         </article>
       </div>
+
+      {partnerForm ? (
+        <form className="admin-form" onSubmit={submitPartner}>
+          <h2>{partnerForm.id ? "Editar parceiro" : "Novo parceiro"}</h2>
+          <input value={partnerForm.nome} onChange={(event) => setPartnerForm({ ...partnerForm, nome: event.target.value })} placeholder="Nome do parceiro" required />
+          <input value={partnerForm.descricao} onChange={(event) => setPartnerForm({ ...partnerForm, descricao: event.target.value })} placeholder="Descricao" />
+          <select value={partnerForm.cidadeId} onChange={(event) => setPartnerForm({ ...partnerForm, cidadeId: event.target.value })} required>
+            <option value="">Selecione a cidade</option>
+            {cidades.map((cidade) => (
+              <option key={cidade.id} value={cidade.id}>{cidade.nome} - {cidade.estado}</option>
+            ))}
+          </select>
+          <label className="check-row">
+            <input type="checkbox" checked={partnerForm.ativo} onChange={(event) => setPartnerForm({ ...partnerForm, ativo: event.target.checked })} />
+            Ativo
+          </label>
+          <div className="form-actions">
+            <button className="small-btn" type="submit">Salvar parceiro</button>
+            <button className="text-action" type="button" onClick={() => setPartnerForm(null)}>Cancelar</button>
+          </div>
+        </form>
+      ) : null}
+
+      {rewardForm ? (
+        <form className="admin-form" onSubmit={submitReward}>
+          <h2>{rewardForm.id ? "Editar recompensa" : "Nova recompensa"}</h2>
+          <input value={rewardForm.descricao} onChange={(event) => setRewardForm({ ...rewardForm, descricao: event.target.value })} placeholder="Descricao da recompensa" required />
+          <input value={rewardForm.pontosNecessarios} onChange={(event) => setRewardForm({ ...rewardForm, pontosNecessarios: event.target.value })} placeholder="Pontos necessarios" min="0" type="number" required />
+          <input value={rewardForm.quantidadeDisponivel} onChange={(event) => setRewardForm({ ...rewardForm, quantidadeDisponivel: event.target.value })} placeholder="Quantidade disponivel" min="0" type="number" required />
+          <select value={rewardForm.parceiroId} onChange={(event) => setRewardForm({ ...rewardForm, parceiroId: event.target.value })} required>
+            <option value="">Selecione o parceiro</option>
+            {parceiros.map((parceiro) => (
+              <option key={parceiro.id} value={parceiro.id}>{parceiro.nome}</option>
+            ))}
+          </select>
+          <label className="check-row">
+            <input type="checkbox" checked={rewardForm.ativo} onChange={(event) => setRewardForm({ ...rewardForm, ativo: event.target.checked })} />
+            Ativa
+          </label>
+          <div className="form-actions">
+            <button className="small-btn" type="submit">Salvar recompensa</button>
+            <button className="text-action" type="button" onClick={() => setRewardForm(null)}>Cancelar</button>
+          </div>
+        </form>
+      ) : null}
+
+      {status ? <div className="status admin-status">{status}</div> : null}
+
       <div className="table-wrap">
         <table>
           <thead>
@@ -232,6 +372,7 @@ function Partners({ recompensas }) {
               <th>Data cadastro</th>
               <th>Recompensa</th>
               <th>Pontos necessarios para ganhar</th>
+              <th>Status</th>
               <th>Acoes</th>
             </tr>
           </thead>
@@ -244,13 +385,46 @@ function Partners({ recompensas }) {
                 <td>{formatDate(reward.parceiro?.dataCadastro || (index ? "2025-12-12" : "2026-01-16"))}</td>
                 <td>{reward.descricao}</td>
                 <td>{reward.pontosNecessarios || 0}</td>
+                <td>{reward.ativo === false ? "Inativa" : "Ativa"}</td>
                 <td>
                   <span className="actions">
-                    <button className="icon-btn" aria-label="Editar">
-                      Edit
+                    <button className="icon-btn" type="button" onClick={() => startEditReward(reward)}>
+                      Editar
                     </button>
-                    <button className="icon-btn" aria-label="Excluir">
-                      Del
+                    <button className="icon-btn" type="button" onClick={() => onToggleReward(reward)}>
+                      {reward.ativo === false ? "Ativar" : "Desativar"}
+                    </button>
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="table-wrap partner-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Parceiro</th>
+              <th>Descricao</th>
+              <th>Cidade</th>
+              <th>Status</th>
+              <th>Acoes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {parceiros.map((parceiro) => (
+              <tr key={parceiro.id}>
+                <td><strong>{parceiro.nome}</strong></td>
+                <td>{parceiro.descricao || "-"}</td>
+                <td>{parceiro.cidade ? `${parceiro.cidade.nome} - ${parceiro.cidade.estado}` : "-"}</td>
+                <td>{parceiro.ativo === false ? "Inativo" : "Ativo"}</td>
+                <td>
+                  <span className="actions">
+                    <button className="icon-btn" type="button" onClick={() => startEditPartner(parceiro)}>Editar</button>
+                    <button className="icon-btn" type="button" onClick={() => onTogglePartner(parceiro)}>
+                      {parceiro.ativo === false ? "Ativar" : "Desativar"}
                     </button>
                   </span>
                 </td>
@@ -318,7 +492,18 @@ function Settings({ email, onEmailChange }) {
   );
 }
 
-function AdminShell({ data, email, activeTab, onTabChange, onLogout, onEmailChange }) {
+function AdminShell({
+  data,
+  email,
+  activeTab,
+  onTabChange,
+  onLogout,
+  onEmailChange,
+  onSavePartner,
+  onSaveReward,
+  onTogglePartner,
+  onToggleReward,
+}) {
   const tabs = [
     ["inicio", "Inicio"],
     ["parceiros", "Parceiros"],
@@ -344,7 +529,17 @@ function AdminShell({ data, email, activeTab, onTabChange, onLogout, onEmailChan
       </nav>
       <div className="view">
         {activeTab === "inicio" && <Dashboard data={data} />}
-        {activeTab === "parceiros" && <Partners recompensas={data.recompensas} />}
+        {activeTab === "parceiros" && (
+          <Partners
+            cidades={data.cidades}
+            parceiros={data.parceiros}
+            recompensas={data.recompensas}
+            onSavePartner={onSavePartner}
+            onSaveReward={onSaveReward}
+            onTogglePartner={onTogglePartner}
+            onToggleReward={onToggleReward}
+          />
+        )}
         {activeTab === "feedbacks" && <Feedbacks feedbacks={data.feedbacks} />}
         {activeTab === "configuracoes" && <Settings email={email} onEmailChange={onEmailChange} />}
       </div>
@@ -388,10 +583,12 @@ export default function App() {
     }
 
     try {
-      const [usuarios, recompensas, feedbacks] = await Promise.all([
+      const [usuarios, parceiros, recompensas, feedbacks, cidades] = await Promise.all([
         request("/usuarios", {}, authToken),
+        request("/parceiros", {}, authToken),
         request("/recompensas", {}, authToken),
         request("/feedbacks", {}, authToken),
+        request("/cidades", {}, ""),
       ]);
       const userList = Array.isArray(usuarios) ? usuarios : [];
       const actionGroups = await Promise.all(
@@ -401,7 +598,9 @@ export default function App() {
       );
       setData({
         usuarios: userList,
+        parceiros: Array.isArray(parceiros) ? parceiros : [],
         recompensas: Array.isArray(recompensas) ? recompensas : [],
+        cidades: Array.isArray(cidades) ? cidades : [],
         feedbacks: Array.isArray(feedbacks) ? feedbacks : [],
         acoes: actionGroups.flat(),
       });
@@ -483,6 +682,54 @@ export default function App() {
     localStorage.setItem("renovabioEmail", nextEmail);
   }
 
+  async function savePartner(form) {
+    const path = form.id ? `/parceiros/${form.id}` : "/parceiros";
+    const method = form.id ? "PUT" : "POST";
+
+    await request(path, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        nome: form.nome,
+        descricao: form.descricao,
+        cidadeId: form.cidadeId,
+        ativo: form.ativo,
+      }),
+    });
+    await loadData();
+  }
+
+  async function saveReward(form) {
+    const path = form.id ? `/recompensas/${form.id}` : "/recompensas";
+    const method = form.id ? "PUT" : "POST";
+
+    await request(path, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        descricao: form.descricao,
+        pontosNecessarios: form.pontosNecessarios,
+        quantidadeDisponivel: form.quantidadeDisponivel,
+        parceiroId: form.parceiroId,
+        ativo: form.ativo,
+      }),
+    });
+    await loadData();
+  }
+
+  async function togglePartner(parceiro) {
+    const nextActive = parceiro.ativo === false;
+    await request(`/parceiros/${parceiro.id}/ativo?ativo=${nextActive}`, { method: "PATCH" });
+    await loadData();
+  }
+
+  async function toggleReward(reward) {
+    const id = reward.id || reward.idRecompensa;
+    const nextActive = reward.ativo === false;
+    await request(`/recompensas/${id}/ativo?ativo=${nextActive}`, { method: "PATCH" });
+    await loadData();
+  }
+
   function logout() {
     setScreen("login");
     setToken("");
@@ -519,6 +766,10 @@ export default function App() {
       onTabChange={setActiveTab}
       onLogout={logout}
       onEmailChange={updateEmail}
+      onSavePartner={savePartner}
+      onSaveReward={saveReward}
+      onTogglePartner={togglePartner}
+      onToggleReward={toggleReward}
     />
   );
 }

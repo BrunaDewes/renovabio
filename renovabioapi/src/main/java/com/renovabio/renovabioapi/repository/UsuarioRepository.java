@@ -1,10 +1,10 @@
 package com.renovabio.renovabioapi.repository;
 
 import com.renovabio.renovabioapi.model.Usuario;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
-import java.util.Optional;
 
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> { //fazendo extends JpaRepository<Usuario, Long>
@@ -13,4 +13,6 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> { //faze
     // esse método é a chave pro login funcionar, ele vai buscar o usuário no banco de dados pelo email, 
     // e o Spring Boot vai criar a query automaticamente.
     Optional<Usuario> findByEmail(String email);
+
+    List<Usuario> findByCidadeId(Long cidadeId);
 }
