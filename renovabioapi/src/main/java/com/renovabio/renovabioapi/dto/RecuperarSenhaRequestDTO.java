@@ -1,9 +1,8 @@
 package com.renovabio.renovabioapi.dto;
 
-public class ConfirmarRecuperacaoSenhaRequestDTO {
+public class RecuperarSenhaRequestDTO {
 
     private String email;
-    private String codigo;
     private String novaSenha;
 
     public String getEmail() {
@@ -12,14 +11,6 @@ public class ConfirmarRecuperacaoSenhaRequestDTO {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getCodigo() {
-        return codigo;
-    }
-
-    public void setCodigo(String codigo) {
-        this.codigo = codigo;
     }
 
     public String getNovaSenha() {

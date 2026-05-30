@@ -19,59 +19,19 @@ import { getApiBaseUrl } from '../utils/api';
 export default function Recuperar() {
   const apiBaseUrl = useMemo(() => getApiBaseUrl(), []);
   const [email, setEmail] = useState('');
-  const [codigo, setCodigo] = useState('');
   const [novaSenha, setNovaSenha] = useState('');
   const [confirmacaoSenha, setConfirmacaoSenha] = useState('');
-  const [codigoEnviado, setCodigoEnviado] = useState(false);
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState('');
 
-  async function enviarCodigo() {
-    if (!email.trim()) {
-      setErro('Informe seu email.');
-      return;
-    }
-
-    setCarregando(true);
-    setErro('');
-
-    try {
-      const response = await fetchComTimeout(`${apiBaseUrl}/usuarios/recuperar-senha/codigo`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: email.trim(),
-        }),
-      });
-
-      if (!response.ok) {
-        setErro(await extrairMensagemErro(response, 'Não foi possível enviar o código.'));
-        return;
-      }
-
-      setCodigoEnviado(true);
-      Alert.alert('Código enviado', 'Se o email estiver cadastrado, enviaremos um código de recuperação.');
-    } catch (error) {
-      if (error instanceof Error && error.name === 'AbortError') {
-        setErro('O envio demorou demais. Verifique a configuracao de email da API e tente novamente.');
-        return;
-      }
-      Alert.alert('Conexão', `Não foi possível acessar a API em ${apiBaseUrl}.`);
-    } finally {
-      setCarregando(false);
-    }
-  }
-
-  async function confirmarNovaSenha() {
-    if (!email.trim() || !codigo.trim() || !novaSenha.trim() || !confirmacaoSenha.trim()) {
+  async function atualizarSenha() {
+    if (!email.trim() || !novaSenha.trim() || !confirmacaoSenha.trim()) {
       setErro('Preencha todos os campos.');
       return;
     }
 
     if (novaSenha !== confirmacaoSenha) {
-      setErro('As senhas não coincidem.');
+      setErro('As senhas nao coincidem.');
       return;
     }
 
@@ -84,32 +44,27 @@ export default function Recuperar() {
     setErro('');
 
     try {
-      const response = await fetchComTimeout(`${apiBaseUrl}/usuarios/recuperar-senha/confirmar`, {
-        method: 'POST',
+      const response = await fetch(`${apiBaseUrl}/usuarios/recuperar-senha`, {
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           email: email.trim(),
-          codigo: codigo.trim(),
           novaSenha: novaSenha.trim(),
         }),
       });
 
       if (!response.ok) {
-        setErro(await extrairMensagemErro(response, 'Não foi possível atualizar a senha.'));
+        setErro(await extrairMensagemErro(response, 'Nao foi possivel atualizar a senha.'));
         return;
       }
 
-      Alert.alert('Senha atualizada', 'Sua senha foi alterada. Faça login com a nova senha.', [
+      Alert.alert('Senha atualizada', 'Sua senha foi alterada. Faca login com a nova senha.', [
         { text: 'Ir para login', onPress: () => router.replace('/login') },
       ]);
-    } catch (error) {
-      if (error instanceof Error && error.name === 'AbortError') {
-        setErro('A solicitacao demorou demais. Tente novamente em instantes.');
-        return;
-      }
-      Alert.alert('Conexão', `Não foi possível acessar a API em ${apiBaseUrl}.`);
+    } catch {
+      Alert.alert('Conexao', `Nao foi possivel acessar a API em ${apiBaseUrl}.`);
     } finally {
       setCarregando(false);
     }
@@ -128,11 +83,7 @@ export default function Recuperar() {
 
         <View style={styles.card}>
           <Text style={styles.title}>Recuperar senha</Text>
-          <Text style={styles.subtitle}>
-            {codigoEnviado
-              ? 'Digite o código recebido por email e defina uma nova senha.'
-              : 'Informe seu email cadastrado para receber um código de recuperação.'}
-          </Text>
+          <Text style={styles.subtitle}>Informe seu email cadastrado e defina uma nova senha.</Text>
 
           <TextInput
             value={email}
@@ -141,63 +92,38 @@ export default function Recuperar() {
             placeholderTextColor="#F8F4D9"
             keyboardType="email-address"
             autoCapitalize="none"
-            editable={!codigoEnviado}
-            style={[styles.input, codigoEnviado ? styles.disabledInput : null]}
+            style={styles.input}
           />
 
-          {codigoEnviado ? (
-            <>
-              <TextInput
-                value={codigo}
-                onChangeText={setCodigo}
-                placeholder="Código de 6 dígitos"
-                placeholderTextColor="#F8F4D9"
-                keyboardType="number-pad"
-                maxLength={6}
-                style={styles.input}
-              />
+          <PasswordInput
+            placeholder="Nova senha"
+            placeholderTextColor="#F8F4D9"
+            value={novaSenha}
+            onChangeText={setNovaSenha}
+            borderColor="#94C61F"
+            textColor="#F8F4D9"
+            iconColor="#F8F4D9"
+          />
 
-              <PasswordInput
-                placeholder="Nova senha"
-                placeholderTextColor="#F8F4D9"
-                value={novaSenha}
-                onChangeText={setNovaSenha}
-                borderColor="#94C61F"
-                textColor="#F8F4D9"
-                iconColor="#F8F4D9"
-              />
-
-              <PasswordInput
-                placeholder="Confirmar nova senha"
-                placeholderTextColor="#F8F4D9"
-                value={confirmacaoSenha}
-                onChangeText={setConfirmacaoSenha}
-                borderColor="#94C61F"
-                textColor="#F8F4D9"
-                iconColor="#F8F4D9"
-              />
-            </>
-          ) : null}
+          <PasswordInput
+            placeholder="Confirmar nova senha"
+            placeholderTextColor="#F8F4D9"
+            value={confirmacaoSenha}
+            onChangeText={setConfirmacaoSenha}
+            borderColor="#94C61F"
+            textColor="#F8F4D9"
+            iconColor="#F8F4D9"
+          />
 
           {erro ? <Text style={styles.errorText}>{erro}</Text> : null}
 
-          <Pressable
-            onPress={() => void (codigoEnviado ? confirmarNovaSenha() : enviarCodigo())}
-            disabled={carregando}
-            style={styles.primaryButton}
-          >
+          <Pressable onPress={() => void atualizarSenha()} disabled={carregando} style={styles.primaryButton}>
             {carregando ? (
               <ActivityIndicator color="#FFFFFF" />
             ) : (
-              <Text style={styles.primaryButtonText}>{codigoEnviado ? 'Atualizar senha' : 'Enviar código'}</Text>
+              <Text style={styles.primaryButtonText}>Atualizar senha</Text>
             )}
           </Pressable>
-
-          {codigoEnviado ? (
-            <Pressable onPress={() => void enviarCodigo()} disabled={carregando}>
-              <Text style={styles.loginText}>Reenviar código</Text>
-            </Pressable>
-          ) : null}
 
           <Pressable onPress={() => router.replace('/login')}>
             <Text style={styles.loginText}>Voltar para o login</Text>
@@ -208,18 +134,7 @@ export default function Recuperar() {
   );
 }
 
-async function fetchComTimeout(url: string, options: RequestInit, timeoutMs = 20000) {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), timeoutMs);
-
-  try {
-    return await fetch(url, { ...options, signal: controller.signal });
-  } finally {
-    clearTimeout(timeout);
-  }
-}
-
-async function extrairMensagemErro(response: Response, fallback = 'Não foi possível concluir a solicitação.') {
+async function extrairMensagemErro(response: Response, fallback = 'Nao foi possivel concluir a solicitacao.') {
   try {
     const bodyText = await response.text();
     if (!bodyText) {
@@ -270,9 +185,6 @@ const styles = {
     paddingVertical: 14,
     paddingHorizontal: 16,
     color: '#F8F4D9',
-  },
-  disabledInput: {
-    opacity: 0.7,
   },
   errorText: {
     color: '#FCA5A5',

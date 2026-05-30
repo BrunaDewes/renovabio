@@ -4,7 +4,7 @@ Esta pasta guarda os objetos usados para transportar dados entre cliente e API s
 
 ## Grupos principais
 
-- Login e senha: `LoginRequestDTO`, `AtualizarSenhaRequestDTO`, `SolicitarRecuperacaoSenhaRequestDTO` e `ConfirmarRecuperacaoSenhaRequestDTO`.
+- Login e senha: `LoginRequestDTO`, `AtualizarSenhaRequestDTO` e `RecuperarSenhaRequestDTO`.
 - Usuario: `UsuarioRequestDTO` e `UsuarioResponseDTO`.
 - Desafios e recompensas: `ComprovacaoDesafioDTO` e `HistoricoTrocaRecompensaDTO`.
 

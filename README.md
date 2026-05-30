@@ -19,7 +19,7 @@ O projeto usa MySQL com o banco `bdrenovabio`. O arquivo `bdrenovabio.sql` conte
 - Cloudinary: armazena fotos de perfil e comprovacoes dos desafios.
 - Gmail SMTP: envia codigos temporarios de recuperacao de senha.
 
-No ambiente publicado, configure as variaveis `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`, `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD` e `MAIL_FROM`.
+No ambiente publicado, configure as variaveis `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY` e `CLOUDINARY_API_SECRET`.
 
 ## Como executar localmente
 

@@ -4,7 +4,7 @@ Esta pasta concentra as regras de negocio da API.
 
 ## Services principais
 
-- `UsuarioService.java`: cadastro, login, senha, recuperacao por codigo de email, perfil, foto e conversao para DTO.
+- `UsuarioService.java`: cadastro, login, senha, recuperacao simplificada, perfil, foto e conversao para DTO.
 - `TokenService.java`: geracao e validacao do token usado pelo app e painel.
 - `FileStorageService.java`: validacao, envio de imagens para Cloudinary e exclusao remota quando aplicavel.
 - `DesafioService.java`: fluxo de desafios, participacao, comprovacao e historico.

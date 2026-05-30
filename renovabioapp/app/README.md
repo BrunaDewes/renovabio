@@ -6,7 +6,7 @@ Esta pasta usa Expo Router. Cada arquivo `.tsx` representa uma rota ou tela do a
 
 - `_layout.tsx`: configuracao global de navegacao.
 - `index.tsx`: rota inicial.
-- `login.tsx`, `cadastro.tsx`, `recuperar.tsx`: autenticacao e recuperacao de conta por codigo enviado por email.
+- `login.tsx`, `cadastro.tsx`, `recuperar.tsx`: autenticacao e recuperacao simplificada de conta.
 - `home.tsx`: tela inicial apos login.
 - `perfil.tsx`: dados do usuario, foto e informacoes de conta.
 - `desafios.tsx`, `desafio-detalhe.tsx`, `historico-desafios.tsx`: fluxo de desafios sustentaveis, comprovacao por camera, visualizacao e exclusao do comprovante de hoje.

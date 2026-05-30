@@ -8,7 +8,7 @@ API REST do sistema RenovaBio, desenvolvida com Spring Boot, Java 21, Spring MVC
 - Persistir dados do dominio no banco MySQL `bdrenovabio`.
 - Gerar e validar token simples para autenticacao do app.
 - Receber imagens de perfil e comprovacoes, armazenando os arquivos no Cloudinary.
-- Enviar codigos temporarios de recuperacao de senha por email.
+- Permitir recuperacao simplificada de senha pelo app.
 - Centralizar regras de negocio usadas pelo aplicativo mobile e pelo painel web.
 
 ## Pastas principais
@@ -40,24 +40,16 @@ Em producao, configure estas variaveis no servico da API:
 CLOUDINARY_CLOUD_NAME
 CLOUDINARY_API_KEY
 CLOUDINARY_API_SECRET
-MAIL_HOST=smtp.gmail.com
-MAIL_PORT=587
-MAIL_USERNAME
-MAIL_PASSWORD
-MAIL_FROM
 ```
-
-`MAIL_PASSWORD` deve ser uma senha de app do Google, sem espacos. Nao salve credenciais reais no repositorio.
 
 ## Recuperacao de senha
 
-O fluxo de recuperacao usa codigo de 6 digitos enviado por email. O codigo fica salvo com hash na tabela `recuperacao_senha`, expira em 30 minutos e e marcado como usado apos a troca de senha.
+O fluxo de recuperacao de senha esta simplificado para o escopo do TCC: o usuario informa email e nova senha. Como melhoria futura, recomenda-se usar codigo temporario enviado por email, com expiracao e validacao no servidor.
 
 Rotas publicas:
 
 ```text
-POST /usuarios/recuperar-senha/codigo
-POST /usuarios/recuperar-senha/confirmar
+PATCH /usuarios/recuperar-senha
 ```
 
 ## Imagens
