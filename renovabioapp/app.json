@@ -28,6 +28,13 @@
     "plugins": [
       "expo-router",
       [
+        "expo-image-picker",
+        {
+          "cameraPermission": "Permita que o RenovaBio use a camera para registrar comprovantes dos desafios.",
+          "photosPermission": "Permita que o RenovaBio acesse suas fotos quando necessario."
+        }
+      ],
+      [
         "expo-splash-screen",
         {
           "image": "./assets/images/icon.png",

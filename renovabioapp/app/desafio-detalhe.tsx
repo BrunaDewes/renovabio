@@ -121,19 +121,19 @@ export default function DesafioDetalhe() {
     return novaParticipacao;
   }
 
-  async function escolherArquivo() {
+  async function tirarFoto() {
     if (jaRegistrouHoje) {
       Alert.alert('Desafios', 'Você já registrou um comprovante hoje. Volte amanhã para enviar outro.');
       return;
     }
 
-    const permissao = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    const permissao = await ImagePicker.requestCameraPermissionsAsync();
     if (!permissao.granted) {
-      Alert.alert('Desafios', 'Permita acesso a galeria para selecionar a foto de comprovação.');
+      Alert.alert('Desafios', 'Permita acesso a camera para tirar a foto de comprovacao.');
       return;
     }
 
-    const resultado = await ImagePicker.launchImageLibraryAsync({
+    const resultado = await ImagePicker.launchCameraAsync({
       mediaTypes: ['images'],
       allowsEditing: false,
       quality: 0.8,
@@ -289,6 +289,9 @@ export default function DesafioDetalhe() {
       }
 
       const participacaoAtualizada = (await response.json()) as UsuarioDesafio;
+      if (participacao.status === 'CONCLUIDO') {
+        await updateUser({ pontuacao: Math.max(0, (user.pontuacao ?? 0) - (participacao.desafio?.pontos ?? 0)) });
+      }
       setParticipacao(participacaoAtualizada);
       const lista = await carregarComprovacoes(participacao.id);
       setComprovacoes(lista);
@@ -363,7 +366,7 @@ export default function DesafioDetalhe() {
             <View style={styles.block}>
               <Text style={styles.sectionTitle}>Comprovação do dia</Text>
               <Text style={styles.supportText}>
-                Escolha uma imagem da galeria para registrar o que você fez hoje no desafio.
+                Tire uma foto agora para registrar o que voce fez hoje no desafio.
               </Text>
 
               {jaRegistrouHoje ? (
@@ -371,13 +374,13 @@ export default function DesafioDetalhe() {
               ) : null}
 
               <TouchableOpacity
-                onPress={() => void escolherArquivo()}
+                onPress={() => void tirarFoto()}
                 style={[styles.fileButton, jaRegistrouHoje ? styles.disabledButton : null]}
                 disabled={jaRegistrouHoje}
               >
-                <Ionicons name="image-outline" size={18} color="#F7F3DF" />
+                <Ionicons name="camera-outline" size={18} color="#F7F3DF" />
                 <Text style={styles.fileButtonText}>
-                  {arquivoSelecionado ? 'Trocar foto' : 'Escolher arquivo'}
+                  {arquivoSelecionado ? 'Tirar outra foto' : 'Tirar foto'}
                 </Text>
               </TouchableOpacity>
 
@@ -420,7 +423,7 @@ export default function DesafioDetalhe() {
               ) : (
                 comprovacoes.map((item, index) => {
                   const fotoUrl = toApiFileUrl(item.imagemUrl);
-                  const podeExcluir = isDataDeHoje(item.dataEnvio) && participacao?.status !== 'CONCLUIDO';
+                  const podeExcluir = isDataDeHoje(item.dataEnvio);
 
                   return (
                     <View key={`${item.id}-${index}`} style={styles.historyRow}>

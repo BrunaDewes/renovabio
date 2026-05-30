@@ -19,19 +19,55 @@ import { getApiBaseUrl } from '../utils/api';
 export default function Recuperar() {
   const apiBaseUrl = useMemo(() => getApiBaseUrl(), []);
   const [email, setEmail] = useState('');
+  const [codigo, setCodigo] = useState('');
   const [novaSenha, setNovaSenha] = useState('');
   const [confirmacaoSenha, setConfirmacaoSenha] = useState('');
+  const [codigoEnviado, setCodigoEnviado] = useState(false);
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState('');
 
-  async function recuperarSenha() {
-    if (!email.trim() || !novaSenha.trim() || !confirmacaoSenha.trim()) {
+  async function enviarCodigo() {
+    if (!email.trim()) {
+      setErro('Informe seu email.');
+      return;
+    }
+
+    setCarregando(true);
+    setErro('');
+
+    try {
+      const response = await fetch(`${apiBaseUrl}/usuarios/recuperar-senha/codigo`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email.trim(),
+        }),
+      });
+
+      if (!response.ok) {
+        setErro(await extrairMensagemErro(response, 'Nao foi possivel enviar o codigo.'));
+        return;
+      }
+
+      setCodigoEnviado(true);
+      Alert.alert('Codigo enviado', 'Se o email estiver cadastrado, enviaremos um codigo de recuperacao.');
+    } catch {
+      Alert.alert('Conexao', `Nao foi possivel acessar a API em ${apiBaseUrl}.`);
+    } finally {
+      setCarregando(false);
+    }
+  }
+
+  async function confirmarNovaSenha() {
+    if (!email.trim() || !codigo.trim() || !novaSenha.trim() || !confirmacaoSenha.trim()) {
       setErro('Preencha todos os campos.');
       return;
     }
 
     if (novaSenha !== confirmacaoSenha) {
-      setErro('As senhas não coincidem.');
+      setErro('As senhas nao coincidem.');
       return;
     }
 
@@ -44,27 +80,28 @@ export default function Recuperar() {
     setErro('');
 
     try {
-      const response = await fetch(`${apiBaseUrl}/usuarios/recuperar-senha`, {
-        method: 'PATCH',
+      const response = await fetch(`${apiBaseUrl}/usuarios/recuperar-senha/confirmar`, {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           email: email.trim(),
+          codigo: codigo.trim(),
           novaSenha: novaSenha.trim(),
         }),
       });
 
       if (!response.ok) {
-        setErro(await extrairMensagemErro(response));
+        setErro(await extrairMensagemErro(response, 'Nao foi possivel atualizar a senha.'));
         return;
       }
 
-      Alert.alert('Senha atualizada', 'Sua senha foi alterada. Faça login com a nova senha.', [
+      Alert.alert('Senha atualizada', 'Sua senha foi alterada. Faca login com a nova senha.', [
         { text: 'Ir para login', onPress: () => router.replace('/login') },
       ]);
     } catch {
-      Alert.alert('Conexao', `Não foi possível acessar a API em ${apiBaseUrl}.`);
+      Alert.alert('Conexao', `Nao foi possivel acessar a API em ${apiBaseUrl}.`);
     } finally {
       setCarregando(false);
     }
@@ -84,7 +121,9 @@ export default function Recuperar() {
         <View style={styles.card}>
           <Text style={styles.title}>Recuperar senha</Text>
           <Text style={styles.subtitle}>
-            Informe seu email cadastrado e defina uma nova senha para acessar sua conta.
+            {codigoEnviado
+              ? 'Digite o codigo recebido por email e defina uma nova senha.'
+              : 'Informe seu email cadastrado para receber um codigo de recuperacao.'}
           </Text>
 
           <TextInput
@@ -94,38 +133,63 @@ export default function Recuperar() {
             placeholderTextColor="#F8F4D9"
             keyboardType="email-address"
             autoCapitalize="none"
-            style={styles.input}
+            editable={!codigoEnviado}
+            style={[styles.input, codigoEnviado ? styles.disabledInput : null]}
           />
 
-          <PasswordInput
-            placeholder="Nova senha"
-            placeholderTextColor="#F8F4D9"
-            value={novaSenha}
-            onChangeText={setNovaSenha}
-            borderColor="#94C61F"
-            textColor="#F8F4D9"
-            iconColor="#F8F4D9"
-          />
+          {codigoEnviado ? (
+            <>
+              <TextInput
+                value={codigo}
+                onChangeText={setCodigo}
+                placeholder="Codigo de 6 digitos"
+                placeholderTextColor="#F8F4D9"
+                keyboardType="number-pad"
+                maxLength={6}
+                style={styles.input}
+              />
 
-          <PasswordInput
-            placeholder="Confirmar nova senha"
-            placeholderTextColor="#F8F4D9"
-            value={confirmacaoSenha}
-            onChangeText={setConfirmacaoSenha}
-            borderColor="#94C61F"
-            textColor="#F8F4D9"
-            iconColor="#F8F4D9"
-          />
+              <PasswordInput
+                placeholder="Nova senha"
+                placeholderTextColor="#F8F4D9"
+                value={novaSenha}
+                onChangeText={setNovaSenha}
+                borderColor="#94C61F"
+                textColor="#F8F4D9"
+                iconColor="#F8F4D9"
+              />
+
+              <PasswordInput
+                placeholder="Confirmar nova senha"
+                placeholderTextColor="#F8F4D9"
+                value={confirmacaoSenha}
+                onChangeText={setConfirmacaoSenha}
+                borderColor="#94C61F"
+                textColor="#F8F4D9"
+                iconColor="#F8F4D9"
+              />
+            </>
+          ) : null}
 
           {erro ? <Text style={styles.errorText}>{erro}</Text> : null}
 
-          <Pressable onPress={() => void recuperarSenha()} disabled={carregando} style={styles.primaryButton}>
+          <Pressable
+            onPress={() => void (codigoEnviado ? confirmarNovaSenha() : enviarCodigo())}
+            disabled={carregando}
+            style={styles.primaryButton}
+          >
             {carregando ? (
               <ActivityIndicator color="#FFFFFF" />
             ) : (
-              <Text style={styles.primaryButtonText}>Atualizar senha</Text>
+              <Text style={styles.primaryButtonText}>{codigoEnviado ? 'Atualizar senha' : 'Enviar codigo'}</Text>
             )}
           </Pressable>
+
+          {codigoEnviado ? (
+            <Pressable onPress={() => void enviarCodigo()} disabled={carregando}>
+              <Text style={styles.loginText}>Reenviar codigo</Text>
+            </Pressable>
+          ) : null}
 
           <Pressable onPress={() => router.replace('/login')}>
             <Text style={styles.loginText}>Voltar para o login</Text>
@@ -136,17 +200,17 @@ export default function Recuperar() {
   );
 }
 
-async function extrairMensagemErro(response: Response) {
+async function extrairMensagemErro(response: Response, fallback = 'Nao foi possivel concluir a solicitacao.') {
   try {
     const bodyText = await response.text();
     if (!bodyText) {
-      return 'Não foi possível atualizar a senha.';
+      return fallback;
     }
 
     const data = JSON.parse(bodyText) as { message?: string; detail?: string; error?: string };
-    return data.message || data.detail || data.error || 'Não foi possível atualizar a senha.';
+    return data.message || data.detail || data.error || fallback;
   } catch {
-    return 'Não foi possível atualizar a senha.';
+    return fallback;
   }
 }
 
@@ -187,6 +251,9 @@ const styles = {
     paddingVertical: 14,
     paddingHorizontal: 16,
     color: '#F8F4D9',
+  },
+  disabledInput: {
+    opacity: 0.7,
   },
   errorText: {
     color: '#FCA5A5',

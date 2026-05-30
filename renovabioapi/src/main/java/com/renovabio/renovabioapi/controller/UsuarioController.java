@@ -1,8 +1,9 @@
 package com.renovabio.renovabioapi.controller;
 
 import com.renovabio.renovabioapi.dto.AtualizarSenhaRequestDTO;
+import com.renovabio.renovabioapi.dto.ConfirmarRecuperacaoSenhaRequestDTO;
 import com.renovabio.renovabioapi.dto.LoginRequestDTO;
-import com.renovabio.renovabioapi.dto.RecuperarSenhaRequestDTO;
+import com.renovabio.renovabioapi.dto.SolicitarRecuperacaoSenhaRequestDTO;
 import com.renovabio.renovabioapi.dto.UsuarioRequestDTO;
 import com.renovabio.renovabioapi.dto.UsuarioResponseDTO;
 import com.renovabio.renovabioapi.model.AcaoUsuario;
@@ -65,9 +66,14 @@ public class UsuarioController {
         usuarioService.atualizarSenha(id, dto);
     }
 
-    @PatchMapping("/recuperar-senha")
-    public void recuperarSenha(@RequestBody RecuperarSenhaRequestDTO dto) {
-        usuarioService.recuperarSenha(dto);
+    @PostMapping("/recuperar-senha/codigo")
+    public void solicitarCodigoRecuperacao(@RequestBody SolicitarRecuperacaoSenhaRequestDTO dto) {
+        usuarioService.solicitarCodigoRecuperacao(dto);
+    }
+
+    @PostMapping("/recuperar-senha/confirmar")
+    public void confirmarRecuperacaoSenha(@RequestBody ConfirmarRecuperacaoSenhaRequestDTO dto) {
+        usuarioService.confirmarRecuperacaoSenha(dto);
     }
 
     @PostMapping("/{id}/foto")

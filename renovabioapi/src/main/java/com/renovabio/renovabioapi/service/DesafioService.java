@@ -122,10 +122,6 @@ public class DesafioService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Comprovante nao pertence ao usuario autenticado");
         }
 
-        if (usuarioDesafio.getStatus() == StatusDesafio.CONCLUIDO) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nao e possivel excluir comprovante de desafio concluido");
-        }
-
         if (comprovacao.getDataEnvio() == null || !comprovacao.getDataEnvio().toLocalDate().equals(LocalDate.now(FUSO_BRASIL))) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Apenas o comprovante de hoje pode ser excluido");
         }
@@ -139,7 +135,32 @@ public class DesafioService {
         int novoDia = Math.max(0, diasAtuais - 1);
         usuarioDesafio.setProgresso(Math.round((novoDia / (float) duracao) * 100));
 
+        if (usuarioDesafio.getStatus() == StatusDesafio.CONCLUIDO) {
+            desfazerConclusaoDesafio(usuarioDesafio, desafio);
+        }
+
         return usuarioDesafioRepository.save(usuarioDesafio);
+    }
+
+    private void desfazerConclusaoDesafio(UsuarioDesafio usuarioDesafio, Desafio desafio) {
+        Usuario usuario = usuarioDesafio.getUsuario();
+        if (usuario != null && desafio != null) {
+            int pontosAtuais = usuario.getPontuacaoAtual() != null ? usuario.getPontuacaoAtual() : 0;
+            int pontosDesafio = desafio.getPontos() != null ? desafio.getPontos() : 0;
+            usuario.setPontuacaoAtual(Math.max(0, pontosAtuais - pontosDesafio));
+            usuarioRepository.save(usuario);
+
+            acaoUsuarioRepository
+                    .findFirstByUsuarioIdUsuarioAndTipoAcaoAndIdReferenciaOrderByDataAcaoDesc(
+                            usuario.getidUsuario(),
+                            TipoAcao.DESAFIO,
+                            desafio.getId()
+                    )
+                    .ifPresent(acaoUsuarioRepository::delete);
+        }
+
+        usuarioDesafio.setStatus(StatusDesafio.EM_ANDAMENTO);
+        usuarioDesafio.setDataFim(null);
     }
 
     public UsuarioDesafio atualizarProgresso(Long usuarioDesafioId, int progresso) {
