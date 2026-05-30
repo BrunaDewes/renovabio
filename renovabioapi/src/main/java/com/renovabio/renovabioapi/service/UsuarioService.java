@@ -13,6 +13,8 @@ import com.renovabio.renovabioapi.model.Usuario;
 import com.renovabio.renovabioapi.repository.CidadeRepository;
 import com.renovabio.renovabioapi.repository.RecuperacaoSenhaRepository;
 import com.renovabio.renovabioapi.repository.UsuarioRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
@@ -37,6 +39,7 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 @Service
 public class UsuarioService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(UsuarioService.class);
     private static final int MINUTOS_VALIDADE_CODIGO = 30;
     private static final SecureRandom RANDOM = new SecureRandom();
 
@@ -255,6 +258,7 @@ public class UsuarioService {
             );
             mailSender.send(mensagem);
         } catch (MailException exception) {
+            LOGGER.error("Falha ao enviar codigo de recuperacao para {}", email, exception);
             throw new ResponseStatusException(BAD_REQUEST, "Nao foi possivel enviar o codigo por email");
         }
     }
