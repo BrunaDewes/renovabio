@@ -7,12 +7,19 @@ Projeto de TGSI para incentivo, registro e acompanhamento de acoes sustentaveis 
 - `renovabioapi`: API Spring Boot responsavel pelas regras de negocio, persistencia em MySQL, autenticacao por token e endpoints usados pelo app e pelo painel web.
 - `renovabioapp`: aplicativo mobile feito com Expo/React Native, com telas para usuarios realizarem cadastro, login, desafios, receitas, recompensas, perfil e feedback.
 - `renovabiosite`: painel web feito com React/Vite para uso administrativo, com login, metricas, parceiros, recompensas, feedbacks e configuracoes.
-- `uploads`: pasta usada para armazenar arquivos enviados, como imagens de perfil ou comprovacoes.
+- `uploads`: pasta mantida apenas para compatibilidade com arquivos antigos locais. Novas imagens sao armazenadas no Cloudinary.
 - Arquivos `.sql`, `.mwb` e imagens de modelagem: materiais de banco de dados e documentacao visual do projeto.
 
 ## Banco de dados
 
 O projeto usa MySQL com o banco `bdrenovabio`. O arquivo `bdrenovabio.sql` contem a estrutura e dados usados na modelagem atual.
+
+## Servicos externos
+
+- Cloudinary: armazena fotos de perfil e comprovacoes dos desafios.
+- Gmail SMTP: envia codigos temporarios de recuperacao de senha.
+
+No ambiente publicado, configure as variaveis `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`, `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD` e `MAIL_FROM`.
 
 ## Como executar localmente
 
@@ -46,7 +53,7 @@ npm run web
 Observacao importante sobre APK:
 
 - Sempre que houver mudanca apenas em telas, textos ou regras que nao adicionem modulo nativo novo, nao e necessario reinstalar o APK durante o desenvolvimento com Expo.
-- Quando entrar uma dependencia nativa nova no app, como aconteceu com `expo-notifications`, e necessario gerar e instalar uma nova build/APK para essa funcionalidade existir no aplicativo instalado.
+- Quando entrar uma dependencia nativa, permissao ou plugin novo no app, e necessario gerar e instalar uma nova build/APK para essa funcionalidade existir no aplicativo instalado.
 - Antes da build final, vale revisar os textos e corrigir erros de escrita para nao carregar isso para o APK distribuido.
 
 4. Execute o painel web em `renovabiosite`:

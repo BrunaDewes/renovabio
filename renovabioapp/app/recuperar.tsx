@@ -36,7 +36,7 @@ export default function Recuperar() {
     setErro('');
 
     try {
-      const response = await fetch(`${apiBaseUrl}/usuarios/recuperar-senha/codigo`, {
+      const response = await fetchComTimeout(`${apiBaseUrl}/usuarios/recuperar-senha/codigo`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -47,14 +47,18 @@ export default function Recuperar() {
       });
 
       if (!response.ok) {
-        setErro(await extrairMensagemErro(response, 'Nao foi possivel enviar o codigo.'));
+        setErro(await extrairMensagemErro(response, 'Não foi possível enviar o código.'));
         return;
       }
 
       setCodigoEnviado(true);
-      Alert.alert('Codigo enviado', 'Se o email estiver cadastrado, enviaremos um codigo de recuperacao.');
-    } catch {
-      Alert.alert('Conexao', `Nao foi possivel acessar a API em ${apiBaseUrl}.`);
+      Alert.alert('Código enviado', 'Se o email estiver cadastrado, enviaremos um código de recuperação.');
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        setErro('O envio demorou demais. Verifique a configuracao de email da API e tente novamente.');
+        return;
+      }
+      Alert.alert('Conexão', `Não foi possível acessar a API em ${apiBaseUrl}.`);
     } finally {
       setCarregando(false);
     }
@@ -67,7 +71,7 @@ export default function Recuperar() {
     }
 
     if (novaSenha !== confirmacaoSenha) {
-      setErro('As senhas nao coincidem.');
+      setErro('As senhas não coincidem.');
       return;
     }
 
@@ -80,7 +84,7 @@ export default function Recuperar() {
     setErro('');
 
     try {
-      const response = await fetch(`${apiBaseUrl}/usuarios/recuperar-senha/confirmar`, {
+      const response = await fetchComTimeout(`${apiBaseUrl}/usuarios/recuperar-senha/confirmar`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -93,15 +97,19 @@ export default function Recuperar() {
       });
 
       if (!response.ok) {
-        setErro(await extrairMensagemErro(response, 'Nao foi possivel atualizar a senha.'));
+        setErro(await extrairMensagemErro(response, 'Não foi possível atualizar a senha.'));
         return;
       }
 
-      Alert.alert('Senha atualizada', 'Sua senha foi alterada. Faca login com a nova senha.', [
+      Alert.alert('Senha atualizada', 'Sua senha foi alterada. Faça login com a nova senha.', [
         { text: 'Ir para login', onPress: () => router.replace('/login') },
       ]);
-    } catch {
-      Alert.alert('Conexao', `Nao foi possivel acessar a API em ${apiBaseUrl}.`);
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        setErro('A solicitacao demorou demais. Tente novamente em instantes.');
+        return;
+      }
+      Alert.alert('Conexão', `Não foi possível acessar a API em ${apiBaseUrl}.`);
     } finally {
       setCarregando(false);
     }
@@ -122,8 +130,8 @@ export default function Recuperar() {
           <Text style={styles.title}>Recuperar senha</Text>
           <Text style={styles.subtitle}>
             {codigoEnviado
-              ? 'Digite o codigo recebido por email e defina uma nova senha.'
-              : 'Informe seu email cadastrado para receber um codigo de recuperacao.'}
+              ? 'Digite o código recebido por email e defina uma nova senha.'
+              : 'Informe seu email cadastrado para receber um código de recuperação.'}
           </Text>
 
           <TextInput
@@ -142,7 +150,7 @@ export default function Recuperar() {
               <TextInput
                 value={codigo}
                 onChangeText={setCodigo}
-                placeholder="Codigo de 6 digitos"
+                placeholder="Código de 6 dígitos"
                 placeholderTextColor="#F8F4D9"
                 keyboardType="number-pad"
                 maxLength={6}
@@ -181,13 +189,13 @@ export default function Recuperar() {
             {carregando ? (
               <ActivityIndicator color="#FFFFFF" />
             ) : (
-              <Text style={styles.primaryButtonText}>{codigoEnviado ? 'Atualizar senha' : 'Enviar codigo'}</Text>
+              <Text style={styles.primaryButtonText}>{codigoEnviado ? 'Atualizar senha' : 'Enviar código'}</Text>
             )}
           </Pressable>
 
           {codigoEnviado ? (
             <Pressable onPress={() => void enviarCodigo()} disabled={carregando}>
-              <Text style={styles.loginText}>Reenviar codigo</Text>
+              <Text style={styles.loginText}>Reenviar código</Text>
             </Pressable>
           ) : null}
 
@@ -200,7 +208,18 @@ export default function Recuperar() {
   );
 }
 
-async function extrairMensagemErro(response: Response, fallback = 'Nao foi possivel concluir a solicitacao.') {
+async function fetchComTimeout(url: string, options: RequestInit, timeoutMs = 20000) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+async function extrairMensagemErro(response: Response, fallback = 'Não foi possível concluir a solicitação.') {
   try {
     const bodyText = await response.text();
     if (!bodyText) {

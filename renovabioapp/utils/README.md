@@ -4,7 +4,7 @@ Esta pasta contem funcoes e dados auxiliares compartilhados entre telas.
 
 ## Arquivos
 
-- `api.ts`: URL base da API, montagem de URLs de arquivos, criacao de `FormData` para imagem e headers de autenticacao.
+- `api.ts`: URL base da API, montagem de URLs de imagens remotas, criacao de `FormData` para imagem e headers de autenticacao.
 - `desafios.ts`: dados ou helpers ligados ao fluxo de desafios.
 - `receitas.ts`: dados ou helpers ligados ao fluxo de receitas.
 

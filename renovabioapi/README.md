@@ -7,7 +7,8 @@ API REST do sistema RenovaBio, desenvolvida com Spring Boot, Java 21, Spring MVC
 - Expor endpoints para usuarios, cidades, desafios, receitas, recompensas e feedbacks.
 - Persistir dados do dominio no banco MySQL `bdrenovabio`.
 - Gerar e validar token simples para autenticacao do app.
-- Receber uploads de imagens usados em perfil e comprovacoes.
+- Receber imagens de perfil e comprovacoes, armazenando os arquivos no Cloudinary.
+- Enviar codigos temporarios de recuperacao de senha por email.
 - Centralizar regras de negocio usadas pelo aplicativo mobile e pelo painel web.
 
 ## Pastas principais
@@ -30,6 +31,38 @@ As principais configuracoes ficam em `src/main/resources/application.properties`
 - Estrategia JPA: `spring.jpa.hibernate.ddl-auto=update`
 - Limite de upload: `8MB`
 - Segredo e expiracao do token da aplicacao.
+
+## Variaveis de ambiente
+
+Em producao, configure estas variaveis no servico da API:
+
+```text
+CLOUDINARY_CLOUD_NAME
+CLOUDINARY_API_KEY
+CLOUDINARY_API_SECRET
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME
+MAIL_PASSWORD
+MAIL_FROM
+```
+
+`MAIL_PASSWORD` deve ser uma senha de app do Google, sem espacos. Nao salve credenciais reais no repositorio.
+
+## Recuperacao de senha
+
+O fluxo de recuperacao usa codigo de 6 digitos enviado por email. O codigo fica salvo com hash na tabela `recuperacao_senha`, expira em 30 minutos e e marcado como usado apos a troca de senha.
+
+Rotas publicas:
+
+```text
+POST /usuarios/recuperar-senha/codigo
+POST /usuarios/recuperar-senha/confirmar
+```
+
+## Imagens
+
+Novas fotos de perfil e comprovacoes sao enviadas ao Cloudinary e a URL HTTPS retornada e salva no banco. A rota `/uploads/**` permanece apenas para compatibilidade com arquivos antigos locais.
 
 ## Comandos uteis
 

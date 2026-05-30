@@ -4,9 +4,9 @@ Esta pasta concentra as regras de negocio da API.
 
 ## Services principais
 
-- `UsuarioService.java`: cadastro, login, senha, perfil, foto e conversao para DTO.
+- `UsuarioService.java`: cadastro, login, senha, recuperacao por codigo de email, perfil, foto e conversao para DTO.
 - `TokenService.java`: geracao e validacao do token usado pelo app e painel.
-- `FileStorageService.java`: validacao e gravacao de imagens enviadas por upload.
+- `FileStorageService.java`: validacao, envio de imagens para Cloudinary e exclusao remota quando aplicavel.
 - `DesafioService.java`: fluxo de desafios, participacao, comprovacao e historico.
 - `ReceitaService.java`: consultas e regras ligadas a receitas.
 - `TrocaRecompensaService.java`: troca de pontos por recompensas e historico.
@@ -15,4 +15,3 @@ Esta pasta concentra as regras de negocio da API.
 ## Organização
 
 Na pasta `service`, ficam as regras principais do sistema, como validações, cálculos e decisões de negócio. Os `controllers` não devem ter muita lógica; eles apenas recebem as requisições da API e chamam o service responsável.
-

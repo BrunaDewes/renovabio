@@ -4,7 +4,7 @@ Esta pasta contem os controllers que recebem requisicoes HTTP e chamam os servic
 
 ## Controllers
 
-- `UsuarioController.java`: cadastro, login, listagem, busca por ID, troca/recuperacao de senha, foto de perfil e acoes do usuario.
+- `UsuarioController.java`: cadastro, login, listagem, busca por ID, troca de senha autenticada, recuperacao por codigo de email, foto de perfil e acoes do usuario.
 - `CidadeController.java`: consulta e cadastro de cidades usadas no perfil do usuario.
 - `DesafioController.java`: listagem, detalhe, participacao e comprovacao de desafios.
 - `ReceitaController.java`: listagem e detalhe de receitas sustentaveis.

@@ -4,9 +4,9 @@ Aplicativo mobile do RenovaBio desenvolvido com Expo, React Native, TypeScript e
 
 ## Responsabilidades
 
-- Permitir cadastro, login e recuperacao de senha.
+- Permitir cadastro, login e recuperacao de senha por codigo enviado por email.
 - Exibir home, perfil, receitas, desafios, recompensas e historicos.
-- Enviar feedbacks e comprovacoes para a API.
+- Enviar feedbacks e comprovacoes para a API, com foto tirada pela camera no momento do registro.
 - Consumir a API do RenovaBio e montar URLs de imagens enviadas.
 - Manter contexto de autenticacao e dados do usuario no app.
 
@@ -33,11 +33,11 @@ npm run web
 npm run lint
 ```
 
-## Observacao sobre notificacoes e APK
+## Observacao sobre build/APK
 
-- O app passou a usar `expo-notifications` para lembretes diarios locais.
-- Como isso e uma dependencia nativa, depois dessa mudanca e necessario gerar e instalar uma nova build/APK para testar notificacoes no aplicativo instalado.
-- Se a mudanca for apenas de texto, layout ou regra de tela, normalmente nao precisa reinstalar APK por causa disso sozinho.
+- Mudancas que alteram configuracoes nativas, permissoes ou plugins do Expo exigem nova build/APK.
+- O fluxo de comprovacao usa camera via `expo-image-picker`, portanto o APK precisa conter permissao de camera.
+- Se a mudanca for apenas de texto, layout ou regra de tela, normalmente nao precisa reinstalar APK durante desenvolvimento com Expo.
 - Antes da build final, revise os textos do app para corrigir erros de escrita e evitar que eles aparecam na versao instalada.
 
 ## API
