@@ -1,6 +1,7 @@
 package com.renovabio.renovabioapi.service;
 
 import com.renovabio.renovabioapi.dto.AtualizarSenhaRequestDTO;
+import com.renovabio.renovabioapi.dto.AtualizarEmailRequestDTO;
 import com.renovabio.renovabioapi.dto.LoginRequestDTO;
 import com.renovabio.renovabioapi.dto.RecuperarSenhaRequestDTO;
 import com.renovabio.renovabioapi.dto.UsuarioRequestDTO;
@@ -119,6 +120,25 @@ public class UsuarioService {
         usuarioRepository.save(usuario);
     }
 
+    public UsuarioResponseDTO atualizarEmail(Long id, AtualizarEmailRequestDTO dto) {
+        if (dto.getEmail() == null || dto.getEmail().isBlank()) {
+            throw new ResponseStatusException(BAD_REQUEST, "Email e obrigatorio");
+        }
+
+        String email = normalizarEmail(dto.getEmail());
+        usuarioRepository.findByEmail(email)
+                .filter(usuario -> !usuario.getidUsuario().equals(id))
+                .ifPresent(usuario -> {
+                    throw new ResponseStatusException(CONFLICT, "Email ja cadastrado");
+                });
+
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Usuario nao encontrado"));
+
+        usuario.setEmail(email);
+        return toResponseDTO(usuarioRepository.save(usuario));
+    }
+
     public void recuperarSenha(RecuperarSenhaRequestDTO dto) {
         if (dto.getEmail() == null || dto.getEmail().isBlank()) {
             throw new ResponseStatusException(BAD_REQUEST, "Email e obrigatorio");
@@ -166,6 +186,7 @@ public class UsuarioService {
         dto.setPontuacao(usuario.getPontuacaoAtual());
         dto.setPhotoUri(usuario.getFotoPerfilUrl());
         dto.setTipo(usuario.getTipo());
+        dto.setAtivo(usuario.getAtivo());
         return dto;
     }
 

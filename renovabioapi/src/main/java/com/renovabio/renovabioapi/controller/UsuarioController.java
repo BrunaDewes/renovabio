@@ -1,6 +1,7 @@
 package com.renovabio.renovabioapi.controller;
 
 import com.renovabio.renovabioapi.dto.AtualizarSenhaRequestDTO;
+import com.renovabio.renovabioapi.dto.AtualizarEmailRequestDTO;
 import com.renovabio.renovabioapi.dto.LoginRequestDTO;
 import com.renovabio.renovabioapi.dto.RecuperarSenhaRequestDTO;
 import com.renovabio.renovabioapi.dto.UsuarioRequestDTO;
@@ -60,6 +61,18 @@ public class UsuarioController {
         return usuarioService.buscarUsuario(id);
     }
 
+    @PatchMapping("/me/email")
+    public UsuarioResponseDTO atualizarMeuEmail(@RequestBody AtualizarEmailRequestDTO dto) {
+        Usuario usuario = getUsuarioAutenticadoObrigatorio();
+        return usuarioService.atualizarEmail(usuario.getidUsuario(), dto);
+    }
+
+    @PatchMapping("/me/senha")
+    public void atualizarMinhaSenha(@RequestBody AtualizarSenhaRequestDTO dto) {
+        Usuario usuario = getUsuarioAutenticadoObrigatorio();
+        usuarioService.atualizarSenha(usuario.getidUsuario(), dto);
+    }
+
     @PatchMapping("/{id}/senha")
     public void atualizarSenha(@PathVariable Long id, @RequestBody AtualizarSenhaRequestDTO dto) {
         usuarioService.atualizarSenha(id, dto);
@@ -98,5 +111,10 @@ public class UsuarioController {
         if (alvo.getCidade() == null || !cidadeId.equals(alvo.getCidade().getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "A prefeitura so pode consultar usuarios da propria cidade");
         }
+    }
+
+    private Usuario getUsuarioAutenticadoObrigatorio() {
+        return usuarioAutenticadoService.getUsuarioAutenticado()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuario nao autenticado"));
     }
 }

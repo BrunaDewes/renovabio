@@ -12,6 +12,7 @@ public class UsuarioResponseDTO {
     private String photoUri;
     private String token;
     private TipoUsuario tipo;
+    private Boolean ativo;
 
     // getters e setters
     public Long getId() { return id; }
@@ -34,4 +35,7 @@ public class UsuarioResponseDTO {
 
     public TipoUsuario getTipo() { return tipo; }
     public void setTipo(TipoUsuario tipo) { this.tipo = tipo; }
+
+    public Boolean getAtivo() { return ativo; }
+    public void setAtivo(Boolean ativo) { this.ativo = ativo; }
 }

@@ -35,14 +35,14 @@ function metric(label, value, extra = "") {
   );
 }
 
-function Chart({ title, data }) {
+function BarChart({ title, data }) {
   const max = Math.max(...data.map((item) => item.value), 0);
 
   return (
     <article className="chart-card">
       <h2 className="chart-title">{title}</h2>
       {max === 0 ? (
-        <div className="empty-chart">Sem dados suficientes para gerar este grafico.</div>
+        <div className="empty-chart">Sem dados suficientes para gerar este gráfico.</div>
       ) : (
         <div className="bar-chart">
           <div className="axis">
@@ -57,6 +57,44 @@ function Chart({ title, data }) {
                 <span className="bar" style={{ height: `${Math.max(10, (item.value / max) * 100)}%` }} />
                 <span className="bar-label">{item.label}</span>
               </span>
+            ))}
+          </div>
+        </div>
+      )}
+    </article>
+  );
+}
+
+function PieChart({ title, data }) {
+  const total = data.reduce((sum, item) => sum + item.value, 0);
+  let current = 0;
+  const colors = ["#8fd10f", "#1f9bd1", "#4fbd7a", "#166b9a"];
+  const gradient = data
+    .map((item, index) => {
+      const start = current;
+      const end = current + (item.value / total) * 100;
+      current = end;
+      return `${colors[index % colors.length]} ${start}% ${end}%`;
+    })
+    .join(", ");
+
+  return (
+    <article className="chart-card pie-card">
+      <h2 className="chart-title">{title}</h2>
+      {total === 0 ? (
+        <div className="empty-chart">Sem dados suficientes para gerar este gráfico.</div>
+      ) : (
+        <div className="pie-layout">
+          <div className="pie" style={{ background: `conic-gradient(${gradient})` }}>
+            <span>{total}</span>
+          </div>
+          <div className="pie-legend">
+            {data.map((item, index) => (
+              <div className="legend-row" key={item.label}>
+                <span className="legend-color" style={{ backgroundColor: colors[index % colors.length] }} />
+                <span>{item.label}</span>
+                <strong>{item.value}</strong>
+              </div>
             ))}
           </div>
         </div>
@@ -87,7 +125,7 @@ function AuthScreen({ screen, email, onScreenChange, onLogin, onSignup }) {
       return;
     }
 
-    setStatus("Instrucao de recuperacao enviada.");
+    setStatus("Instrução de recuperação enviada.");
   }
 
   return (
@@ -152,10 +190,12 @@ function AuthScreen({ screen, email, onScreenChange, onLogin, onSignup }) {
 
 function Dashboard({ data }) {
   const { usuarios, parceiros, recompensas, acoes } = data;
-  const activeUsers = usuarios.filter((user) => user.ativo !== false).length;
-  const totalPoints = usuarios.reduce((total, user) => total + (Number(user.pontuacao ?? user.pontuacaoAtual) || 0), 0);
+  const citizenUsers = usuarios.filter((user) => user.tipo !== "PREFEITURA");
+  const activeUsers = citizenUsers.filter((user) => user.ativo === true).length;
+  const activePartners = parceiros.filter((parceiro) => parceiro.ativo !== false).length;
+  const totalPoints = citizenUsers.reduce((total, user) => total + (Number(user.pontuacao ?? user.pontuacaoAtual) || 0), 0);
   const actions = acoes.length;
-  const pointsByUser = usuarios
+  const pointsByUser = citizenUsers
     .map((user) => ({
       label: user.nome?.split(" ")[0] || user.email?.split("@")[0] || `U${user.id}`,
       value: Number(user.pontuacao ?? user.pontuacaoAtual) || 0,
@@ -173,16 +213,16 @@ function Dashboard({ data }) {
   return (
     <>
       <div className="metrics">
-        {metric("Usuarios cadastrados", usuarios.length)}
-        {metric("Usuarios ativos", activeUsers)}
-        {metric("Parceiros cadastrados", parceiros.length)}
+        {metric("Usuários cadastrados", citizenUsers.length)}
+        {metric("Usuários ativos", activeUsers)}
+        {metric("Parceiros ativos", activePartners)}
         {metric("Recompensas ativas", recompensas.filter((item) => item.ativo !== false).length)}
-        {metric("Total de acoes sustentaveis", actions, "wide")}
-        {metric("Pontuacao total gerada", totalPoints, "wide")}
+        {metric("Total de ações sustentáveis", actions, "wide")}
+        {metric("Pontuação total gerada", totalPoints, "wide")}
       </div>
       <div className="charts">
-        <Chart title="Acoes sustentaveis por tipo" data={actionsByType} />
-        <Chart title="Pontuacao por usuario" data={pointsByUser} />
+        <PieChart title="Ações sustentáveis por tipo" data={actionsByType} />
+        <BarChart title="Ranking dos 5 usuários com maior pontuação" data={pointsByUser} />
       </div>
     </>
   );
@@ -193,7 +233,7 @@ function extractErrorMessage(error) {
     return error.message;
   }
 
-  return "Nao foi possivel conectar com a API.";
+  return "Não foi possível conectar com a API.";
 }
 
 function Partners({
@@ -206,6 +246,7 @@ function Partners({
   onToggleReward,
 }) {
   const [search, setSearch] = useState("");
+  const [tableView, setTableView] = useState("recompensas");
   const [partnerForm, setPartnerForm] = useState(null);
   const [rewardForm, setRewardForm] = useState(null);
   const [status, setStatus] = useState("");
@@ -215,9 +256,17 @@ function Partners({
     return recompensas.filter((reward) => `${reward.parceiro?.nome || ""} ${reward.descricao}`.toLowerCase().includes(term));
   }, [recompensas, search]);
 
+  const filteredPartners = useMemo(() => {
+    const term = search.trim().toLowerCase();
+    return parceiros.filter((parceiro) =>
+      `${parceiro.nome || ""} ${parceiro.descricao || ""} ${parceiro.cidade?.nome || ""}`.toLowerCase().includes(term),
+    );
+  }, [parceiros, search]);
+
   function startNewPartner() {
     setStatus("");
     setRewardForm(null);
+    setTableView("parceiros");
     setPartnerForm({
       id: null,
       nome: "",
@@ -230,6 +279,7 @@ function Partners({
   function startEditPartner(parceiro) {
     setStatus("");
     setRewardForm(null);
+    setTableView("parceiros");
     setPartnerForm({
       id: parceiro.id,
       nome: parceiro.nome || "",
@@ -242,6 +292,7 @@ function Partners({
   function startNewReward() {
     setStatus("");
     setPartnerForm(null);
+    setTableView("recompensas");
     setRewardForm({
       id: null,
       descricao: "",
@@ -255,6 +306,7 @@ function Partners({
   function startEditReward(reward) {
     setStatus("");
     setPartnerForm(null);
+    setTableView("recompensas");
     setRewardForm({
       id: reward.id || reward.idRecompensa,
       descricao: reward.descricao || "",
@@ -297,13 +349,6 @@ function Partners({
 
   return (
     <>
-      <input
-        className="search"
-        type="search"
-        placeholder="Buscar parceiro pelo nome"
-        value={search}
-        onChange={(event) => setSearch(event.target.value)}
-      />
       <div className="partner-stats">
         <article className="summary-card">
           <strong className="summary-number">{parceiros.length}</strong>
@@ -317,11 +362,29 @@ function Partners({
         </article>
       </div>
 
+      <div className="table-toolbar">
+        <div className="segmented" aria-label="Selecionar tabela">
+          <button className={tableView === "recompensas" ? "active" : ""} type="button" onClick={() => setTableView("recompensas")}>
+            Recompensas
+          </button>
+          <button className={tableView === "parceiros" ? "active" : ""} type="button" onClick={() => setTableView("parceiros")}>
+            Parceiros
+          </button>
+        </div>
+        <input
+          className="search"
+          type="search"
+          placeholder={tableView === "recompensas" ? "Buscar por parceiro ou recompensa" : "Buscar por parceiro, descrição ou cidade"}
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+        />
+      </div>
+
       {partnerForm ? (
         <form className="admin-form" onSubmit={submitPartner}>
           <h2>{partnerForm.id ? "Editar parceiro" : "Novo parceiro"}</h2>
           <input value={partnerForm.nome} onChange={(event) => setPartnerForm({ ...partnerForm, nome: event.target.value })} placeholder="Nome do parceiro" required />
-          <input value={partnerForm.descricao} onChange={(event) => setPartnerForm({ ...partnerForm, descricao: event.target.value })} placeholder="Descricao" />
+          <input value={partnerForm.descricao} onChange={(event) => setPartnerForm({ ...partnerForm, descricao: event.target.value })} placeholder="Descrição" />
           <select value={partnerForm.cidadeId} onChange={(event) => setPartnerForm({ ...partnerForm, cidadeId: event.target.value })} required>
             <option value="">Selecione a cidade</option>
             {cidades.map((cidade) => (
@@ -342,9 +405,9 @@ function Partners({
       {rewardForm ? (
         <form className="admin-form" onSubmit={submitReward}>
           <h2>{rewardForm.id ? "Editar recompensa" : "Nova recompensa"}</h2>
-          <input value={rewardForm.descricao} onChange={(event) => setRewardForm({ ...rewardForm, descricao: event.target.value })} placeholder="Descricao da recompensa" required />
-          <input value={rewardForm.pontosNecessarios} onChange={(event) => setRewardForm({ ...rewardForm, pontosNecessarios: event.target.value })} placeholder="Pontos necessarios" min="0" type="number" required />
-          <input value={rewardForm.quantidadeDisponivel} onChange={(event) => setRewardForm({ ...rewardForm, quantidadeDisponivel: event.target.value })} placeholder="Quantidade disponivel" min="0" type="number" required />
+          <input value={rewardForm.descricao} onChange={(event) => setRewardForm({ ...rewardForm, descricao: event.target.value })} placeholder="Descrição da recompensa" required />
+          <input value={rewardForm.pontosNecessarios} onChange={(event) => setRewardForm({ ...rewardForm, pontosNecessarios: event.target.value })} placeholder="Pontos necessários" min="0" type="number" required />
+          <input value={rewardForm.quantidadeDisponivel} onChange={(event) => setRewardForm({ ...rewardForm, quantidadeDisponivel: event.target.value })} placeholder="Quantidade disponível" min="0" type="number" required />
           <select value={rewardForm.parceiroId} onChange={(event) => setRewardForm({ ...rewardForm, parceiroId: event.target.value })} required>
             <option value="">Selecione o parceiro</option>
             {parceiros.map((parceiro) => (
@@ -364,6 +427,7 @@ function Partners({
 
       {status ? <div className="status admin-status">{status}</div> : null}
 
+      {tableView === "recompensas" ? (
       <div className="table-wrap">
         <table>
           <thead>
@@ -371,9 +435,9 @@ function Partners({
               <th>Nome parceiro</th>
               <th>Data cadastro</th>
               <th>Recompensa</th>
-              <th>Pontos necessarios para ganhar</th>
+              <th>Pontos necessários para ganhar</th>
               <th>Status</th>
-              <th>Acoes</th>
+              <th>Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -401,20 +465,21 @@ function Partners({
           </tbody>
         </table>
       </div>
+      ) : (
 
-      <div className="table-wrap partner-table">
+      <div className="table-wrap">
         <table>
           <thead>
             <tr>
               <th>Parceiro</th>
-              <th>Descricao</th>
+              <th>Descrição</th>
               <th>Cidade</th>
               <th>Status</th>
-              <th>Acoes</th>
+              <th>Ações</th>
             </tr>
           </thead>
           <tbody>
-            {parceiros.map((parceiro) => (
+            {filteredPartners.map((parceiro) => (
               <tr key={parceiro.id}>
                 <td><strong>{parceiro.nome}</strong></td>
                 <td>{parceiro.descricao || "-"}</td>
@@ -433,6 +498,7 @@ function Partners({
           </tbody>
         </table>
       </div>
+      )}
     </>
   );
 }
@@ -454,41 +520,94 @@ function Feedbacks({ feedbacks }) {
   );
 }
 
-function Settings({ email, onEmailChange }) {
+function Settings({ email, onEmailChange, onPasswordChange }) {
   const [status, setStatus] = useState("");
   const [nextEmail, setNextEmail] = useState(email);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [savingEmail, setSavingEmail] = useState(false);
+  const [savingPassword, setSavingPassword] = useState(false);
 
-  function submit(event) {
+  async function submitEmail(event) {
     event.preventDefault();
-    onEmailChange(nextEmail.trim() || email);
-    setStatus("Configuracoes salvas.");
+    setSavingEmail(true);
+    setStatus("");
+
+    try {
+      await onEmailChange(nextEmail.trim() || email);
+      setStatus("Email salvo.");
+    } catch (error) {
+      setStatus(extractErrorMessage(error));
+    } finally {
+      setSavingEmail(false);
+    }
+  }
+
+  async function submitPassword(event) {
+    event.preventDefault();
+    setStatus("");
+
+    if (!newPassword.trim()) {
+      setStatus("Informe a nova senha.");
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setStatus("As senhas não conferem.");
+      return;
+    }
+
+    setSavingPassword(true);
+
+    try {
+      await onPasswordChange(newPassword);
+      setNewPassword("");
+      setConfirmPassword("");
+      setStatus("Senha alterada.");
+    } catch (error) {
+      setStatus(extractErrorMessage(error));
+    } finally {
+      setSavingPassword(false);
+    }
   }
 
   return (
-    <form className="settings" onSubmit={submit}>
-      <section className="settings-card">
+    <div className="settings">
+      <form className="settings-card" onSubmit={submitEmail}>
         <h2>Email da Prefeitura</h2>
         <div className="settings-row">
           <input className="field light" type="email" value={nextEmail} onChange={(event) => setNextEmail(event.target.value)} />
-          <button className="pill-btn" type="submit">
-            Salvar
+          <button className="pill-btn" type="submit" disabled={savingEmail}>
+            {savingEmail ? "Salvando..." : "Salvar"}
           </button>
         </div>
-      </section>
-      <section className="settings-card">
+      </form>
+      <form className="settings-card" onSubmit={submitPassword}>
         <h2>Alterar senha</h2>
         <div className="settings-row">
           <div className="password-stack">
-            <input className="field light" type="password" placeholder="Nova senha" />
-            <input className="field light" type="password" placeholder="Confirmar nova senha" />
+            <input
+              className="field light"
+              type="password"
+              placeholder="Nova senha"
+              value={newPassword}
+              onChange={(event) => setNewPassword(event.target.value)}
+            />
+            <input
+              className="field light"
+              type="password"
+              placeholder="Confirmar nova senha"
+              value={confirmPassword}
+              onChange={(event) => setConfirmPassword(event.target.value)}
+            />
           </div>
-          <button className="pill-btn" type="submit">
-            Salvar
+          <button className="pill-btn" type="submit" disabled={savingPassword}>
+            {savingPassword ? "Salvando..." : "Salvar"}
           </button>
         </div>
-      </section>
+      </form>
       <div className="status">{status}</div>
-    </form>
+    </div>
   );
 }
 
@@ -499,6 +618,7 @@ function AdminShell({
   onTabChange,
   onLogout,
   onEmailChange,
+  onPasswordChange,
   onSavePartner,
   onSaveReward,
   onTogglePartner,
@@ -508,7 +628,7 @@ function AdminShell({
     ["inicio", "Inicio"],
     ["parceiros", "Parceiros"],
     ["feedbacks", "Feedbacks"],
-    ["configuracoes", "Configuracoes"],
+    ["configuracoes", "Configurações"],
   ];
 
   return (
@@ -541,7 +661,9 @@ function AdminShell({
           />
         )}
         {activeTab === "feedbacks" && <Feedbacks feedbacks={data.feedbacks} />}
-        {activeTab === "configuracoes" && <Settings email={email} onEmailChange={onEmailChange} />}
+        {activeTab === "configuracoes" && (
+          <Settings email={email} onEmailChange={onEmailChange} onPasswordChange={onPasswordChange} />
+        )}
       </div>
     </section>
   );
@@ -573,7 +695,15 @@ export default function App() {
     }
 
     if (response.status === 204) return null;
-    return response.json();
+
+    const text = await response.text();
+    if (!text) return null;
+
+    try {
+      return JSON.parse(text);
+    } catch {
+      return text;
+    }
   }
 
   async function loadData(authToken = token) {
@@ -620,11 +750,11 @@ export default function App() {
       const nextToken = user.token || "";
 
       if (!Object.hasOwn(user, "tipo")) {
-        throw new Error("A API nao retornou o tipo do usuario. Publique a API atualizada antes de acessar o painel.");
+        throw new Error("A API não retornou o tipo do usuário. Publique a API atualizada antes de acessar o painel.");
       }
 
       if (user.tipo !== "PREFEITURA") {
-        throw new Error("Este acesso e exclusivo para usuarios do tipo PREFEITURA.");
+        throw new Error("Este acesso é exclusivo para usuários do tipo PREFEITURA.");
       }
 
       setToken(nextToken);
@@ -649,7 +779,7 @@ export default function App() {
         : null;
 
       if (!cidade) {
-        throw new Error("Cidade nao encontrada. Digite o nome igual ao cadastro da API.");
+        throw new Error("Cidade não encontrada. Digite o nome igual ao cadastro da API.");
       }
 
       await request(
@@ -670,16 +800,30 @@ export default function App() {
 
       setEmail(nextEmail);
       localStorage.setItem("renovabioEmail", nextEmail);
-      setStatus("Cadastro concluido. Faca login para acessar o painel.");
+      setStatus("Cadastro concluído. Faça login para acessar o painel.");
       setTimeout(() => setScreen("login"), 900);
     } catch (error) {
       setStatus(extractErrorMessage(error));
     }
   }
 
-  function updateEmail(nextEmail) {
-    setEmail(nextEmail);
-    localStorage.setItem("renovabioEmail", nextEmail);
+  async function updateEmail(nextEmail) {
+    const user = await request("/usuarios/me/email", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: nextEmail }),
+    });
+    const savedEmail = user?.email || nextEmail;
+    setEmail(savedEmail);
+    localStorage.setItem("renovabioEmail", savedEmail);
+  }
+
+  async function updatePassword(newPassword) {
+    await request("/usuarios/me/senha", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ novaSenha: newPassword }),
+    });
   }
 
   async function savePartner(form) {
@@ -738,10 +882,12 @@ export default function App() {
 
   useEffect(() => {
     if (token) {
-      loadData(token).catch(() => {
-        setToken("");
-        localStorage.removeItem("renovabioToken");
-      });
+      loadData(token)
+        .then(() => setScreen("admin"))
+        .catch(() => {
+          setToken("");
+          localStorage.removeItem("renovabioToken");
+        });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -766,6 +912,7 @@ export default function App() {
       onTabChange={setActiveTab}
       onLogout={logout}
       onEmailChange={updateEmail}
+      onPasswordChange={updatePassword}
       onSavePartner={savePartner}
       onSaveReward={saveReward}
       onTogglePartner={togglePartner}

@@ -274,7 +274,7 @@ button {
 }
 
 .chart-card {
-  background: linear-gradient(180deg, #fff, #fffdf0);
+  background: #fffef7;
   padding: 22px 22px 16px;
   min-height: 310px;
 }
@@ -327,7 +327,7 @@ button {
   width: 100%;
   border-radius: 2px 2px 0 0;
   min-height: 16px;
-  background: linear-gradient(180deg, var(--green-500), #edf8d4);
+  background: var(--green-500);
 }
 
 .bar-value {
@@ -355,6 +355,62 @@ button {
   text-align: center;
 }
 
+.pie-card {
+  min-height: 310px;
+}
+
+.pie-layout {
+  min-height: 230px;
+  display: grid;
+  grid-template-columns: minmax(160px, 220px) 1fr;
+  gap: 26px;
+  align-items: center;
+}
+
+.pie {
+  width: min(220px, 100%);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  box-shadow: inset 0 0 0 1px rgba(49, 49, 46, 0.08);
+}
+
+.pie span {
+  width: 76px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--ink);
+  background: #fffef7;
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.pie-legend {
+  display: grid;
+  gap: 12px;
+}
+
+.legend-row {
+  display: grid;
+  grid-template-columns: 14px 1fr auto;
+  gap: 10px;
+  align-items: center;
+  color: var(--muted);
+}
+
+.legend-color {
+  width: 14px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+}
+
+.legend-row strong {
+  color: var(--ink);
+}
+
 .empty-state {
   min-height: 180px;
   border-radius: 8px;
@@ -368,10 +424,41 @@ button {
   border: 0;
   border-radius: 999px;
   padding: 0 24px;
-  margin-bottom: 28px;
   background: white;
   color: var(--ink);
   box-shadow: var(--shadow);
+}
+
+.table-toolbar {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 18px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.segmented {
+  display: inline-grid;
+  grid-template-columns: repeat(2, 1fr);
+  border: 1px solid var(--green-500);
+  border-radius: 999px;
+  overflow: hidden;
+  background: white;
+  box-shadow: var(--shadow);
+}
+
+.segmented button {
+  border: 0;
+  background: transparent;
+  color: var(--green-700);
+  min-height: 44px;
+  padding: 0 20px;
+  font-weight: 800;
+}
+
+.segmented button.active {
+  color: white;
+  background: var(--green-500);
 }
 
 .partner-stats {
@@ -632,9 +719,18 @@ td {
     gap: 12px;
   }
 
+  .pie-layout {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
   .summary-card {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .table-toolbar {
+    grid-template-columns: 1fr;
   }
 
   .admin-form {
