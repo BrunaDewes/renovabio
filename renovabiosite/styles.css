@@ -597,6 +597,7 @@ td {
   display: flex;
   justify-content: center;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
 .icon-btn {
@@ -607,6 +608,11 @@ td {
   font-size: 13px;
   font-weight: 800;
   padding: 6px 9px;
+}
+
+.icon-btn.danger {
+  border-color: #b83232;
+  color: #8f1f1f;
 }
 
 .feedback-list {

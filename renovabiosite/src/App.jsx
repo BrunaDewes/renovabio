@@ -9,6 +9,8 @@ const emptyData = {
   cidades: [],
   feedbacks: [],
   acoes: [],
+  desafios: [],
+  trocas: [],
 };
 
 function formatDate(value) {
@@ -24,6 +26,14 @@ function normalizeText(value) {
     .replace(/[\u0300-\u036f]/g, "")
     .trim()
     .toLowerCase();
+}
+
+function isCurrentMonth(value) {
+  if (!value) return false;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return false;
+  const now = new Date();
+  return date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth();
 }
 
 function metric(label, value, extra = "") {
@@ -103,7 +113,7 @@ function PieChart({ title, data }) {
   );
 }
 
-function AuthScreen({ screen, email, onScreenChange, onLogin, onSignup }) {
+function AuthScreen({ screen, email, onScreenChange, onLogin, onSignup, onRecoverPassword }) {
   const [status, setStatus] = useState("");
   const isLogin = screen === "login";
   const isSignup = screen === "cadastro";
@@ -125,7 +135,18 @@ function AuthScreen({ screen, email, onScreenChange, onLogin, onSignup }) {
       return;
     }
 
-    setStatus("Instrução de recuperação enviada.");
+    if (!form.novaSenha.value.trim()) {
+      setStatus("Informe a nova senha.");
+      return;
+    }
+
+    if (form.novaSenha.value !== form.confirmarSenha.value) {
+      setStatus("As senhas não conferem.");
+      return;
+    }
+
+    setStatus("Alterando senha...");
+    onRecoverPassword(form.email.value.trim(), form.novaSenha.value, setStatus);
   }
 
   return (
@@ -171,10 +192,12 @@ function AuthScreen({ screen, email, onScreenChange, onLogin, onSignup }) {
             </>
           ) : (
             <>
-              <p className="auth-copy">Informe o email para o qual deseja redefinir sua senha</p>
+              <p className="auth-copy">Informe o email e cadastre uma nova senha</p>
               <input className="field" name="email" type="email" placeholder="Email" required />
+              <input className="field" name="novaSenha" type="password" placeholder="Nova senha" required />
+              <input className="field" name="confirmarSenha" type="password" placeholder="Confirmar nova senha" required />
               <button className="primary-btn" type="submit">
-                Enviar
+                Alterar senha
               </button>
             </>
           )}
@@ -189,12 +212,15 @@ function AuthScreen({ screen, email, onScreenChange, onLogin, onSignup }) {
 }
 
 function Dashboard({ data }) {
-  const { usuarios, parceiros, recompensas, acoes } = data;
+  const { usuarios, parceiros, recompensas, acoes, desafios, trocas } = data;
   const citizenUsers = usuarios.filter((user) => user.tipo !== "PREFEITURA");
   const activeUsers = citizenUsers.filter((user) => user.ativo === true).length;
   const activePartners = parceiros.filter((parceiro) => parceiro.ativo !== false).length;
   const totalPoints = citizenUsers.reduce((total, user) => total + (Number(user.pontuacao ?? user.pontuacaoAtual) || 0), 0);
   const actions = acoes.length;
+  const newUsersThisMonth = citizenUsers.filter((user) => isCurrentMonth(user.dataCadastro)).length;
+  const actionsThisMonth = acoes.filter((action) => isCurrentMonth(action.dataAcao)).length;
+  const challengeTitles = new Map(desafios.map((desafio) => [Number(desafio.id || desafio.idDesafio), desafio.titulo || "Desafio"]));
   const pointsByUser = citizenUsers
     .map((user) => ({
       label: user.nome?.split(" ")[0] || user.email?.split("@")[0] || `U${user.id}`,
@@ -209,6 +235,31 @@ function Dashboard({ data }) {
       return groups;
     }, {}),
   ).map(([label, value]) => ({ label: label.replaceAll("_", " "), value }));
+  const mostCompletedChallenges = Object.entries(
+    acoes
+      .filter((action) => action.tipoAcao === "DESAFIO")
+      .reduce((groups, action) => {
+        const id = Number(action.idReferencia);
+        const label = challengeTitles.get(id) || `Desafio ${id || ""}`.trim();
+        groups[label] = (groups[label] || 0) + 1;
+        return groups;
+      }, {}),
+  )
+    .map(([label, value]) => ({ label, value }))
+    .sort((a, b) => b.value - a.value)
+    .slice(0, 5);
+  const mostRedeemedRewards = Object.entries(
+    trocas.reduce((groups, troca) => {
+      const reward = troca.recompensaDescricao || "Recompensa";
+      const partner = troca.parceiroNome ? ` (${troca.parceiroNome})` : "";
+      const label = `${reward}${partner}`;
+      groups[label] = (groups[label] || 0) + 1;
+      return groups;
+    }, {}),
+  )
+    .map(([label, value]) => ({ label, value }))
+    .sort((a, b) => b.value - a.value)
+    .slice(0, 5);
 
   return (
     <>
@@ -217,18 +268,26 @@ function Dashboard({ data }) {
         {metric("Usuários ativos", activeUsers)}
         {metric("Parceiros ativos", activePartners)}
         {metric("Recompensas ativas", recompensas.filter((item) => item.ativo !== false).length)}
+        {metric("Novos usuários no mês", newUsersThisMonth)}
+        {metric("Ações sustentáveis no mês", actionsThisMonth)}
         {metric("Total de ações sustentáveis", actions, "wide")}
         {metric("Pontuação total gerada", totalPoints, "wide")}
       </div>
       <div className="charts">
         <PieChart title="Ações sustentáveis por tipo" data={actionsByType} />
         <BarChart title="Ranking dos 5 usuários com maior pontuação" data={pointsByUser} />
+        <BarChart title="Desafios mais realizados" data={mostCompletedChallenges} />
+        <BarChart title="Recompensas mais resgatadas" data={mostRedeemedRewards} />
       </div>
     </>
   );
 }
 
 function extractErrorMessage(error) {
+  if (error?.status === 403 && error?.path?.startsWith("/parceiros/")) {
+    return "Não foi possível excluir este parceiro. Confirme se você está logada na prefeitura da mesma cidade dele.";
+  }
+
   if (error instanceof Error && error.message) {
     return error.message;
   }
@@ -237,13 +296,14 @@ function extractErrorMessage(error) {
 }
 
 function Partners({
-  cidades,
   parceiros,
   recompensas,
   onSavePartner,
   onSaveReward,
   onTogglePartner,
   onToggleReward,
+  onDeletePartner,
+  onDeleteReward,
 }) {
   const [search, setSearch] = useState("");
   const [tableView, setTableView] = useState("recompensas");
@@ -271,7 +331,6 @@ function Partners({
       id: null,
       nome: "",
       descricao: "",
-      cidadeId: cidades[0]?.id || "",
       ativo: true,
     });
   }
@@ -284,7 +343,6 @@ function Partners({
       id: parceiro.id,
       nome: parceiro.nome || "",
       descricao: parceiro.descricao || "",
-      cidadeId: parceiro.cidade?.id || cidades[0]?.id || "",
       ativo: parceiro.ativo !== false,
     });
   }
@@ -322,7 +380,6 @@ function Partners({
     try {
       await onSavePartner({
         ...partnerForm,
-        cidadeId: Number(partnerForm.cidadeId),
       });
       setPartnerForm(null);
       setStatus("Parceiro salvo.");
@@ -342,6 +399,32 @@ function Partners({
       });
       setRewardForm(null);
       setStatus("Recompensa salva.");
+    } catch (error) {
+      setStatus(extractErrorMessage(error));
+    }
+  }
+
+  async function deletePartner(parceiro) {
+    const confirmed = window.confirm(`Excluir o parceiro "${parceiro.nome}" e suas recompensas?`);
+    if (!confirmed) return;
+
+    try {
+      await onDeletePartner(parceiro);
+      setPartnerForm(null);
+      setStatus("Parceiro excluído.");
+    } catch (error) {
+      setStatus(extractErrorMessage(error));
+    }
+  }
+
+  async function deleteReward(reward) {
+    const confirmed = window.confirm(`Excluir a recompensa "${reward.descricao}"?`);
+    if (!confirmed) return;
+
+    try {
+      await onDeleteReward(reward);
+      setRewardForm(null);
+      setStatus("Recompensa excluída.");
     } catch (error) {
       setStatus(extractErrorMessage(error));
     }
@@ -374,7 +457,7 @@ function Partners({
         <input
           className="search"
           type="search"
-          placeholder={tableView === "recompensas" ? "Buscar por parceiro ou recompensa" : "Buscar por parceiro, descrição ou cidade"}
+          placeholder={tableView === "recompensas" ? "Buscar por parceiro ou recompensa" : "Buscar por parceiro ou descrição"}
           value={search}
           onChange={(event) => setSearch(event.target.value)}
         />
@@ -385,12 +468,6 @@ function Partners({
           <h2>{partnerForm.id ? "Editar parceiro" : "Novo parceiro"}</h2>
           <input value={partnerForm.nome} onChange={(event) => setPartnerForm({ ...partnerForm, nome: event.target.value })} placeholder="Nome do parceiro" required />
           <input value={partnerForm.descricao} onChange={(event) => setPartnerForm({ ...partnerForm, descricao: event.target.value })} placeholder="Descrição" />
-          <select value={partnerForm.cidadeId} onChange={(event) => setPartnerForm({ ...partnerForm, cidadeId: event.target.value })} required>
-            <option value="">Selecione a cidade</option>
-            {cidades.map((cidade) => (
-              <option key={cidade.id} value={cidade.id}>{cidade.nome} - {cidade.estado}</option>
-            ))}
-          </select>
           <label className="check-row">
             <input type="checkbox" checked={partnerForm.ativo} onChange={(event) => setPartnerForm({ ...partnerForm, ativo: event.target.checked })} />
             Ativo
@@ -458,6 +535,9 @@ function Partners({
                     <button className="icon-btn" type="button" onClick={() => onToggleReward(reward)}>
                       {reward.ativo === false ? "Ativar" : "Desativar"}
                     </button>
+                    <button className="icon-btn danger" type="button" onClick={() => deleteReward(reward)}>
+                      Excluir
+                    </button>
                   </span>
                 </td>
               </tr>
@@ -490,6 +570,9 @@ function Partners({
                     <button className="icon-btn" type="button" onClick={() => startEditPartner(parceiro)}>Editar</button>
                     <button className="icon-btn" type="button" onClick={() => onTogglePartner(parceiro)}>
                       {parceiro.ativo === false ? "Ativar" : "Desativar"}
+                    </button>
+                    <button className="icon-btn danger" type="button" onClick={() => deletePartner(parceiro)}>
+                      Excluir
                     </button>
                   </span>
                 </td>
@@ -623,10 +706,12 @@ function AdminShell({
   onSaveReward,
   onTogglePartner,
   onToggleReward,
+  onDeletePartner,
+  onDeleteReward,
 }) {
   const tabs = [
     ["inicio", "Inicio"],
-    ["parceiros", "Parceiros"],
+    ["parceiros", "Parceiros e recompensas"],
     ["feedbacks", "Feedbacks"],
     ["configuracoes", "Configurações"],
   ];
@@ -651,13 +736,14 @@ function AdminShell({
         {activeTab === "inicio" && <Dashboard data={data} />}
         {activeTab === "parceiros" && (
           <Partners
-            cidades={data.cidades}
             parceiros={data.parceiros}
             recompensas={data.recompensas}
             onSavePartner={onSavePartner}
             onSaveReward={onSaveReward}
             onTogglePartner={onTogglePartner}
             onToggleReward={onToggleReward}
+            onDeletePartner={onDeletePartner}
+            onDeleteReward={onDeleteReward}
           />
         )}
         {activeTab === "feedbacks" && <Feedbacks feedbacks={data.feedbacks} />}
@@ -678,20 +764,24 @@ export default function App() {
 
   async function request(path, options = {}, authToken = token) {
     const headers = { ...(options.headers || {}) };
-    if (authToken) headers.Authorization = `Bearer ${authToken}`;
+    const effectiveToken = authToken || localStorage.getItem("renovabioToken") || "";
+    if (effectiveToken) headers.Authorization = `Bearer ${effectiveToken}`;
     const response = await fetch(`${API_URL}${path}`, { ...options, headers });
     if (!response.ok) {
       let message = `Erro ${response.status} ao chamar ${path}`;
 
       try {
         const payload = await response.json();
-        message = payload.message || payload.error || message;
+        message = payload.message || payload.detail || payload.error || message;
       } catch {
         const text = await response.text().catch(() => "");
         if (text) message = text;
       }
 
-      throw new Error(message);
+      const error = new Error(message);
+      error.status = response.status;
+      error.path = path;
+      throw error;
     }
 
     if (response.status === 204) return null;
@@ -713,12 +803,14 @@ export default function App() {
     }
 
     try {
-      const [usuarios, parceiros, recompensas, feedbacks, cidades] = await Promise.all([
+      const [usuarios, parceiros, recompensas, feedbacks, cidades, desafios, trocas] = await Promise.all([
         request("/usuarios", {}, authToken),
         request("/parceiros", {}, authToken),
         request("/recompensas", {}, authToken),
         request("/feedbacks", {}, authToken),
         request("/cidades", {}, ""),
+        request("/desafios", {}, "").catch(() => []),
+        request("/recompensas/trocas", {}, authToken).catch(() => []),
       ]);
       const userList = Array.isArray(usuarios) ? usuarios : [];
       const actionGroups = await Promise.all(
@@ -733,6 +825,8 @@ export default function App() {
         cidades: Array.isArray(cidades) ? cidades : [],
         feedbacks: Array.isArray(feedbacks) ? feedbacks : [],
         acoes: actionGroups.flat(),
+        desafios: Array.isArray(desafios) ? desafios : [],
+        trocas: Array.isArray(trocas) ? trocas : [],
       });
     } catch (error) {
       setData(emptyData);
@@ -741,6 +835,8 @@ export default function App() {
   }
 
   async function login(nextEmail, password, setStatus) {
+    let loginValidated = false;
+
     try {
       const user = await request("/usuarios/login", {
         method: "POST",
@@ -757,6 +853,7 @@ export default function App() {
         throw new Error("Este acesso é exclusivo para usuários do tipo PREFEITURA.");
       }
 
+      loginValidated = true;
       setToken(nextToken);
       setEmail(nextEmail);
       localStorage.setItem("renovabioToken", nextToken);
@@ -767,7 +864,11 @@ export default function App() {
     } catch (error) {
       setToken("");
       localStorage.removeItem("renovabioToken");
-      setStatus(extractErrorMessage(error));
+      if (!loginValidated && (error?.status === 401 || error?.status === 403)) {
+        setStatus("Email ou senha incorretos.");
+      } else {
+        setStatus(extractErrorMessage(error));
+      }
     }
   }
 
@@ -807,6 +908,27 @@ export default function App() {
     }
   }
 
+  async function recoverPassword(nextEmail, newPassword, setStatus) {
+    try {
+      await request(
+        "/usuarios/recuperar-senha",
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: nextEmail, novaSenha: newPassword }),
+        },
+        "",
+      );
+
+      setEmail(nextEmail);
+      localStorage.setItem("renovabioEmail", nextEmail);
+      setStatus("Senha alterada. Faça login com a nova senha.");
+      setTimeout(() => setScreen("login"), 1000);
+    } catch (error) {
+      setStatus(extractErrorMessage(error));
+    }
+  }
+
   async function updateEmail(nextEmail) {
     const user = await request("/usuarios/me/email", {
       method: "PATCH",
@@ -836,7 +958,6 @@ export default function App() {
       body: JSON.stringify({
         nome: form.nome,
         descricao: form.descricao,
-        cidadeId: form.cidadeId,
         ativo: form.ativo,
       }),
     });
@@ -874,6 +995,17 @@ export default function App() {
     await loadData();
   }
 
+  async function deletePartner(parceiro) {
+    await request(`/parceiros/${parceiro.id}`, { method: "DELETE" });
+    await loadData();
+  }
+
+  async function deleteReward(reward) {
+    const id = reward.id || reward.idRecompensa;
+    await request(`/recompensas/${id}`, { method: "DELETE" });
+    await loadData();
+  }
+
   function logout() {
     setScreen("login");
     setToken("");
@@ -900,6 +1032,7 @@ export default function App() {
         onScreenChange={setScreen}
         onLogin={login}
         onSignup={signupPrefeitura}
+        onRecoverPassword={recoverPassword}
       />
     );
   }
@@ -917,6 +1050,8 @@ export default function App() {
       onSaveReward={saveReward}
       onTogglePartner={togglePartner}
       onToggleReward={toggleReward}
+      onDeletePartner={deletePartner}
+      onDeleteReward={deleteReward}
     />
   );
 }

@@ -5,6 +5,7 @@ import com.renovabio.renovabioapi.model.Cidade;
 import com.renovabio.renovabioapi.model.Parceiro;
 import com.renovabio.renovabioapi.repository.CidadeRepository;
 import com.renovabio.renovabioapi.repository.ParceiroRepository;
+import com.renovabio.renovabioapi.repository.RecompensaRepository;
 import com.renovabio.renovabioapi.service.UsuarioAutenticadoService;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -17,14 +18,17 @@ public class ParceiroController {
 
     private final ParceiroRepository parceiroRepository;
     private final CidadeRepository cidadeRepository;
+    private final RecompensaRepository recompensaRepository;
     private final UsuarioAutenticadoService usuarioAutenticadoService;
 
     public ParceiroController(
             ParceiroRepository parceiroRepository,
             CidadeRepository cidadeRepository,
+            RecompensaRepository recompensaRepository,
             UsuarioAutenticadoService usuarioAutenticadoService) {
         this.parceiroRepository = parceiroRepository;
         this.cidadeRepository = cidadeRepository;
+        this.recompensaRepository = recompensaRepository;
         this.usuarioAutenticadoService = usuarioAutenticadoService;
     }
 
@@ -64,18 +68,24 @@ public class ParceiroController {
         return parceiroRepository.save(parceiro);
     }
 
+    @DeleteMapping("/{id}")
+    public void excluir(@PathVariable Long id) {
+        Parceiro parceiro = parceiroRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Parceiro nao encontrado"));
+
+        validarParceiroDaPrefeitura(parceiro);
+        recompensaRepository.deleteAll(recompensaRepository.findByParceiroId(id));
+        parceiroRepository.delete(parceiro);
+    }
+
     private void aplicarDados(Parceiro parceiro, ParceiroRequestDTO dto) {
         if (dto.getNome() == null || dto.getNome().isBlank()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nome do parceiro e obrigatorio");
         }
 
-        if (dto.getCidadeId() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cidade e obrigatoria");
-        }
+        Long cidadeId = usuarioAutenticadoService.getCidadePrefeituraObrigatoria();
 
-        usuarioAutenticadoService.validarCidadeDaPrefeitura(dto.getCidadeId());
-
-        Cidade cidade = cidadeRepository.findById(dto.getCidadeId())
+        Cidade cidade = cidadeRepository.findById(cidadeId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cidade nao encontrada"));
 
         parceiro.setNome(dto.getNome().trim());

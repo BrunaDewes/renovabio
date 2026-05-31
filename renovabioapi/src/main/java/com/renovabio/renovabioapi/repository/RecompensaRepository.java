@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface RecompensaRepository extends JpaRepository<Recompensa, Long> {
     List<Recompensa> findByParceiroCidadeId(Long cidadeId);
+
+    List<Recompensa> findByParceiroId(Long parceiroId);
 }

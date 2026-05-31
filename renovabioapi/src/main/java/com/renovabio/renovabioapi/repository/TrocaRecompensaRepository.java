@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TrocaRecompensaRepository extends JpaRepository<TrocaRecompensa, Long> {
     List<TrocaRecompensa> findByUsuarioIdUsuarioOrderByDataTrocaDesc(Long usuarioId);
+
+    List<TrocaRecompensa> findByRecompensaParceiroCidadeIdOrderByDataTrocaDesc(Long cidadeId);
 }

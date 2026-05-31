@@ -74,9 +74,23 @@ public class RecompensaController {
         return recompensaRepository.save(recompensa);
     }
 
+    @DeleteMapping("/{id}")
+    public void excluir(@PathVariable Long id) {
+        Recompensa recompensa = recompensaRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Recompensa nao encontrada"));
+
+        validarRecompensaDaPrefeitura(recompensa);
+        recompensaRepository.delete(recompensa);
+    }
+
     @GetMapping("/usuario/{usuarioId}/trocas")
     public List<HistoricoTrocaRecompensaDTO> listarTrocasUsuario(@PathVariable Long usuarioId) {
         return trocaRecompensaService.listarTrocasUsuario(usuarioId);
+    }
+
+    @GetMapping("/trocas")
+    public List<HistoricoTrocaRecompensaDTO> listarTrocasPrefeitura() {
+        return trocaRecompensaService.listarTrocasPorCidade(usuarioAutenticadoService.getCidadePrefeituraObrigatoria());
     }
 
     // TROCAR RECOMPENSA

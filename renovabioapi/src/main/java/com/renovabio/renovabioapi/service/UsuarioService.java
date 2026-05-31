@@ -187,6 +187,7 @@ public class UsuarioService {
         dto.setPhotoUri(usuario.getFotoPerfilUrl());
         dto.setTipo(usuario.getTipo());
         dto.setAtivo(usuario.getAtivo());
+        dto.setDataCadastro(usuario.getDataCadastro());
         return dto;
     }
 

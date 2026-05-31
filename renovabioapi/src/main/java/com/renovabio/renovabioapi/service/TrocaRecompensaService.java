@@ -80,6 +80,12 @@ public class TrocaRecompensaService {
                 .collect(Collectors.toList());
     }
 
+    public List<HistoricoTrocaRecompensaDTO> listarTrocasPorCidade(Long cidadeId) {
+        return trocaRecompensaRepository.findByRecompensaParceiroCidadeIdOrderByDataTrocaDesc(cidadeId).stream()
+                .map(this::toHistoricoDTO)
+                .collect(Collectors.toList());
+    }
+
     private HistoricoTrocaRecompensaDTO toHistoricoDTO(TrocaRecompensa troca) {
         HistoricoTrocaRecompensaDTO dto = new HistoricoTrocaRecompensaDTO();
         Recompensa recompensa = troca.getRecompensa();

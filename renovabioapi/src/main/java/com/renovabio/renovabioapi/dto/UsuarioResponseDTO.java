@@ -1,6 +1,7 @@
 package com.renovabio.renovabioapi.dto;
 
 import com.renovabio.renovabioapi.model.TipoUsuario;
+import java.time.LocalDateTime;
 
 //retorna dados para o cliente sem senha.
 public class UsuarioResponseDTO {
@@ -13,6 +14,7 @@ public class UsuarioResponseDTO {
     private String token;
     private TipoUsuario tipo;
     private Boolean ativo;
+    private LocalDateTime dataCadastro;
 
     // getters e setters
     public Long getId() { return id; }
@@ -38,4 +40,7 @@ public class UsuarioResponseDTO {
 
     public Boolean getAtivo() { return ativo; }
     public void setAtivo(Boolean ativo) { this.ativo = ativo; }
+
+    public LocalDateTime getDataCadastro() { return dataCadastro; }
+    public void setDataCadastro(LocalDateTime dataCadastro) { this.dataCadastro = dataCadastro; }
 }
