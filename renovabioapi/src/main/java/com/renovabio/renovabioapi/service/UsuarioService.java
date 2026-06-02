@@ -44,6 +44,9 @@ public class UsuarioService {
     @Autowired
     private TokenService tokenService;
 
+    @Autowired
+    private UsuarioAtividadeService usuarioAtividadeService;
+
     public UsuarioResponseDTO criarUsuario(UsuarioRequestDTO dto) {
         if (usuarioRepository.findByEmail(dto.getEmail()).isPresent()) {
             throw new ResponseStatusException(CONFLICT, "Email ja cadastrado");
@@ -71,10 +74,6 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findByEmail(dto.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(UNAUTHORIZED, "Email ou senha invalidos"));
 
-        if (!Boolean.TRUE.equals(usuario.getAtivo())) {
-            throw new ResponseStatusException(UNAUTHORIZED, "Usuario inativo");
-        }
-
         if (!senhaConfere(dto.getSenha(), usuario.getSenha())) {
             throw new ResponseStatusException(UNAUTHORIZED, "Email ou senha invalidos");
         }
@@ -84,19 +83,21 @@ public class UsuarioService {
             usuarioRepository.save(usuario);
         }
 
+        usuario = usuarioAtividadeService.registrarAtividade(usuario);
+
         UsuarioResponseDTO response = toResponseDTO(usuario);
         response.setToken(tokenService.gerarToken(usuario.getidUsuario()));
         return response;
     }
 
     public List<UsuarioResponseDTO> listarUsuarios() {
-        return usuarioRepository.findAll().stream()
+        return usuarioAtividadeService.atualizarStatusPorInatividade(usuarioRepository.findAll()).stream()
                 .map(this::toResponseDTO)
                 .collect(Collectors.toList());
     }
 
     public List<UsuarioResponseDTO> listarUsuariosPorCidade(Long cidadeId) {
-        return usuarioRepository.findByCidadeId(cidadeId).stream()
+        return usuarioAtividadeService.atualizarStatusPorInatividade(usuarioRepository.findByCidadeId(cidadeId)).stream()
                 .map(this::toResponseDTO)
                 .collect(Collectors.toList());
     }
@@ -104,6 +105,8 @@ public class UsuarioService {
     public UsuarioResponseDTO buscarUsuario(Long id) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Usuario nao encontrado"));
+
+        usuario = usuarioAtividadeService.atualizarStatusPorInatividade(usuario);
 
         return toResponseDTO(usuario);
     }
@@ -117,7 +120,7 @@ public class UsuarioService {
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Usuario nao encontrado"));
 
         usuario.setSenha(passwordEncoder.encode(dto.getNovaSenha()));
-        usuarioRepository.save(usuario);
+        usuarioAtividadeService.registrarAtividade(usuario);
     }
 
     public UsuarioResponseDTO atualizarEmail(Long id, AtualizarEmailRequestDTO dto) {
@@ -136,7 +139,7 @@ public class UsuarioService {
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Usuario nao encontrado"));
 
         usuario.setEmail(email);
-        return toResponseDTO(usuarioRepository.save(usuario));
+        return toResponseDTO(usuarioAtividadeService.registrarAtividade(usuario));
     }
 
     public void recuperarSenha(RecuperarSenhaRequestDTO dto) {
@@ -157,7 +160,7 @@ public class UsuarioService {
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Usuario nao encontrado"));
 
         usuario.setSenha(passwordEncoder.encode(dto.getNovaSenha().trim()));
-        usuarioRepository.save(usuario);
+        usuarioAtividadeService.registrarAtividade(usuario);
     }
 
     public UsuarioResponseDTO atualizarFotoPerfil(Long id, MultipartFile file) {
@@ -167,7 +170,7 @@ public class UsuarioService {
         String fotoUrl = fileStorageService.salvarImagem(file, "perfil");
         usuario.setFotoPerfilUrl(fotoUrl);
 
-        return toResponseDTO(usuarioRepository.save(usuario));
+        return toResponseDTO(usuarioAtividadeService.registrarAtividade(usuario));
     }
 
     public UsuarioResponseDTO removerFotoPerfil(Long id) {
@@ -175,7 +178,7 @@ public class UsuarioService {
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Usuario nao encontrado"));
 
         usuario.setFotoPerfilUrl(null);
-        return toResponseDTO(usuarioRepository.save(usuario));
+        return toResponseDTO(usuarioAtividadeService.registrarAtividade(usuario));
     }
 
     private UsuarioResponseDTO toResponseDTO(Usuario usuario) {

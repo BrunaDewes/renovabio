@@ -22,15 +22,18 @@ public class TrocaRecompensaService {
     private final UsuarioRepository usuarioRepository;
     private final RecompensaRepository recompensaRepository;
     private final TrocaRecompensaRepository trocaRecompensaRepository;
+    private final UsuarioAtividadeService usuarioAtividadeService;
 
     public TrocaRecompensaService(
             UsuarioRepository usuarioRepository,
             RecompensaRepository recompensaRepository,
-            TrocaRecompensaRepository trocaRecompensaRepository) {
+            TrocaRecompensaRepository trocaRecompensaRepository,
+            UsuarioAtividadeService usuarioAtividadeService) {
 
         this.usuarioRepository = usuarioRepository;
         this.recompensaRepository = recompensaRepository;
         this.trocaRecompensaRepository = trocaRecompensaRepository;
+        this.usuarioAtividadeService = usuarioAtividadeService;
     }
 
     @Transactional
@@ -54,7 +57,7 @@ public class TrocaRecompensaService {
         }
 
         usuario.setPontuacaoAtual(usuario.getPontuacaoAtual() - recompensa.getPontosNecessarios());
-        usuarioRepository.save(usuario);
+        usuarioAtividadeService.registrarAtividade(usuario);
 
         recompensa.setQuantidadeDisponivel(recompensa.getQuantidadeDisponivel() - 1);
         recompensaRepository.save(recompensa);

@@ -7,7 +7,6 @@ Projeto de TGSI para incentivo, registro e acompanhamento de acoes sustentaveis 
 - `renovabioapi`: API Spring Boot responsavel pelas regras de negocio, persistencia em MySQL, autenticacao por token e endpoints usados pelo app e pelo painel web.
 - `renovabioapp`: aplicativo mobile feito com Expo/React Native, com telas para usuarios realizarem cadastro, login, desafios, receitas, recompensas, perfil e feedback.
 - `renovabiosite`: painel web feito com React/Vite para uso administrativo, com login, metricas, parceiros, recompensas, feedbacks e configuracoes.
-- `uploads`: pasta mantida apenas para compatibilidade com arquivos antigos locais. Novas imagens sao armazenadas no Cloudinary.
 - Arquivos `.sql`, `.mwb` e imagens de modelagem: materiais de banco de dados e documentacao visual do projeto.
 
 ## Banco de dados
@@ -17,9 +16,26 @@ O projeto usa MySQL com o banco `bdrenovabio`. O arquivo `bdrenovabio.sql` conte
 ## Servicos externos
 
 - Cloudinary: armazena fotos de perfil e comprovacoes dos desafios.
-- Gmail SMTP: envia codigos temporarios de recuperacao de senha.
 
 No ambiente publicado, configure as variaveis `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY` e `CLOUDINARY_API_SECRET`.
+
+## Tipos de usuario
+
+O sistema separa dois tipos de usuario:
+
+- `CIDADAO`: usuario do aplicativo mobile. Realiza receitas, desafios, resgata recompensas, envia feedbacks e aparece nas estatisticas do painel.
+- `PREFEITURA`: usuario do painel web. Acessa o site administrativo, gerencia parceiros/recompensas e acompanha estatisticas da propria cidade.
+
+O app cadastra usuarios como `CIDADAO`. O site da prefeitura cadastra usuarios como `PREFEITURA`.
+
+## Regra por cidade
+
+As informacoes administrativas sempre respeitam a cidade da prefeitura logada:
+
+- Prefeitura de Caibate ve e gerencia apenas dados de Caibate.
+- Prefeitura de Mato Queimado ve e gerencia apenas dados de Mato Queimado.
+- Parceiros e recompensas criados no painel sao associados automaticamente a cidade da prefeitura logada.
+- Usuarios do tipo `PREFEITURA` nao entram nos rankings e metricas de cidadaos.
 
 ## Como executar localmente
 
@@ -64,6 +80,63 @@ npm install
 npm run dev
 ```
 
-Com a configuracao atual, a API local roda em `http://localhost:8080` e o painel web usa essa URL para buscar os dados.
+Com a configuracao atual, a API local roda em `http://localhost:8080`. O painel web usa por padrao a API publicada no Railway; para apontar para a API local, configure `VITE_API_URL=http://localhost:8080`.
 
 Cada pasta principal possui seu proprio `README.md` com instrucoes e descricao dos arquivos internos.
+
+## Publicacao da API no Railway
+
+O Railway deve estar conectado ao repositorio GitHub e usando a branch `main`.
+
+1. Salve e envie as alteracoes:
+
+```bash
+git add .
+git commit -m "Mensagem do commit"
+git push origin main
+```
+
+2. No Railway, confirme se iniciou um novo deploy da API. Se nao iniciar automaticamente, abra o servico da API e use `Redeploy`.
+
+3. Configure as variaveis de ambiente necessarias no servico da API:
+
+```text
+CLOUDINARY_CLOUD_NAME
+CLOUDINARY_API_KEY
+CLOUDINARY_API_SECRET
+```
+
+4. Aguarde o deploy finalizar antes de publicar o site, porque o site pode chamar endpoints novos da API.
+
+## Publicacao do site no GitHub Pages
+
+O site publicado fica no branch `gh-pages`. O codigo fonte fica no branch `main`.
+
+1. Gere o build do site:
+
+```bash
+cd renovabiosite
+npm run build
+cd ..
+```
+
+2. Adicione o build ao Git. A opcao `-f` e necessaria porque `dist` normalmente fica ignorado:
+
+```bash
+git add -f renovabiosite/dist
+git commit -m "Build do site para GitHub Pages"
+```
+
+3. Publique o conteudo de `renovabiosite/dist` no branch `gh-pages`:
+
+```bash
+git subtree split --prefix renovabiosite/dist -b gh-pages-deploy
+git push -f origin gh-pages-deploy:gh-pages
+git branch -D gh-pages-deploy
+```
+
+4. Acesse:
+
+```text
+https://brunadewes.github.io/renovabio/
+```

@@ -35,6 +35,7 @@ public class DesafioService {
     private final AcaoUsuarioRepository acaoUsuarioRepository;
     private final ComprovacaoDesafioRepository comprovacaoDesafioRepository;
     private final FileStorageService fileStorageService;
+    private final UsuarioAtividadeService usuarioAtividadeService;
 
     public DesafioService(
             DesafioRepository desafioRepository,
@@ -42,7 +43,8 @@ public class DesafioService {
             UsuarioDesafioRepository usuarioDesafioRepository,
             AcaoUsuarioRepository acaoUsuarioRepository,
             ComprovacaoDesafioRepository comprovacaoDesafioRepository,
-            FileStorageService fileStorageService) {
+            FileStorageService fileStorageService,
+            UsuarioAtividadeService usuarioAtividadeService) {
 
         this.desafioRepository = desafioRepository;
         this.usuarioRepository = usuarioRepository;
@@ -50,6 +52,7 @@ public class DesafioService {
         this.acaoUsuarioRepository = acaoUsuarioRepository;
         this.comprovacaoDesafioRepository = comprovacaoDesafioRepository;
         this.fileStorageService = fileStorageService;
+        this.usuarioAtividadeService = usuarioAtividadeService;
     }
 
     public List<Desafio> listarDesafios() {
@@ -70,6 +73,8 @@ public class DesafioService {
 
         Desafio desafio = desafioRepository.findById(desafioId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Desafio nao encontrado"));
+
+        usuario = usuarioAtividadeService.registrarAtividade(usuario);
 
         UsuarioDesafio usuarioDesafio = new UsuarioDesafio(usuario, desafio, StatusDesafio.EM_ANDAMENTO);
         return usuarioDesafioRepository.save(usuarioDesafio);
@@ -100,6 +105,10 @@ public class DesafioService {
         comprovacao.setImagemUrl(imagemUrl);
         comprovacao.setDataEnvio(LocalDateTime.now(FUSO_BRASIL));
 
+        if (usuarioDesafio.getUsuario() != null) {
+            usuarioAtividadeService.registrarAtividade(usuarioDesafio.getUsuario());
+        }
+
         return toComprovacaoDTO(comprovacaoDesafioRepository.save(comprovacao));
     }
 
@@ -128,6 +137,7 @@ public class DesafioService {
 
         fileStorageService.excluirImagem(comprovacao.getImagemUrl());
         comprovacaoDesafioRepository.delete(comprovacao);
+        usuarioAtividadeService.registrarAtividade(usuarioDesafio.getUsuario());
 
         Desafio desafio = usuarioDesafio.getDesafio();
         int duracao = Math.max(1, desafio != null && desafio.getDuracaoDias() != null ? desafio.getDuracaoDias() : 1);
@@ -172,6 +182,9 @@ public class DesafioService {
         }
 
         usuarioDesafio.setProgresso(progresso);
+        if (usuarioDesafio.getUsuario() != null) {
+            usuarioAtividadeService.registrarAtividade(usuarioDesafio.getUsuario());
+        }
         return usuarioDesafioRepository.save(usuarioDesafio);
     }
 
@@ -189,7 +202,7 @@ public class DesafioService {
         Desafio desafio = usuarioDesafio.getDesafio();
 
         usuario.setPontuacaoAtual(usuario.getPontuacaoAtual() + desafio.getPontos());
-        usuarioRepository.save(usuario);
+        usuarioAtividadeService.registrarAtividade(usuario);
 
         AcaoUsuario acao = new AcaoUsuario();
         acao.setUsuario(usuario);

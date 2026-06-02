@@ -14,6 +14,8 @@ public interface AcaoUsuarioRepository extends JpaRepository<AcaoUsuario, Long> 
     // métodos prontos --> save(), findAll(), findById(), deleteById()
 
     List<AcaoUsuario> findByUsuarioIdUsuario(Long usuarioId);  //LISTAR AÇÕES DE UM USUÁRIO
+    Optional<AcaoUsuario> findFirstByUsuarioIdUsuarioOrderByDataAcaoDesc(Long usuarioId);
+
     Optional<AcaoUsuario> findFirstByUsuarioIdUsuarioAndTipoAcaoAndIdReferenciaOrderByDataAcaoDesc(
             Long usuarioId,
             TipoAcao tipoAcao,

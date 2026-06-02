@@ -28,11 +28,18 @@ public class ReceitaService {
     private final ReceitaRepository receitaRepository;
     private final UsuarioRepository usuarioRepository;
     private final AcaoUsuarioRepository acaoUsuarioRepository;
+    private final UsuarioAtividadeService usuarioAtividadeService;
 
-    public ReceitaService(ReceitaRepository receitaRepository, UsuarioRepository usuarioRepository, AcaoUsuarioRepository acaoUsuarioRepository) {
+    public ReceitaService(
+            ReceitaRepository receitaRepository,
+            UsuarioRepository usuarioRepository,
+            AcaoUsuarioRepository acaoUsuarioRepository,
+            UsuarioAtividadeService usuarioAtividadeService) {
+
         this.receitaRepository = receitaRepository;
         this.usuarioRepository = usuarioRepository;
         this.acaoUsuarioRepository = acaoUsuarioRepository;
+        this.usuarioAtividadeService = usuarioAtividadeService;
     }
 
     // LISTAR TODAS AS RECEITAS
@@ -70,6 +77,6 @@ public class ReceitaService {
                 usuario.getPontuacaoAtual() + receita.getPontos()
         );
 
-        usuarioRepository.save(usuario);
+        usuarioAtividadeService.registrarAtividade(usuario);
     }
 }

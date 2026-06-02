@@ -15,10 +15,16 @@ public class FeedbackService {
 
     private final FeedbackRepository feedbackRepository;
     private final UsuarioRepository usuarioRepository;
+    private final UsuarioAtividadeService usuarioAtividadeService;
 
-    public FeedbackService(FeedbackRepository feedbackRepository, UsuarioRepository usuarioRepository) {
+    public FeedbackService(
+            FeedbackRepository feedbackRepository,
+            UsuarioRepository usuarioRepository,
+            UsuarioAtividadeService usuarioAtividadeService) {
+
         this.feedbackRepository = feedbackRepository;
         this.usuarioRepository = usuarioRepository;
+        this.usuarioAtividadeService = usuarioAtividadeService;
     }
 
     // LISTAR TODOS OS FEEDBACKS
@@ -40,6 +46,8 @@ public class FeedbackService {
         feedback.setUsuario(usuario);
         feedback.setMensagem(mensagem);
         feedback.setDataEnvio(LocalDateTime.now());
+
+        usuarioAtividadeService.registrarAtividade(usuario);
 
         return feedbackRepository.save(feedback);
     }
