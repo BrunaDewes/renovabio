@@ -15,4 +15,4 @@ Esta pasta contem componentes reutilizaveis usados pelas telas do app.
 
 ## Padrao
 
-Componentes desta pasta devem ser genericos o suficiente para uso em mais de uma tela. Logica especifica de uma tela deve permanecer em `app`.
+Componentes desta pasta sao genericos o suficiente para uso em mais de uma tela. Logica especifica de uma tela permanece em `app`.

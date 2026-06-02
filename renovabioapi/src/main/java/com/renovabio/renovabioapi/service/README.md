@@ -17,9 +17,9 @@ Esta pasta concentra as regras de negocio da API.
 ## Regras usadas pelo painel
 
 - `UsuarioAutenticadoService` identifica a prefeitura pelo token e fornece a cidade vinculada a ela.
-- Services e controllers administrativos devem validar a cidade da prefeitura antes de alterar parceiros, recompensas ou consultar dados sensiveis.
-- Atividades relevantes atualizam a ultima atividade do usuario para manter o campo `ativo` coerente.
+- Services e controllers administrativos validam a cidade da prefeitura antes de alterar parceiros, recompensas ou consultar dados sensiveis.
+- Atividades relevantes reativam o usuario; a inativacao considera a ultima acao registrada em `AcaoUsuario` ou `dataCadastro`.
 
 ## Organizacao
 
-Na pasta `service`, ficam as regras principais do sistema, como validacoes, calculos e decisoes de negocio. Os controllers devem apenas receber as requisicoes da API e chamar o service responsavel.
+Na pasta `service`, ficam as regras principais do sistema, como validacoes, calculos e decisoes de negocio. Controllers recebem as requisicoes da API e chamam o service responsavel.

@@ -21,4 +21,4 @@ Esta pasta contem os controllers que recebem requisicoes HTTP e chamam os servic
 
 ## Padrao usado
 
-Os controllers devem manter pouca regra de negocio. Validacoes, calculos, atualizacoes de pontuacao e acesso mais complexo ao banco devem ficar nos services.
+Controllers mantem pouca regra de negocio. Validacoes, calculos, atualizacoes de pontuacao e acesso mais complexo ao banco ficam nos services.

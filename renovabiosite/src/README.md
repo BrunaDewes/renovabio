@@ -9,7 +9,7 @@ Esta pasta contem o codigo-fonte principal do painel web.
 
 ## API
 
-O painel usa a API publicada no Railway como URL base. Para usar outro ambiente, deve configurar `VITE_API_URL` ou alterar a constante `API_URL` em `App.jsx`.
+O painel usa a API publicada no Railway como URL base. Para usar outro ambiente, configuracao por `VITE_API_URL` ou alteracao da constante `API_URL` em `App.jsx`.
 
 Chamadas importantes feitas por `App.jsx`:
 
@@ -36,4 +36,4 @@ Chamadas importantes feitas por `App.jsx`:
 
 ## Padrao
 
-Se o painel crescer, deve se separar componentes grandes de `App.jsx` em arquivos proprios dentro desta pasta.
+Com o crescimento do painel, componentes grandes de `App.jsx` podem ser separados em arquivos proprios dentro desta pasta.

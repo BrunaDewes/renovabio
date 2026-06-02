@@ -38,7 +38,7 @@ npm run lint
 - Mudancas que alteram configuracoes nativas, permissoes ou plugins do Expo exigem nova build/APK.
 - O fluxo de comprovacao usa camera via `expo-image-picker`, portanto o APK precisa conter permissao de camera.
 - Se a mudanca for apenas de texto, layout ou regra de tela, normalmente nao precisa reinstalar APK durante desenvolvimento com Expo.
-- Antes da build final, revise os textos do app para corrigir erros de escrita e evitar que eles aparecam na versao instalada.
+- Revisao dos textos antes da build final evita erros de escrita na versao instalada.
 
 ## API
 

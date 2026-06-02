@@ -11,6 +11,6 @@ Esta pasta contem arquivos de configuracao e recursos carregados pelo Spring Boo
 
 ## Atencao
 
-Credenciais reais devem ser configuradas por variaveis de ambiente, nao escritas diretamente em `application.properties`.
+Credenciais reais ficam em variaveis de ambiente, nao escritas diretamente em `application.properties`.
 
-No Railway, configure as variaveis do Cloudinary no servico da API. O fluxo atual de recuperacao de senha e simplificado e nao depende de SMTP.
+No Railway, as variaveis do Cloudinary ficam no servico da API. O fluxo atual de recuperacao de senha e simplificado e nao depende de SMTP.

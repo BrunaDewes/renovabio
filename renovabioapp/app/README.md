@@ -17,4 +17,4 @@ Esta pasta usa Expo Router. Cada arquivo `.tsx` representa uma rota ou tela do a
 
 ## Padrao
 
-As telas podem consumir `context`, `utils` e `components`, mas regras compartilhadas devem ficar fora desta pasta para evitar duplicacao.
+As telas podem consumir `context`, `utils` e `components`. Regras compartilhadas ficam fora desta pasta para evitar duplicacao.

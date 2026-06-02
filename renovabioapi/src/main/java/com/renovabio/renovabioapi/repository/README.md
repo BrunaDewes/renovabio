@@ -10,4 +10,4 @@ Esta pasta contem interfaces Spring Data JPA usadas para consultar e persistir e
 
 ## Como usar
 
-Services chamam repositories para buscar e salvar dados. Controllers so devem acessar repositories diretamente em casos simples e pontuais.
+Services chamam repositories para buscar e salvar dados. Acesso direto por controllers fica restrito a casos simples e pontuais.

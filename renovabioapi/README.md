@@ -36,7 +36,7 @@ As principais configuracoes ficam em `src/main/resources/application.properties`
 
 ## Variaveis de ambiente
 
-Em producao, configure estas variaveis no servico da API:
+Em producao, estas variaveis ficam configuradas no servico da API:
 
 ```text
 CLOUDINARY_CLOUD_NAME
@@ -44,7 +44,7 @@ CLOUDINARY_API_KEY
 CLOUDINARY_API_SECRET
 ```
 
-O site publicado usa a API do Railway. Depois de alterar endpoints usados pelo painel, publique a API antes de publicar o GitHub Pages.
+O site publicado usa a API do Railway. Depois de alterar endpoints usados pelo painel, a API deve ser publicada antes do GitHub Pages.
 
 ## Autenticacao e tipos de usuario
 
@@ -151,7 +151,7 @@ mvnw.cmd test
 
 ## Deploy no Railway
 
-1. Envie as alteracoes para o GitHub:
+1. Envio das alteracoes para o GitHub:
 
 ```bash
 git add .
@@ -159,8 +159,8 @@ git commit -m "Mensagem do commit"
 git push origin main
 ```
 
-2. No Railway, confira se o servico da API iniciou um novo deploy da branch `main`.
+2. Conferencia do novo deploy da branch `main` no servico da API no Railway.
 
-3. Se nao iniciou, use `Redeploy` no servico da API.
+3. Uso da opcao `Redeploy` no servico da API quando o deploy automatico nao iniciar.
 
-4. Aguarde o deploy finalizar antes de publicar o site no GitHub Pages.
+4. Publicacao do site no GitHub Pages apos a finalizacao do deploy da API.

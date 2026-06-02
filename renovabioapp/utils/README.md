@@ -10,4 +10,4 @@ Esta pasta contem funcoes e dados auxiliares compartilhados entre telas.
 
 ## Uso
 
-Coloque aqui funcoes puras, adaptadores de API e dados auxiliares que nao dependem diretamente da interface. Componentes visuais devem ficar em `components`.
+Esta pasta concentra funcoes puras, adaptadores de API e dados auxiliares que nao dependem diretamente da interface. Componentes visuais ficam em `components`.
