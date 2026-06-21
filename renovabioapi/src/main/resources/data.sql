@@ -26,14 +26,14 @@ INSERT INTO cidade (id, estado, nome) VALUES
 (25, 'RS', 'Ubiretama'),
 (26, 'RS', 'Vitoria das Missoes');
 
-INSERT INTO categoria (id_Categoria, nome_Categoria, tipo) VALUES
-(1,'Doces','RECEITA'),
-(2,'Reaproveitamento','RECEITA'),
-(3,'Compostagem','DESAFIO'),
-(4,'Reducao de residuos','DESAFIO'),
-(5,'Reciclagem','DESAFIO'),
-(6,'Salgados','RECEITA'),
-(7,'Bebidas','RECEITA');
+INSERT INTO categoria (id_Categoria, nome_Categoria) VALUES
+(1,'Doces'),
+(2,'Reaproveitamento'),
+(3,'Compostagem'),
+(4,'Reducao de residuos'),
+(5,'Reciclagem'),
+(6,'Salgados'),
+(7,'Bebidas');
 
 INSERT INTO parceiro (id_parceiros, ativo, descricao, nome_parceiro, cidade_id_cidade) VALUES
 (1,1,'Descontos em produtos','Supermercado Lacador',1),
@@ -84,16 +84,16 @@ INSERT INTO receita (id_receita, titulo_receita, descricao, ingredientes, modo_p
 (38,'Cha de Frutas','Cha feito com frutas e cascas','1 maca com casca, cascas de 1 abacaxi, 1 laranja com casca, acucar a gosto, 2 cravos-da-india, canela em pau a gosto, 1 litro de agua','Lave bem as frutas e corte em pedacos. Em uma panela, leve ao fogo medio o acucar, o cravo e a canela para caramelizar. Acrescente as frutas e a agua e deixe cozinhar. Se desejar, adicione o cha de sua preferencia. Desligue o fogo e deixe descansar com a panela tampada. Coe antes de servir. Depois de pronto, conserve na geladeira.',20,'FACIL',8,7);
 
 INSERT INTO desafio (id_desafio, ativo, titulo, descricao, pontos, duracao_dias, categoria_id_categoria) VALUES
-(1, 1,'Composte por 7 dias','Separe residuos organicos e utilize uma composteira durante 7 dias consecutivos.',50,7,2),
+(1, 1,'Composte por 7 dias','Separe residuos organicos e utilize uma composteira durante 7 dias consecutivos.',50,7,3),
 (2, 1,'Reduza o desperdicio de alimentos','Durante uma semana, reaproveite cascas, talos ou sobras de alimentos em receitas.',40,7,2),
-(3, 1,'Separe o lixo corretamente','Durante 5 dias, separe corretamente os residuos organicos dos reciclaveis antes do descarte e registre sua organizacao diaria.',30,5,2),
-(4, 1,'Produza menos lixo organico','Durante 7 dias, tente reduzir a quantidade de residuos organicos gerados em casa.',35,7,2),
+(3, 1,'Separe o lixo corretamente','Durante 5 dias, separe corretamente os residuos organicos dos reciclaveis antes do descarte e registre sua organizacao diaria.',30,5,5),
+(4, 1,'Produza menos lixo organico','Durante 7 dias, tente reduzir a quantidade de residuos organicos gerados em casa.',35,7,4),
 (5, 1,'Faca uma receita sustentavel','Prepare pelo menos uma receita utilizando reaproveitamento de alimentos.',20,1,2),
-(6, 1,'Monte sua composteira','Monte uma composteira domestica utilizando baldes, caixas ou outro recipiente adequado para iniciar a compostagem de residuos organicos.',60,3,2),
-(7, 1, 'Feche o ciclo: Plante algo', 'Utilize o adubo líquido ou sólido gerado na sua composteira para plantar uma erva, tempero ou hortaliça.', 45, 1, 2),
-(8, 1, 'Multiplique o impacto', 'Convença um amigo ou familiar a começar a separar os resíduos orgânicos em casa e registre a iniciativa.', 50, 2, 2),
-(9, 1, 'Descubra a Biodigestão', 'Leia um artigo ou assista a um vídeo sobre como biodigestores transformam resíduos orgânicos em biogás e biofertilizante.', 25, 1, 2),
-(10, 1, 'Auditoria do lixo comum', 'Revise o lixo comum da sua casa hoje e identifique pelo menos um item que foi descartado, mas que poderia ter sido compostado ou reaproveitado.', 35, 1, 2),
+(6, 1,'Monte sua composteira','Monte uma composteira domestica utilizando baldes, caixas ou outro recipiente adequado para iniciar a compostagem de residuos organicos.',60,3,3),
+(7, 1, 'Feche o ciclo: Plante algo', 'Utilize o adubo líquido ou sólido gerado na sua composteira para plantar uma erva, tempero ou hortaliça.', 45, 1, 3),
+(8, 1, 'Multiplique o impacto', 'Convença um amigo ou familiar a começar a separar os resíduos orgânicos em casa e registre a iniciativa.', 50, 2, 4),
+(9, 1, 'Descubra a Biodigestão', 'Leia um artigo ou assista a um vídeo sobre como biodigestores transformam resíduos orgânicos em biogás e biofertilizante.', 25, 1, 3),
+(10, 1, 'Auditoria do lixo comum', 'Revise o lixo comum da sua casa hoje e identifique pelo menos um item que foi descartado, mas que poderia ter sido compostado ou reaproveitado.', 35, 1, 5),
 (11, 1, 'Resgate na geladeira', 'Faça uma limpa na geladeira e salve um alimento que está prestes a estragar, transformando-o em uma refeição ou congelando-o.', 20, 1, 2);
 
 INSERT INTO recompensa (id_recompensa, ativo, descricao, pontos_necessarios, quantidade_disponivel, parceiro_id_parceiros) VALUES

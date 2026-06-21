@@ -10,7 +10,7 @@ Esta pasta usa Expo Router. Cada arquivo `.tsx` representa uma rota ou tela do a
 - `home.tsx`: tela inicial apos login.
 - `perfil.tsx`: dados do usuario, foto e informacoes de conta.
 - `desafios.tsx`, `desafio-detalhe.tsx`, `historico-desafios.tsx`: fluxo de desafios sustentaveis, comprovacao por camera, visualizacao e exclusao do comprovante de hoje.
-- `receitas.tsx`, `receita-detalhe.tsx`: listagem e detalhe de receitas.
+- `receitas.tsx`, `receita-detalhe.tsx`: listagem, busca, filtro por categoria e detalhe de receitas.
 - `recompensas.tsx`, `historico-recompensas.tsx`: recompensas disponiveis e trocas realizadas.
 - `compostagem.tsx`, `descarte.tsx`: telas educativas.
 - `feedback.tsx`: envio de feedback para o sistema.

@@ -5,7 +5,7 @@ Aplicativo mobile do RenovaBio desenvolvido com Expo, React Native, TypeScript e
 ## Responsabilidades
 
 - Permitir cadastro, login e recuperacao simplificada de senha.
-- Exibir home, perfil, receitas, desafios, recompensas e historicos.
+- Exibir home, perfil, receitas com busca e filtro por categoria, desafios, recompensas e historicos.
 - Enviar feedbacks e comprovacoes para a API, com foto tirada pela camera no momento do registro.
 - Consumir a API do RenovaBio e montar URLs de imagens enviadas.
 - Manter contexto de autenticacao e dados do usuario no app.

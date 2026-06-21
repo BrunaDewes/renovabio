@@ -27,13 +27,12 @@ public class ReceitaDataInitializer implements ApplicationRunner {
 
     private void garantirCategorias() {
         jdbcTemplate.execute("""
-                INSERT INTO categoria (id_categoria, nome_categoria, tipo) VALUES
-                (1, 'Doces', 'RECEITA'),
-                (6, 'Salgados', 'RECEITA'),
-                (7, 'Bebidas', 'RECEITA')
+                INSERT INTO categoria (id_categoria, nome_categoria) VALUES
+                (1, 'Doces'),
+                (6, 'Salgados'),
+                (7, 'Bebidas')
                 ON DUPLICATE KEY UPDATE
-                nome_categoria = VALUES(nome_categoria),
-                tipo = VALUES(tipo)
+                nome_categoria = VALUES(nome_categoria)
                 """);
     }
 

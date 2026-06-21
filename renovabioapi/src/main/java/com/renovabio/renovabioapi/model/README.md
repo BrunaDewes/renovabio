@@ -6,7 +6,8 @@ Esta pasta contem as entidades JPA e enums que representam as tabelas e conceito
 
 - Usuarios, cidades e perfil: `Usuario`, `Cidade`. `Usuario` tambem guarda o status `ativo`.
 - Desafios: `Desafio`, `UsuarioDesafio`, `ComprovacaoDesafio`.
-- Receitas: `Receita`, `Categoria`.
+- Conteudos: `Categoria` classifica registros de `Receita` e `Desafio` sem um campo de tipo adicional.
+- Receitas: `Receita`.
 - Recompensas e parceiros: `Recompensa`, `Parceiro`, `TrocaRecompensa`.
 - Historico e interacoes: `AcaoUsuario`, `Feedback`.
 
@@ -14,7 +15,6 @@ Esta pasta contem as entidades JPA e enums que representam as tabelas e conceito
 
 - `TipoUsuario`
 - `TipoAcao`
-- `TipoPontuacao`
 - `StatusDesafio`
 - `StatusTroca`
 - `DificuldadeReceita`

@@ -26,6 +26,7 @@ export default function Receitas() {
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState('');
   const [busca, setBusca] = useState('');
+  const [categoriaSelecionada, setCategoriaSelecionada] = useState('Todas');
 
   const carregarReceitas = useCallback(async () => {
     setCarregando(true);
@@ -51,17 +52,29 @@ export default function Receitas() {
     void carregarReceitas();
   }, [carregarReceitas]);
 
+  const categorias = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          receitas
+            .map((receita) => receita.categoria?.nome ?? receita.categoria?.nomeCategoria)
+            .filter((categoria): categoria is string => Boolean(categoria)),
+        ),
+      ).sort((a, b) => a.localeCompare(b, 'pt-BR')),
+    [receitas],
+  );
+
   const receitasFiltradas = receitas.filter((receita) => {
     const termo = busca.trim().toLowerCase();
-    if (!termo) {
-      return true;
-    }
-
-    return (
+    const categoria = receita.categoria?.nome ?? receita.categoria?.nomeCategoria;
+    const correspondeCategoria = categoriaSelecionada === 'Todas' || categoria === categoriaSelecionada;
+    const correspondeBusca =
+      !termo ||
       receita.titulo?.toLowerCase().includes(termo) ||
       receita.descricao?.toLowerCase().includes(termo) ||
-      receita.ingredientes?.toLowerCase().includes(termo)
-    );
+      receita.ingredientes?.toLowerCase().includes(termo);
+
+    return correspondeCategoria && correspondeBusca;
   });
 
   return (
@@ -97,6 +110,32 @@ export default function Receitas() {
           />
         </View>
 
+        {categorias.length > 0 ? (
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.categoryFilters}
+          >
+            {['Todas', ...categorias].map((categoria) => {
+              const selecionada = categoriaSelecionada === categoria;
+
+              return (
+                <TouchableOpacity
+                  key={categoria}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: selecionada }}
+                  onPress={() => setCategoriaSelecionada(categoria)}
+                  style={[styles.categoryButton, selecionada ? styles.categoryButtonSelected : null]}
+                >
+                  <Text style={[styles.categoryText, selecionada ? styles.categoryTextSelected : null]}>
+                    {categoria}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+        ) : null}
+
         {carregando ? (
           <View style={styles.centerState}>
             <ActivityIndicator color="#0B7A43" size="large" />
@@ -114,7 +153,7 @@ export default function Receitas() {
 
         {!carregando && !erro && receitasFiltradas.length === 0 ? (
           <View style={styles.feedbackCard}>
-            <Text style={styles.feedbackText}>Nenhuma receita encontrada para essa busca.</Text>
+            <Text style={styles.feedbackText}>Nenhuma receita encontrada com os filtros selecionados.</Text>
           </View>
         ) : null}
 
@@ -192,7 +231,7 @@ const styles = {
     borderRadius: 999,
     paddingHorizontal: 16,
     paddingVertical: 10,
-    marginBottom: 22,
+    marginBottom: 12,
   },
   searchInput: {
     flex: 1,
@@ -200,6 +239,31 @@ const styles = {
     color: '#35506B',
     fontSize: 14,
     paddingVertical: 2,
+  },
+  categoryFilters: {
+    gap: 8,
+    paddingBottom: 22,
+  },
+  categoryButton: {
+    minHeight: 38,
+    justifyContent: 'center' as const,
+    backgroundColor: 'rgba(255,248,232,0.95)',
+    borderWidth: 1,
+    borderColor: 'rgba(11,122,67,0.3)',
+    borderRadius: 8,
+    paddingHorizontal: 14,
+  },
+  categoryButtonSelected: {
+    backgroundColor: '#0B7A43',
+    borderColor: '#0B7A43',
+  },
+  categoryText: {
+    color: '#0B7A43',
+    fontSize: 14,
+    fontWeight: '700' as const,
+  },
+  categoryTextSelected: {
+    color: '#F7F3DF',
   },
   centerState: {
     marginTop: 90,

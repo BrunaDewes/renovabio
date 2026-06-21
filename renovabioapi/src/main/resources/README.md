@@ -5,7 +5,7 @@ Esta pasta contem arquivos de configuracao e recursos carregados pelo Spring Boo
 ## Arquivos e pastas
 
 - `application.properties`: configura banco MySQL, JPA, porta do servidor, upload, Cloudinary e token.
-- `data.sql`: dados iniciais usados quando a aplicacao carrega scripts SQL.
+- `data.sql`: dados de referencia de cidades, categorias, receitas, desafios, parceiros e recompensas. O inicializador atual utiliza o bloco de receitas desse arquivo.
 - `static`: local reservado para arquivos estaticos servidos pela aplicacao, caso sejam usados futuramente.
 - `templates`: local reservado para templates de servidor, caso sejam usados futuramente.
 
