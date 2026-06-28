@@ -759,12 +759,12 @@ export default function App() {
   const [screen, setScreen] = useState("login");
   const [activeTab, setActiveTab] = useState("inicio");
   const [data, setData] = useState(emptyData);
-  const [email, setEmail] = useState(localStorage.getItem("renovabioEmail") || "prefeituracaibate@gmail.com");
+  const [email, setEmail] = useState("");
   const [token, setToken] = useState(localStorage.getItem("renovabioToken") || "");
 
-  async function request(path, options = {}, authToken = token) {
+  async function request(path, options = {}, authToken) {
     const headers = { ...(options.headers || {}) };
-    const effectiveToken = authToken || localStorage.getItem("renovabioToken") || "";
+    const effectiveToken = authToken === undefined ? token || localStorage.getItem("renovabioToken") || "" : authToken;
     if (effectiveToken) headers.Authorization = `Bearer ${effectiveToken}`;
     const response = await fetch(`${API_URL}${path}`, { ...options, headers });
     if (!response.ok) {
@@ -857,7 +857,6 @@ export default function App() {
       setToken(nextToken);
       setEmail(nextEmail);
       localStorage.setItem("renovabioToken", nextToken);
-      localStorage.setItem("renovabioEmail", nextEmail);
       await loadData(nextToken);
       setStatus("");
       setScreen("admin");
@@ -900,7 +899,6 @@ export default function App() {
       );
 
       setEmail(nextEmail);
-      localStorage.setItem("renovabioEmail", nextEmail);
       setStatus("Cadastro concluído. Faça login para acessar o painel.");
       setTimeout(() => setScreen("login"), 900);
     } catch (error) {
@@ -921,7 +919,6 @@ export default function App() {
       );
 
       setEmail(nextEmail);
-      localStorage.setItem("renovabioEmail", nextEmail);
       setStatus("Senha alterada. Faça login com a nova senha.");
       setTimeout(() => setScreen("login"), 1000);
     } catch (error) {
@@ -937,7 +934,6 @@ export default function App() {
     });
     const savedEmail = user?.email || nextEmail;
     setEmail(savedEmail);
-    localStorage.setItem("renovabioEmail", savedEmail);
   }
 
   async function updatePassword(newPassword) {
@@ -1013,6 +1009,8 @@ export default function App() {
   }
 
   useEffect(() => {
+    localStorage.removeItem("renovabioEmail");
+
     if (token) {
       loadData(token)
         .then(() => setScreen("admin"))

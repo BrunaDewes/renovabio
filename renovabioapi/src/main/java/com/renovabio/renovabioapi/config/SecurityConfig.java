@@ -30,9 +30,9 @@ public class SecurityConfig {
                 .cors(cors -> {})
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
+                        .requestMatchers(HttpMethod.PATCH, "/usuarios/recuperar-senha").permitAll()
                         .requestMatchers(
                                 "/usuarios/login",
-                                "/usuarios/recuperar-senha",
                                 "/cidades",
                                 "/uploads/**"
                         ).permitAll()
